@@ -1,0 +1,25 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+known_first_party = "advent_of_code"
+line_length = 100
+
+[tool.poetry]
+name = "advent-of-code"
+version = "0.1.0"
+description = ""
+authors = ["Brad Eisenhauer <bradley.eisenhauer@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = ">=7.1"
+typer = ">=0.6"
+
+[tool.poetry.scripts]
+aoc = "advent_of_code.cli:app"
