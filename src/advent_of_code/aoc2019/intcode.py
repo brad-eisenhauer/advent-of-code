@@ -45,6 +45,28 @@ class IntcodeMachine:
             case 4:  # output
                 [output] = self.read_values(modes, 1)
                 self.pointer += 2
+            case 5:  # jump-if-true
+                condition, address = self.read_values(modes, 2)
+                if condition:
+                    self.pointer = address
+                else:
+                    self.pointer += 3
+            case 6:  # jump-if-false
+                condition, address = self.read_values(modes, 2)
+                if not condition:
+                    self.pointer = address
+                else:
+                    self.pointer += 3
+            case 7:  # less than
+                left, right = self.read_values(modes, 2)
+                address = self.buffer[self.pointer + 3]
+                self.buffer[address] = int(left < right)
+                self.pointer += 4
+            case 8:  # equals
+                left, right = self.read_values(modes, 2)
+                address = self.buffer[self.pointer + 3]
+                self.buffer[address] = int(left == right)
+                self.pointer += 4
             case 99:  # halt
                 self.pointer = None
             case _:
