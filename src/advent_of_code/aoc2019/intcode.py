@@ -4,6 +4,10 @@ from typing import Optional, TextIO, Iterator, TypeVar
 T = TypeVar("T")
 
 
+class IllegalOperationError(RuntimeError):
+    ...
+
+
 @dataclass
 class IntcodeMachine:
     buffer: list[int]
@@ -21,9 +25,12 @@ class IntcodeMachine:
                 yield output
 
     def step(self) -> Optional[int]:
-        op_code = self.buffer[self.pointer] % 100
-        modes = self.buffer[self.pointer] // 100
-        return self.process_opcode(op_code, modes)
+        try:
+            op_code = self.buffer[self.pointer] % 100
+            modes = self.buffer[self.pointer] // 100
+            return self.process_opcode(op_code, modes)
+        except TypeError as e:
+            raise IllegalOperationError("Attempted to run a halted machine.") from e
 
     def process_opcode(self, op_code: int, modes: int) -> Optional[int]:
         output: Optional[int] = None
