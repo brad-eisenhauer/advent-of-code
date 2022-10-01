@@ -17,16 +17,10 @@ class Solution(Generic[T]):
     def __init__(self, day: int, year: int):
         self.day = day
         self.year = year
-        self.read_input = cache(self._read_input)
 
     def open_input(self):
         path = get_input_path(self.day, self.year)
         return open(path)
-
-    def _read_input(self) -> Sequence[str]:
-        with self.open_input() as f:
-            result = f.readlines()
-        return result
 
     def solve_part(self, part: PuzzlePart) -> T:
         match part:
