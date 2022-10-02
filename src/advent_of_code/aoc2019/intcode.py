@@ -13,6 +13,7 @@ class IntcodeMachine:
     buffer: list[int]
     input_stream: Iterator[int] = field(default_factory=lambda: iter(()))
     pointer: Optional[int] = 0
+    relative_base: int = 0
 
     @staticmethod
     def read_buffer(f: TextIO) -> list[int]:
@@ -32,22 +33,32 @@ class IntcodeMachine:
         except TypeError as e:
             raise IllegalOperationError("Attempted to run a halted machine.") from e
 
+    def read(self, index: int) -> int:
+        while index >= len(self.buffer):
+            self.buffer.extend([0] * len(self.buffer))
+        return self.buffer[index]
+
+    def write(self, index: int, value: int):
+        while index >= len(self.buffer):
+            self.buffer.extend([0] * len(self.buffer))
+        self.buffer[index] = value
+
     def process_opcode(self, op_code: int, modes: int) -> Optional[int]:
         output: Optional[int] = None
         match op_code:
             case 1:  # add
                 left, right = self.read_values(modes, 2)
-                result_idx = self.buffer[self.pointer + 3]
-                self.buffer[result_idx] = left + right
+                result_idx = self.read(self.pointer + 3)
+                self.write(result_idx, left + right)
                 self.pointer += 4
             case 2:  # multiply
                 left, right = self.read_values(modes, 2)
-                result_idx = self.buffer[self.pointer + 3]
-                self.buffer[result_idx] = left * right
+                result_idx = self.read(self.pointer + 3)
+                self.write(result_idx, left * right)
                 self.pointer += 4
             case 3:  # input
-                address = self.buffer[self.pointer + 1]
-                self.buffer[address] = next(self.input_stream)
+                address = self.read(self.pointer + 1)
+                self.write(address, next(self.input_stream))
                 self.pointer += 2
             case 4:  # output
                 [output] = self.read_values(modes, 1)
@@ -66,14 +77,18 @@ class IntcodeMachine:
                     self.pointer += 3
             case 7:  # less than
                 left, right = self.read_values(modes, 2)
-                address = self.buffer[self.pointer + 3]
-                self.buffer[address] = int(left < right)
+                address = self.read(self.pointer + 3)
+                self.write(address, int(left < right))
                 self.pointer += 4
             case 8:  # equals
                 left, right = self.read_values(modes, 2)
-                address = self.buffer[self.pointer + 3]
-                self.buffer[address] = int(left == right)
+                address = self.read(self.pointer + 3)
+                self.write(address, int(left == right))
                 self.pointer += 4
+            case 9:  # relative base adjustment
+                [adjustment] = self.read_values(modes, 1)
+                self.relative_base += adjustment
+                self.pointer += 2
             case 99:  # halt
                 self.pointer = None
             case _:
@@ -85,10 +100,13 @@ class IntcodeMachine:
             mode = modes % 10
             modes //= 10
             match mode:
-                case 0:
-                    index = self.buffer[self.pointer + offset]
-                    yield self.buffer[index]
-                case 1:
-                    yield self.buffer[self.pointer + offset]
+                case 0:  # position mode
+                    index = self.read(self.pointer + offset)
+                    yield self.read(index)
+                case 1:  # immediate mode
+                    yield self.read(self.pointer + offset)
+                case 2:  # relative mode
+                    relative = self.read(self.pointer + offset)
+                    yield self.read(self.offset_base + relative)
                 case _:
                     raise ValueError(f"Unrecognized parameter mode: {mode}")
