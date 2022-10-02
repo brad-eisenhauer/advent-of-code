@@ -1,6 +1,5 @@
 from enum import Enum
-from functools import cache
-from typing import Generic, TypeVar, Sequence
+from typing import Generic, TypeVar
 
 from advent_of_code.util import get_input_path
 
