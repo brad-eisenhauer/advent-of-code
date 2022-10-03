@@ -29,9 +29,9 @@ class IntcodeMachine:
         try:
             op_code = self.buffer[self.pointer] % 100
             modes = self.buffer[self.pointer] // 100
-            return self.process_opcode(op_code, modes)
         except TypeError as e:
             raise IllegalOperationError("Attempted to run a halted machine.") from e
+        return self.process_opcode(op_code, modes)
 
     def read(self, index: int) -> int:
         while index >= len(self.buffer):

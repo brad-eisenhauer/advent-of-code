@@ -18,7 +18,9 @@ authors = ["Brad Eisenhauer <bradley.eisenhauer@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+python-dotenv = "*"
 pytest = ">=7.1"
+requests = "*"
 typer = ">=0.6"
 
 [tool.poetry.scripts]
