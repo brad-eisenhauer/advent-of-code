@@ -74,9 +74,7 @@ class SeriesRule(Rule):
                 yield "", partial_message
             else:
                 for match, remainder in rules[0].find_matches(partial_message):
-                    for sub_match, sub_remainder in find_matches_rec(
-                        remainder, rules[1:]
-                    ):
+                    for sub_match, sub_remainder in find_matches_rec(remainder, rules[1:]):
                         yield match + sub_match, sub_remainder
 
         return find_matches_rec(message, self.rules)
@@ -88,9 +86,7 @@ class RuleBuilder:
             n, rule = line.split(":")
             return int(n), rule.strip()
 
-        self.rules: dict[int, Union[str, Rule]] = dict(
-            parse_line(line) for line in rules
-        )
+        self.rules: dict[int, Union[str, Rule]] = dict(parse_line(line) for line in rules)
 
     def get_rule(self, index: int) -> Rule:
         if isinstance((rule := self.rules[index]), Rule):
@@ -102,12 +98,8 @@ class RuleBuilder:
         if rule.startswith('"'):
             return LiteralRule(rule.strip('"'))
         if "|" in rule:
-            return UnionRule(
-                self.build_rule(sub_rule.strip()) for sub_rule in rule.split("|")
-            )
-        return SeriesRule(
-            DeferredRule(self, int(sub_rule)) for sub_rule in rule.split()
-        )
+            return UnionRule(self.build_rule(sub_rule.strip()) for sub_rule in rule.split("|"))
+        return SeriesRule(DeferredRule(self, int(sub_rule)) for sub_rule in rule.split())
 
 
 class DeferredRule(Rule):

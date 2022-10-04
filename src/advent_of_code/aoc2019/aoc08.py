@@ -44,7 +44,7 @@ class SifImage:
         step = width * height
         index = 0
         while index < len(self.data):
-            yield self.data[index:index+step]
+            yield self.data[index : index + step]
             index += step
 
     def render(self) -> str:

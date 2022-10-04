@@ -26,15 +26,11 @@ class Tile:
         }
 
     def rotate_left(self) -> Tile:
-        new_data = (
-            "".join(s[i - 1] for s in self.img_data) for i in range(self.size, 0, -1)
-        )
+        new_data = ("".join(s[i - 1] for s in self.img_data) for i in range(self.size, 0, -1))
         return Tile(self.id, new_data)
 
     def rotate_right(self) -> Tile:
-        new_data = (
-            "".join(s[i] for s in reversed(self.img_data)) for i in range(self.size)
-        )
+        new_data = ("".join(s[i] for s in reversed(self.img_data)) for i in range(self.size))
         return Tile(self.id, new_data)
 
     def flip_horizontal(self) -> Tile:

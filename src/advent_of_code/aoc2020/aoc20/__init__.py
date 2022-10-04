@@ -164,10 +164,7 @@ def get_monster_mask():
     """It was a sea-floor smash."""
     with StringIO(SEA_MONSTER) as sm:
         return Mask(
-            (x, y)
-            for x, line in enumerate(sm)
-            for y, char in enumerate(line)
-            if char == "#"
+            (x, y) for x, line in enumerate(sm) for y, char in enumerate(line) if char == "#"
         )
 
 

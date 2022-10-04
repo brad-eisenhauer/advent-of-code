@@ -38,9 +38,7 @@ class Image:
         col_range = range(min(0, col), len(self.tiles[0]))
         new_data = (
             (
-                tile
-                if row_idx == row and col_idx == col
-                else self.get(row_idx, col_idx)
+                tile if row_idx == row and col_idx == col else self.get(row_idx, col_idx)
                 for col_idx in col_range
             )
             for row_idx in row_range
@@ -78,10 +76,7 @@ class Image:
         for edge in Edge:
             if (
                 adj_tile := self.get(
-                    *(
-                        idx + offset
-                        for idx, offset in zip((row, col), adjacent_offsets[edge])
-                    )
+                    *(idx + offset for idx, offset in zip((row, col), adjacent_offsets[edge]))
                 )
             ) is not None:
                 edge_requirements[edge] = adj_tile.edges[edge.opposite]

@@ -47,7 +47,9 @@ class StationPlacer:
         station = None
         max_visible = 0
         for left in self.map:
-            visible_count = sum(1 for right in self.map if right is not left and self.has_line_of_sight(left, right))
+            visible_count = sum(
+                1 for right in self.map if right is not left and self.has_line_of_sight(left, right)
+            )
             if station is None or visible_count > max_visible:
                 station = left
                 max_visible = visible_count
@@ -65,7 +67,7 @@ class StationPlacer:
         while self.map:
             for a in sorted(
                 (a for a in self.map if self.has_line_of_sight(station, a)),
-                key=lambda a: (a - station).heading
+                key=lambda a: (a - station).heading,
             ):
                 self.map.remove(a)
                 yield a
@@ -121,7 +123,7 @@ class TestVector:
             (Vector((0, 3)), [Vector((0, 1)), Vector((0, 2))]),
             (Vector((4, 12)), [Vector((1, 3)), Vector((2, 6)), Vector((3, 9))]),
             (Vector((-2, -2)), [Vector((-1, -1))]),
-        ]
+        ],
     )
     def test_get_steps(self, vector, expected):
         assert list(vector.get_steps()) == expected
@@ -216,7 +218,7 @@ SAMPLE_MAPS = [
     [
         (Vector((0, 2)), Vector((1, 2)), True),
         (Vector((0, 2)), Vector((2, 2)), False),
-    ]
+    ],
 )
 def test_has_line_of_sight(left, right, expected):
     with StringIO(SAMPLE_MAPS[0]) as f:
@@ -224,10 +226,7 @@ def test_has_line_of_sight(left, right, expected):
     assert placer.has_line_of_sight(left, right) == expected
 
 
-@pytest.mark.parametrize(
-    ("map_input", "expected"),
-    zip(SAMPLE_MAPS, [8, 33, 35, 41, 210])
-)
+@pytest.mark.parametrize(("map_input", "expected"), zip(SAMPLE_MAPS, [8, 33, 35, 41, 210]))
 def test_calc_max_visible_asteroids(map_input, expected):
     with StringIO(map_input) as f:
         placer = StationPlacer(StationPlacer.read_map(f))

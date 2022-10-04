@@ -29,21 +29,21 @@ class AocSolution(Solution[int]):
 
 
 def test_quine():
-    quine = [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99]
+    quine = [109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99]
     machine = IntcodeMachine(quine.copy())
     result = list(machine.run())
     assert result == quine
 
 
 def test_large_number():
-    program = [1102,34915192,34915192,7,4,7,99,0]
+    program = [1102, 34915192, 34915192, 7, 4, 7, 99, 0]
     machine = IntcodeMachine(program)
     result = next(machine.run())
     assert floor(log10(result)) + 1 == 16
 
 
 def test_large_number_2():
-    program = [104,1125899906842624,99]
+    program = [104, 1125899906842624, 99]
     machine = IntcodeMachine(program.copy())
     result = next(machine.run())
     assert result == program[1]
@@ -68,7 +68,7 @@ def test_write_past_initial_buffer():
     [
         ([3, 100, 9, 1, 204, 99, 204, 0, 99], [0, 42]),
         ([3, 100, 109, 1, 204, 99, 204, 0, 99], [42, 100]),
-    ]
+    ],
 )
 def test_relative_mode(program, expected):
     machine = IntcodeMachine(program, input_stream=iter((42,)))

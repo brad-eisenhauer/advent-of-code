@@ -79,7 +79,9 @@ def submit(
     result = solution.solve_part(part)
     load_dotenv()
     url = f"https://adventofcode.com/{year}/day/{day}/answer"
-    response = requests.post(url, data={"level": level, "answer": result}, cookies={"session": getenv("AOC_SESSION")})
+    response = requests.post(
+        url, data={"level": level, "answer": result}, cookies={"session": getenv("AOC_SESSION")}
+    )
     response.raise_for_status()
     content = response.content.decode()
     if "That's the right answer" in content:
