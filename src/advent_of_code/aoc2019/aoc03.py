@@ -19,10 +19,12 @@ class AocSolution(Solution[int]):
         super().__init__(3, 2019)
 
     def solve_part_one(self) -> int:
-        return calc_nearest_intersection_distance(self.read_input())
+        with self.open_input() as f:
+            return calc_nearest_intersection_distance(f.readlines())
 
     def solve_part_two(self) -> int:
-        return calc_min_total_wire_distance_to_intersection(self.read_input())
+        with self.open_input() as f:
+            return calc_min_total_wire_distance_to_intersection(f.readlines())
 
 
 def get_points_covered_by_route(route: str) -> dict[Vector, int]:
