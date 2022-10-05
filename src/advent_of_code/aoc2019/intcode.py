@@ -1,11 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Optional, TextIO, Iterator, TypeVar
 
+from advent_of_code.errors import IllegalOperationError
+
 T = TypeVar("T")
-
-
-class IllegalOperationError(RuntimeError):
-    ...
 
 
 @dataclass
