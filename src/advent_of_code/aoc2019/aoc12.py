@@ -1,13 +1,19 @@
 from __future__ import annotations
 
 import re
+import uuid
 from dataclasses import dataclass
+from enum import Enum
+from functools import reduce
 from io import StringIO
 from typing import TextIO
 
+import numpy as np
 import pytest
+from scipy.stats import rankdata
 
 from advent_of_code.base import Solution
+from advent_of_code.util import least_common_multiple
 
 
 class AocSolution(Solution[int]):
@@ -22,95 +28,62 @@ class AocSolution(Solution[int]):
         return array.total_energy()
 
     def solve_part_two(self) -> int:
-        step_count = 0
-        prior_states = set()
         with self.open_input() as f:
             array = MoonArray.read_array(f)
-        while array not in prior_states:
-            prior_states.add(array)
-            array = array.step()
+        cycles = (ax.steps_to_cycle() for ax in array.axes)
+        return reduce(least_common_multiple, cycles)
+
+
+@dataclass(frozen=True)
+class MoonAxis:
+    positions: tuple[int, ...]
+    velocities: tuple[int, ...]
+
+    @classmethod
+    def from_positions(cls, positions: tuple[int, ...]) -> MoonAxis:
+        velocities = (0,) * len(positions)
+        return cls(positions, velocities)
+
+    def acceleration(self) -> tuple[int, ...]:
+        pos_arr = np.array(self.positions)
+        return tuple(rankdata(-pos_arr, method="min") - rankdata(pos_arr, method="min"))
+
+    def step(self) -> MoonAxis:
+        new_velos = tuple(v + a for v, a in zip(self.velocities, self.acceleration()))
+        new_pos = tuple(p + v for p, v in zip(self.positions, new_velos))
+        return MoonAxis(new_pos, new_velos)
+
+    def steps_to_cycle(self) -> int:
+        step_count = 1
+        axis = self
+        while (axis := axis.step()) != self:
             step_count += 1
         return step_count
 
 
 @dataclass(frozen=True)
-class Moon:
-    position: tuple[int, ...]
-    velocity: tuple[int, ...] = (0, 0, 0)
-
-    def apply_velocity_delta(self, delta: tuple[int, ...]) -> Moon:
-        return Moon(self.position, tuple(a + b for a, b in zip(self.velocity, delta)))
-
-    def advance(self) -> Moon:
-        return Moon(tuple(a + b for a, b in zip(self.position, self.velocity)), self.velocity)
-
-    def total_energy(self) -> int:
-        return sum(abs(n) for n in self.position) * sum(abs(n) for n in self.velocity)
-
-
-@dataclass(frozen=True)
 class MoonArray:
-    moons: frozenset[Moon]
+    axes: tuple[MoonAxis, ...]
 
     @classmethod
     def read_array(cls, f: TextIO) -> MoonArray:
         pattern = re.compile(r"^<x=(-?\d+), y=(-?\d+), z=(-?\d+)>")
-        moons = []
-        for line in f.readlines():
-            matches = pattern.match(line)
-            moons.append(Moon(tuple(int(m) for m in matches.groups())))
-        return cls(frozenset(moons))
+        positions = (tuple(int(n) for n in pattern.match(line).groups()) for line in f.readlines())
+        axes = tuple(MoonAxis.from_positions(ps) for ps in zip(*positions))
+        return cls(axes)
 
     def step(self) -> MoonArray:
-        temp = self.update_velocities()
-        return temp.update_positions()
-
-    def update_velocities(self) -> MoonArray:
-        velocity_dict = self.calc_velocity_deltas()
-        return MoonArray(frozenset(
-            m.apply_velocity_delta(tuple(velocity_dict[(a, p)] for a, p in zip(["x", "y", "z"], m.position)))
-            for m in self.moons
-        ))
-
-    def update_positions(self) -> MoonArray:
-        return MoonArray(frozenset(m.advance() for m in self.moons))
-
-    def calc_velocity_deltas(self) -> dict[(str, int), int]:
-        """Calculate moon velocities
-
-        Returns
-        -------
-        dict[(str, int), int]
-            A dictionary mapping an axis ("x", "y", or "z") and position on that axis to its velocity.
-        """
-
-        def count_values_to(positions):
-            result = []
-            last_pos = None
-            pos_count = 0
-            for i, p in enumerate(positions):
-                if p == last_pos:
-                    result.append(pos_count)
-                else:
-                    pos_count = i
-                    result.append(pos_count)
-                last_pos = p
-            return result
-
-        def values_to_dict(positions, axis):
-            positions = sorted(positions)
-            positions_less_than = count_values_to(positions)
-            positions_greater_than = list(reversed(count_values_to(reversed(positions))))
-            return {
-                (axis, p): gt - lt
-                for p, gt, lt in zip(positions, positions_greater_than, positions_less_than)
-            }
-
-        xs, ys, zs = zip(*(m.position for m in self.moons))
-        return values_to_dict(xs, "x") | values_to_dict(ys, "y") | values_to_dict(zs, "z")
+        axes = tuple(ax.step() for ax in self.axes)
+        return MoonArray(axes)
 
     def total_energy(self) -> int:
-        return sum(m.total_energy() for m in self.moons)
+        potential_energies = [
+            sum(abs(p) for p in ps) for ps in zip(*map(lambda ax: ax.positions, self.axes))
+        ]
+        kinetic_energies = [
+            sum(abs(v) for v in vs) for vs in zip(*map(lambda ax: ax.velocities, self.axes))
+        ]
+        return sum(p * k for p, k in zip(potential_energies, kinetic_energies))
 
 
 SAMPLE_INPUT = """\
@@ -122,106 +95,78 @@ SAMPLE_INPUT = """\
 
 
 @pytest.fixture
-def sample_array():
+def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         return MoonArray.read_array(f)
 
 
-def test_create_moon_array(sample_array):
-    assert len(sample_array.moons) == 4
+class TestMoonAxis:
+    @pytest.mark.parametrize(
+        ("axis", "expected"),
+        [
+            (MoonAxis.from_positions((-1, 2, 4, 3)), MoonAxis((2, 3, 1, 2), (3, 1, -3, -1))),
+            (MoonAxis.from_positions((0, -10, -8, 5)), MoonAxis((-1, -7, -7, 2), (-1, 3, 1, -3))),
+            (MoonAxis.from_positions((2, -7, 8, -1)), MoonAxis((1, -4, 5, 0), (-1, 3, -3, 1))),
+        ],
+    )
+    def test_step(self, axis, expected):
+        assert axis.step() == expected
 
 
-@pytest.mark.parametrize(
-    ("step_count", "expected"),
-    [
-        (
-            0,
-            {
-                ("x", -1): 3,
-                ("x", 2): 1,
-                ("x", 3): -1,
-                ("x", 4): -3,
-                ("y", -10): 3,
-                ("y", -8): 1,
-                ("y", 0): -1,
-                ("y", 5): -3,
-                ("z", -7): 3,
-                ("z", -1): 1,
-                ("z", 2): -1,
-                ("z", 8): -3,
-            },
-        ),
-        (
-            1,
-            {
-                ("x", 1): 3,
-                ("x", 2): 0,
-                ("x", 3): -3,
-                ("y", -7): 2,
-                ("y", -1): -1,
-                ("y", 2): -3,
-                ("z", -4): 3,
-                ("z", 0): 1,
-                ("z", 1): -1,
-                ("z", 5): -3,
-            }
-        )
-    ],
-)
-def test_calc_velocity_delta(sample_array, step_count, expected):
-    array = sample_array
-    for _ in range(step_count):
-        array = array.step()
-    assert array.calc_velocity_deltas() == expected
-
-
-@pytest.mark.parametrize(
-    ("step_count", "expected"),
-    [
-        (
-            1,
-            MoonArray(
-                frozenset([
-                    Moon((2, -1, 1), (3, -1, -1)),
-                    Moon((3, -7, -4), (1, 3, 3)),
-                    Moon((1, -7, 5), (-3, 1, -3)),
-                    Moon((2, 2, 0), (-1, -3, 1)),
-                ])
-            ),
-        ),
-        (
-            2,
-            MoonArray(
-                frozenset([
-                    Moon((5, -3, -1), (3, -2, -2)),
-                    Moon((1, -2, 2), (-2, 5, 6)),
-                    Moon((1, -4, -1), (0, 3, -6)),
-                    Moon((1, -4, 2), (-1, -6, 2)),
-                ])
-            ),
-        ),
-        (
-            10,
-            MoonArray(
-                frozenset([
-                    Moon((2, 1, -3), (-3, -2, 1)),
-                    Moon((1, -8, 0), (-1, 1, 3)),
-                    Moon((3, -6, 1), (3, 2, -3)),
-                    Moon((2, 0, 4), (1, -1, -1)),
-                ])
+class TestMoonArray:
+    def test_read_array(self, sample_input):
+        expected = MoonArray(
+            (
+                MoonAxis.from_positions((-1, 2, 4, 3)),
+                MoonAxis.from_positions((0, -10, -8, 5)),
+                MoonAxis.from_positions((2, -7, 8, -1)),
             )
         )
-    ],
-)
-def test_one_step(sample_array, step_count, expected):
-    array = sample_array
-    for _ in range(step_count):
-        array = array.step()
-    assert array == expected
+        assert sample_input == expected
 
+    @pytest.mark.parametrize(
+        ("step_count", "expected"),
+        [
+            (
+                1,
+                MoonArray(
+                    (
+                        MoonAxis((2, 3, 1, 2), (3, 1, -3, -1)),
+                        MoonAxis((-1, -7, -7, 2), (-1, 3, 1, -3)),
+                        MoonAxis((1, -4, 5, 0), (-1, 3, -3, 1)),
+                    )
+                ),
+            ),
+            (
+                2,
+                MoonArray(
+                    (
+                        MoonAxis((5, 1, 1, 1), (3, -2, 0, -1)),
+                        MoonAxis((-3, -2, -4, -4), (-2, 5, 3, -6)),
+                        MoonAxis((-1, 2, -1, 2), (-2, 6, -6, 2)),
+                    )
+                ),
+            ),
+            (
+                10,
+                MoonArray(
+                    (
+                        MoonAxis((2, 1, 3, 2), (-3, -1, 3, 1)),
+                        MoonAxis((1, -8, -6, 0), (-2, 1, 2, -1)),
+                        MoonAxis((-3, 0, 1, 4), (1, 3, -3, -1)),
+                    )
+                ),
+            ),
+        ],
+    )
+    def test_stepwise(self, sample_input, step_count, expected):
+        array = sample_input
+        for _ in range(step_count):
+            array = array.step()
+        assert array == expected
 
-def test_energy(sample_array):
-    array = sample_array
-    for _ in range(10):
-        array = array.step()
-    assert array.total_energy() == 179
+    def test_total_energy(self, sample_input):
+        array = sample_input
+        for _ in range(10):
+            array = array.step()
+        assert array.total_energy() == 179

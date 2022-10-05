@@ -61,6 +61,10 @@ def greatest_common_divisor(a: int, b: int) -> int:
     return greatest_common_divisor(b, a % b)
 
 
+def least_common_multiple(a: int, b: int) -> int:
+    return a // greatest_common_divisor(a, b) * b
+
+
 @contextmanager
 def timer():
     start = time.monotonic()
