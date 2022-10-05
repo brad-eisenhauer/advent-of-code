@@ -1,3 +1,6 @@
+"""Advent of Code 2019, Day 11: https://adventofcode.com/2019/day/11"""
+from __future__ import annotations
+
 from typing import Iterator
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine
@@ -8,17 +11,18 @@ class AocSolution(Solution):
     def __init__(self):
         super().__init__(11, 2019)
 
-    def solve_part_one(self) -> int:
+    def create_robot(self) -> Robot:
         with self.open_input() as f:
             program = IntcodeMachine.read_buffer(f)
-        robot = Robot(program)
+        return Robot(program)
+
+    def solve_part_one(self) -> int:
+        robot = self.create_robot()
         robot.run()
         return len(robot.panels)
 
-    def solve_part_two(self) -> int:
-        with self.open_input() as f:
-            program = IntcodeMachine.read_buffer(f)
-        robot = Robot(program)
+    def solve_part_two(self):
+        robot = self.create_robot()
         robot.panels[(0, 0)] = 1
         robot.run()
         robot.print_panels()
