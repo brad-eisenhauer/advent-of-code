@@ -50,11 +50,8 @@ def load_solution(day: int, year: int) -> Solution:
     module_name = f"advent_of_code.aoc{year}.aoc{day:02}"
     mod = import_module(module_name)
 
-    for key, item in mod.__dict__.items():
-        if key == "AocSolution":
-            solution_cls = item
-            break
-    else:
+    solution_cls = mod.__dict__.get("AocSolution")
+    if solution_cls is None:
         raise TypeError(f"{module_name} contains no implementation of Solution.")
 
     return solution_cls()
