@@ -6,9 +6,7 @@ from functools import reduce
 from io import StringIO
 from typing import TextIO
 
-import numpy as np
 import pytest
-from scipy.stats import rankdata
 
 from advent_of_code.base import Solution
 from advent_of_code.util import least_common_multiple
@@ -43,8 +41,9 @@ class MoonAxis:
         return cls(positions, velocities)
 
     def acceleration(self) -> tuple[int, ...]:
-        pos_arr = np.array(self.positions)
-        return tuple(rankdata(-pos_arr, method="min") - rankdata(pos_arr, method="min"))
+        less_than_count = (sum(1 for p2 in self.positions if p2 < p1) for p1 in self.positions)
+        greater_than_count = (sum(1 for p2 in self.positions if p2 > p1) for p1 in self.positions)
+        return tuple(b - a for a, b in zip(less_than_count, greater_than_count))
 
     def step(self) -> MoonAxis:
         new_velos = tuple(v + a for v, a in zip(self.velocities, self.acceleration()))
@@ -52,9 +51,10 @@ class MoonAxis:
         return MoonAxis(new_pos, new_velos)
 
     def steps_to_cycle(self) -> int:
+        axis = self.step()
         step_count = 1
-        axis = self
-        while (axis := axis.step()) != self:
+        while axis != self:
+            axis = axis.step()
             step_count += 1
         return step_count
 
