@@ -7,12 +7,28 @@ import pytest
 import requests
 import typer
 from dotenv import load_dotenv
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 from advent_of_code.base import PuzzlePart, Solution
 from advent_of_code.util import timer
 
 CURRENT_YEAR = date.today().year
 app = typer.Typer(name="aoc")
+
+
+@app.command(help="Create a stub solution for selected puzzle")
+def init(
+    day: int = typer.Argument(..., help="Puzzle day to create"),
+    year: int = typer.Argument(CURRENT_YEAR, help="Puzzle year to create"),
+):
+    env = Environment(
+        loader=PackageLoader("advent_of_code"),
+        autoescape=select_autoescape(),
+    )
+    template = env.get_template("aoc.py.jinja")
+    output_path = Path(__file__).parent / f"aoc{year}" / f"aoc{day:02}.py"
+    with open(output_path, "w") as f:
+        f.write(template.render(day=day, year=year))
 
 
 @app.command(help="Run unit tests for selected puzzle")
