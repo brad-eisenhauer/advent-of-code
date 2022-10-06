@@ -23,6 +23,31 @@ class AocSolution(Solution[int]):
         requirements, _ = reactor.requirements("FUEL", 1)
         return requirements["ORE"]
 
+    def solve_part_two(self) -> int:
+        with self.open_input() as f:
+            reactor = Reactor.from_file(f)
+        requirements, _ = reactor.requirements("FUEL", 1)
+        ore_per_fuel = requirements["ORE"]
+        ore_limit = int(1e12)
+        max_known_producible = ore_limit // ore_per_fuel
+        n = max_known_producible
+        while True:
+            n = int(n * 1.1)
+            requirements, _ = reactor.requirements("FUEL", n)
+            if requirements["ORE"] > ore_limit:
+                min_known_not_producible = n
+                break
+            else:
+                max_known_producible = n
+        while min_known_not_producible > max_known_producible + 1:
+            n = (max_known_producible + min_known_not_producible) // 2
+            requirements, _ = reactor.requirements("FUEL", n)
+            if requirements["ORE"] > ore_limit:
+                min_known_not_producible = n
+            else:
+                max_known_producible = n
+        return max_known_producible
+
 
 @dataclass
 class Recipe:
