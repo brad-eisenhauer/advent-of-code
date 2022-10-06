@@ -80,7 +80,10 @@ class Game:
     def print_blocks(self, out: TextIO = sys.stdout):
         max_col_idx, max_row_idx = (max(ns) for ns in zip(*self.board.keys()))
         lines = [
-            [self.PRINT_CHARS[self.board.get((col_idx, row_idx), 0)] for col_idx in range(0, max_col_idx + 1)]
+            [
+                self.PRINT_CHARS[self.board.get((col_idx, row_idx), 0)]
+                for col_idx in range(0, max_col_idx + 1)
+            ]
             for row_idx in range(0, max_row_idx + 1)
         ]
         for coords, char in zip(reversed(self.ball_history), self.BALL_CHARS):
@@ -101,4 +104,3 @@ class Game:
             else:
                 result = 1
             yield result
-
