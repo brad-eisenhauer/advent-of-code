@@ -1,4 +1,5 @@
 """Advent of Code 2019, Day 13: https://adventofcode.com/2019/day/13"""
+import logging
 import sys
 from dataclasses import dataclass, field
 from itertools import islice
@@ -6,6 +7,8 @@ from typing import Optional, Iterator, ClassVar, TextIO
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine
 from advent_of_code.base import Solution
+
+log = logging.getLogger("aoc")
 
 
 class AocSolution(Solution[int]):
@@ -43,7 +46,7 @@ class Game:
         3: "=",  # paddle
         4: "0",  # ball
     }
-    BALL_CHARS: ClassVar[tuple[str, ...]] = ("0", "O", "o", ".")
+    BALL_CHARS: ClassVar[tuple[str, ...]] = (".", "o", "O", "0")
 
     def __post_init__(self):
         self.machine.input_stream = self.joystick()
@@ -68,7 +71,7 @@ class Game:
                         self.paddle = x, y
                     case 4:
                         self.ball_history.append((x, y))
-                        # self.print_blocks()
+                        self.print_blocks()
                     case _:
                         ...
         except ValueError:
@@ -77,21 +80,20 @@ class Game:
     def get_score(self) -> int:
         return self.board[(-1, 0)]
 
-    def print_blocks(self, out: TextIO = sys.stdout):
+    def print_blocks(self):
+        if log.level > logging.DEBUG:
+            return
         max_col_idx, max_row_idx = (max(ns) for ns in zip(*self.board.keys()))
-        lines = [
-            [
+        for row_idx in range(0, max_row_idx + 1):
+            line = [
                 self.PRINT_CHARS[self.board.get((col_idx, row_idx), 0)]
                 for col_idx in range(0, max_col_idx + 1)
             ]
-            for row_idx in range(0, max_row_idx + 1)
-        ]
-        for coords, char in zip(reversed(self.ball_history), self.BALL_CHARS):
-            col_idx, row_idx = coords
-            if lines[row_idx][col_idx] == " ":
-                lines[row_idx][col_idx] = char
-        for line in lines:
-            out.write("".join(line) + "\n")
+            for i, (x, y) in enumerate(self.ball_history[-4:]):
+                if y == row_idx:
+                    line[x] = self.BALL_CHARS[i]
+            log.debug("%s" * len(line), *line)
+        log.debug("")
 
     def joystick(self) -> Iterator[int]:
         while True:

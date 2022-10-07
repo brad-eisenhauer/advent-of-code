@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 from importlib import import_module
 from os import getenv
@@ -14,6 +15,11 @@ from advent_of_code.util import timer
 
 CURRENT_YEAR = date.today().year
 app = typer.Typer(name="aoc")
+
+
+@app.callback()
+def main(debug: bool = False):
+    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
 
 
 @app.command(help="Create a stub solution for selected puzzle")
