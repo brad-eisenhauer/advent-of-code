@@ -16,6 +16,8 @@ from advent_of_code.util import timer
 CURRENT_YEAR = date.today().year
 app = typer.Typer(name="aoc")
 
+log = logging.getLogger("aoc")
+
 
 @app.callback()
 def main(debug: bool = False):
@@ -103,6 +105,7 @@ def submit(
     )
     response.raise_for_status()
     content = response.content.decode()
+    log.debug("Content: %s", content)
     if "That's the right answer" in content:
         print("That's the right answer!")
     elif "That's not the right answer" in content:
