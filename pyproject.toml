@@ -20,6 +20,7 @@ include = ["templates/*.jinja"]
 [tool.poetry.dependencies]
 python = "^3.10"
 jinja2 = "*"
+pandas = ">=1.2"
 python-dotenv = "*"
 pytest = ">=7.1"
 requests = "*"
