@@ -1,4 +1,7 @@
 """Advent of Code {{ year }}, day {{ day }}: https://adventofcode.com/{{ year }}/day/{{ day }}"""
+from io import StringIO
+
+import pytest
 
 from advent_of_code.base import Solution
 
@@ -9,3 +12,13 @@ class AocSolution(Solution[int]):
 
     def solve_part_one(self) -> int:
         ...
+
+
+SAMPLE_INPUT = """\
+"""
+
+
+@pytest.fixture
+def sample_input():
+    with StringIO(SAMPLE_INPUT) as f:
+        yield f
