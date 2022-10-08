@@ -1,6 +1,5 @@
 """ Advent of Code 2021, Day 10: https://adventofcode.com/2021/day/10 """
 from io import StringIO
-from pathlib import Path
 from typing import TextIO, Iterator
 
 import numpy as np

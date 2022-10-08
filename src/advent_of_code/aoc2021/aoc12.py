@@ -164,9 +164,3 @@ def test_count_paths(sample_index: int, revisit_small_cave, expected, count_path
 
     count = count_paths(graph, revisit_small_cave)
     assert count == expected
-
-
-if __name__ == "__main__":
-    input_path = get_input_path(12, 2021)
-    with Timer() as t:
-        main(input_path, t)
