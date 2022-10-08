@@ -44,13 +44,6 @@ ILLEGAL_CLOSER_SCORES = {")": 3, "]": 57, "}": 1197, ">": 25137}
 COMPLETION_SCORES = {"(": 1, "[": 2, "{": 3, "<": 4}
 
 
-def main(input_path: Path):
-    with open(input_path) as fp:
-        score = calc_scores(fp)
-
-    print(score)
-
-
 def calc_scores(fp: TextIO) -> tuple[int, int]:
     corrupted_score = 0
     incomplete_scores = []
