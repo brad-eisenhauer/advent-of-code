@@ -25,9 +25,7 @@ class AocSolution(Solution[int]):
 
 class IllegalCharError(SyntaxError):
     def __init__(self, position: int, illegal_char: str):
-        super().__init__(
-            f"Illegal character '{illegal_char}' found at position {position}."
-        )
+        super().__init__(f"Illegal character '{illegal_char}' found at position {position}.")
         self.position = position
         self.illegal_char = illegal_char
 

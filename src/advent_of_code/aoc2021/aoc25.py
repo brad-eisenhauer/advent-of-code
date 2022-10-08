@@ -51,9 +51,7 @@ class SeaCucumber:
     def next_position(self) -> Vector:
         return tuple(
             (p + t) % d
-            for p, t, d in zip(
-                self.position, self.orientation.target, self.grid.dimensions
-            )
+            for p, t, d in zip(self.position, self.orientation.target, self.grid.dimensions)
         )
 
     def can_move(self) -> bool:
@@ -66,9 +64,7 @@ class Grid:
         self.grid: list[list[Optional[SeaCucumber]]] = [
             [None for _ in range(dimensions[1])] for _ in range(dimensions[0])
         ]
-        self.sea_cucumbers_by_orientation: dict[
-            Orientation, list[SeaCucumber]
-        ] = defaultdict(list)
+        self.sea_cucumbers_by_orientation: dict[Orientation, list[SeaCucumber]] = defaultdict(list)
 
     @classmethod
     def read(cls, fp: TextIO) -> Grid:
@@ -120,9 +116,7 @@ class Grid:
         result = 0  # total number of sea cucumbers that moved
         for orientation in Orientation:
             movers = tuple(
-                c
-                for c in self.sea_cucumbers_by_orientation[orientation]
-                if c.can_move()
+                c for c in self.sea_cucumbers_by_orientation[orientation] if c.can_move()
             )
             result += len(movers)
             self.move_all(movers)
@@ -198,7 +192,7 @@ v...>>.v.v
 ..v..v>vv>
 v.v..>>v..
 .v>....v..
-"""
+""",
 ]
 
 

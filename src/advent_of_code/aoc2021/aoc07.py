@@ -90,10 +90,7 @@ def calc_fuel_consumption(
     final_position: int,
     fuel_mode: FuelConsumptionMode,
 ) -> int:
-    return sum(
-        fuel_mode.fuel_consumption_fn(abs(p - final_position))
-        for p in initial_positions
-    )
+    return sum(fuel_mode.fuel_consumption_fn(abs(p - final_position)) for p in initial_positions)
 
 
 TEST_INPUT = "16,1,2,0,4,2,7,1,2,14"
@@ -106,8 +103,6 @@ TEST_INPUT = "16,1,2,0,4,2,7,1,2,14"
 def test_optimize(fuel_mode, expected):
     with StringIO(TEST_INPUT) as fp:
         initial_positions = read_positions(fp)
-        optimal_position, fuel_consumption = optimize_positions(
-            initial_positions, fuel_mode
-        )
+        optimal_position, fuel_consumption = optimize_positions(initial_positions, fuel_mode)
 
     assert fuel_consumption == expected

@@ -77,9 +77,7 @@ class FoldableMask(Mask):
         printable = self.normalize()
         width, height = printable.dimensions
         for y in range(height):
-            s = "".join(
-                ("▒" if (x, y) in printable.points else " ") for x in range(width)
-            )
+            s = "".join(("▒" if (x, y) in printable.points else " ") for x in range(width))
             out.write(s + "\n")
 
 

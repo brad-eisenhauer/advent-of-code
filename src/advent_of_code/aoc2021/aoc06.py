@@ -89,15 +89,11 @@ def count_descendants(days_until_spawn: int, simulation_length: int) -> int:
 
 """This represents the daily population from a single fish, spawned ex nihilo"""
 POPULATION_BY_DAY = (
-    (1,) * MATURITY_INTERVAL
-    + (2,) * SPAWN_INTERVAL
-    + (3,) * (MATURITY_INTERVAL - SPAWN_INTERVAL)
+    (1,) * MATURITY_INTERVAL + (2,) * SPAWN_INTERVAL + (3,) * (MATURITY_INTERVAL - SPAWN_INTERVAL)
 )
 
 
-def calc_population_by_day(
-    days_until_spawn: Iterable[int], simulation_length: int
-) -> List[int]:
+def calc_population_by_day(days_until_spawn: Iterable[int], simulation_length: int) -> List[int]:
     """
     The population on any given day is equal to the sum of the populations 7 and 9
     days prior.  Inspired by https://wild.maths.org/fibonacci-and-bees
@@ -106,10 +102,7 @@ def calc_population_by_day(
     population_by_day = [
         sum(populations)
         for populations in zip(
-            *(
-                initial_population(d, count)
-                for d, count in days_until_spawn_counts.items()
-            )
+            *(initial_population(d, count) for d, count in days_until_spawn_counts.items())
         )
     ]
     for _ in range(simulation_length - MATURITY_INTERVAL):

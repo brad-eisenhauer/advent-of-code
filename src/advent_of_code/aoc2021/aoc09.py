@@ -87,9 +87,7 @@ class HeightMap:
             if point in all_basin_points or self.get_height(point) == 9:
                 continue
             if (low_point := self.find_low_point(point)) is not None:
-                basin = Basin(
-                    members=set(self.find_basin_points(low_point)), low=low_point
-                )
+                basin = Basin(members=set(self.find_basin_points(low_point)), low=low_point)
                 result.append(basin)
                 all_basin_points |= basin.members
 
@@ -102,10 +100,7 @@ class HeightMap:
 
         try:
             downstream_point = next(
-                p
-                for d in Direction
-                for p in (d.from_point(start),)
-                if self.get_height(p) < value
+                p for d in Direction for p in (d.from_point(start),) if self.get_height(p) < value
             )
             return self.find_low_point(downstream_point)
         except StopIteration:

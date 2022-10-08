@@ -33,7 +33,7 @@ class OctopusGrid:
         grid_size = len(energy)
         null_row = (0,) * (grid_size + 2)
         self.energy = np.array((null_row, *energy, null_row))
-        self.count = grid_size ** 2
+        self.count = grid_size**2
 
         # Create matrix of ones with zero borders
         self.increment_matrix = np.ones_like(self.energy, dtype=int)
@@ -101,7 +101,6 @@ class OctopusGrid:
         return self.calc_flash_energy(new_flashes)
 
     def calc_flashes(self) -> np.ndarray:
-
         def generate_neighbors(x, y) -> Iterator[tuple[int, int]]:
             yield x - 1, y - 1
             yield x - 1, y

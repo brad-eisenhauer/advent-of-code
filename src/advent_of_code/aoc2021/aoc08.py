@@ -24,17 +24,12 @@ def count_easy_digits(fp: TextIO) -> int:
     target_values = {"1", "4", "7", "8"}
     count = 0
     for patterns, display in map(parse_line, fp):
-        count += sum(
-            1 for char in decode_display(patterns, display) if char in target_values
-        )
+        count += sum(1 for char in decode_display(patterns, display) if char in target_values)
     return count
 
 
 def sum_displays(fp: TextIO) -> int:
-    return sum(
-        int(decode_display(patterns, display))
-        for patterns, display in map(parse_line, fp)
-    )
+    return sum(int(decode_display(patterns, display)) for patterns, display in map(parse_line, fp))
 
 
 def parse_line(line: str) -> Tuple[Iterator[str], Iterator[str]]:
@@ -76,9 +71,7 @@ def build_decoder(patterns: Iterable[str]) -> Callable[[str], str]:
         that contains both segments.
     """
     patterns = tuple(patterns)
-    segment_appearance_counts = Counter(
-        segment for pattern in patterns for segment in pattern
-    )
+    segment_appearance_counts = Counter(segment for pattern in patterns for segment in pattern)
     lower_left_segment = next(
         segment for segment, count in segment_appearance_counts.items() if count == 4
     )

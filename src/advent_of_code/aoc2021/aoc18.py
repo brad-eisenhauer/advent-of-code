@@ -157,9 +157,7 @@ class Node(Tree):
             left_result = left_result.add_right(explode_result.left_remainder)
 
         if left_result is not self.left or right_result is not self.right:
-            return ExplodeResult(
-                left_remainder, Node(left_result, right_result), right_remainder
-            )
+            return ExplodeResult(left_remainder, Node(left_result, right_result), right_remainder)
 
         return ExplodeResult(None, self, None)
 
@@ -193,9 +191,7 @@ def parse_input(fp: TextIO) -> Iterator[Tree]:
 
 def find_largest_sum(sf_numbers: Sequence[Tree]) -> int:
     return max(
-        (left + right).magnitude
-        for left, right in permutations(sf_numbers, 2)
-        if left is not right
+        (left + right).magnitude for left, right in permutations(sf_numbers, 2) if left is not right
     )
 
 

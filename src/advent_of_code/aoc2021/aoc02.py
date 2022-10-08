@@ -8,9 +8,7 @@ import numpy as np
 
 from advent_of_code.base import Solution
 
-Movement = NewType(
-    "Movement", np.ndarray  # Movement vector consists of displacement, ∆ aim
-)
+Movement = NewType("Movement", np.ndarray)  # Movement vector consists of displacement, ∆ aim
 State = NewType("State", np.ndarray)  # State vector consists of x, y, aim
 
 

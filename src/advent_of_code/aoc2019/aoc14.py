@@ -193,7 +193,7 @@ def test_parse_reactor():
         ("D", 1, ({"ORE": 21}, {"A": 6})),
         ("E", 1, ({"ORE": 31}, {"A": 9})),
         ("FUEL", 1, ({"ORE": 31}, {"A": 2})),
-    ]
+    ],
 )
 def test_reactor_requirements(product, qty, expected):
     with StringIO(SAMPLE_INPUTS[0]) as f:

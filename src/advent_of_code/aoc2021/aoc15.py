@@ -40,8 +40,7 @@ def expand_costs(
     new_size = orig_size * multiplier
     result = [
         [
-            (costs[base_row][base_col] - 1 + row // orig_size + col // orig_size) % 9
-            + 1
+            (costs[base_row][base_col] - 1 + row // orig_size + col // orig_size) % 9 + 1
             for col in range(new_size)
             for base_row in (row % orig_size,)
             for base_col in (col % orig_size,)

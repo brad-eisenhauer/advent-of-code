@@ -55,9 +55,7 @@ class Board:
     @property
     def has_won(self) -> bool:
         # Check rows
-        if any(
-            all(self.markers[i : i + self.SIZE]) for i in range(0, len(self), self.SIZE)
-        ):
+        if any(all(self.markers[i : i + self.SIZE]) for i in range(0, len(self), self.SIZE)):
             return True
         # Check columns
         if any(all(self.markers[i :: self.SIZE]) for i in range(self.SIZE)):
@@ -66,12 +64,10 @@ class Board:
 
     @property
     def score(self) -> int:
-        return sum(
-            number for number, marked in zip(self.numbers, self.markers) if not marked
-        )
+        return sum(number for number, marked in zip(self.numbers, self.markers) if not marked)
 
     def __len__(self):
-        return self.SIZE ** 2
+        return self.SIZE**2
 
 
 def read_game_input(fp: TextIO) -> Tuple[Sequence[Board], Iterable[int]]:

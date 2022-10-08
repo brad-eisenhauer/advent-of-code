@@ -50,17 +50,15 @@ class Formula:
             mid_idx = len(template) // 2
             left = template[: mid_idx + 1]
             right = template[mid_idx:]
-            result = self.count_elements(left, steps) + self.count_elements(
-                right, steps
-            )
+            result = self.count_elements(left, steps) + self.count_elements(right, steps)
             # middle character is included in both counts
             result[template[mid_idx]] -= 1
             return result
 
         new_char = self.rules[template]
-        result = self.count_elements(
-            template[0] + new_char, steps - 1
-        ) + self.count_elements(new_char + template[1], steps - 1)
+        result = self.count_elements(template[0] + new_char, steps - 1) + self.count_elements(
+            new_char + template[1], steps - 1
+        )
         result[new_char] -= 1
         return result
 
@@ -103,9 +101,7 @@ class ElementCountTests(unittest.TestCase):
         ):
             with self.subTest(source=source, steps=steps, expected=expected):
                 with (
-                    StringIO(source)
-                    if source is not None
-                    else open(get_input_path(14, 2021))
+                    StringIO(source) if source is not None else open(get_input_path(14, 2021))
                 ) as fp:
                     template, formula = read_input(fp)
                 result = formula.calc_element_count_range(template, steps)

@@ -40,17 +40,13 @@ def calc_window_sums(measurements: Iterable[int], window_size: int) -> Iterator[
 
 def create_windows(items: Iterable[T], n: int) -> Iterator[Tuple[T, ...]]:
     iterators = tee(items, n)
-    offset_iterators = (
-        islice(iterator, offset, None) for offset, iterator in enumerate(iterators)
-    )
+    offset_iterators = (islice(iterator, offset, None) for offset, iterator in enumerate(iterators))
     return zip(*offset_iterators)
 
 
 def count_increases(measurements: Iterable[int]) -> int:
     return sum(
-        1
-        for predecessor, successor in create_windows(measurements, 2)
-        if successor > predecessor
+        1 for predecessor, successor in create_windows(measurements, 2) if successor > predecessor
     )
 
 

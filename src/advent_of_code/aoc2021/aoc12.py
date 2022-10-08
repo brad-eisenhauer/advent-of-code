@@ -60,9 +60,7 @@ def count_paths_bfs(graph: nx.Graph, allow_revisit_to_small_cave: bool = False) 
                 continue
 
             if is_big(next_cave) or next_cave not in state.caves_visited:
-                queue.append(
-                    PathState(next_cave, caves_visited, state.has_revisited_small_cave)
-                )
+                queue.append(PathState(next_cave, caves_visited, state.has_revisited_small_cave))
             # small, previously-visited cave: check whether we're allowed to revisit
             elif allow_revisit_to_small_cave and not state.has_revisited_small_cave:
                 queue.append(PathState(next_cave, caves_visited, True))
