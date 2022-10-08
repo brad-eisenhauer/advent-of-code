@@ -179,9 +179,3 @@ def test_simulate(sample_input):
 def test_synchronize(sample_input):
     octopi = OctopusGrid.read(sample_input)
     assert octopi.run_until_synchronized() == 195
-
-
-if __name__ == "__main__":
-    input_path = get_input_path(11, 2021)
-    with Timer() as t:
-        main(input_path, t)

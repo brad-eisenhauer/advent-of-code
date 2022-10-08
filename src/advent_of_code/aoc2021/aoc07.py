@@ -111,9 +111,3 @@ def test_optimize(fuel_mode, expected):
         )
 
     assert fuel_consumption == expected
-
-
-if __name__ == "__main__":
-    input_path = get_input_path(7, 2021)
-    with timer():
-        main(input_path)
