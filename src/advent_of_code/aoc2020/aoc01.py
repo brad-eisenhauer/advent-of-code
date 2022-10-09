@@ -32,7 +32,7 @@ def find_sums_to(nums: list[int], m: int, n: int = 2) -> Optional[list[int]]:
     if n == 1:
         return [m] if m in nums else None
     for i, num in enumerate(nums):
-        sub = find_sums_to(nums[i+1:], m - num, n - 1)
+        sub = find_sums_to(nums[i + 1 :], m - num, n - 1)
         if sub is not None:
             return [num] + sub
     return None

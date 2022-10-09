@@ -110,7 +110,7 @@ def test_parse_passwords(sample_input):
     [
         (Policy1, [True, False, True]),
         (Policy2, [True, False, False]),
-    ]
+    ],
 )
 def test_validate_passwords(sample_input, policy_cls, expected):
     result = [PasswordEntry.parse(line, policy_cls).is_valid() for line in sample_input]
