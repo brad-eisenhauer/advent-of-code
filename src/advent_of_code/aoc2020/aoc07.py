@@ -1,6 +1,7 @@
 """Advent of Code 2020, day 7: https://adventofcode.com/2020/day/7"""
 import re
 from collections import deque
+from functools import cache
 from io import StringIO
 from typing import TextIO
 
@@ -19,6 +20,11 @@ class AocSolution(Solution[int]):
             graph = build_graph(f)
         return count_distinct_can_contain(graph, "shiny gold")
 
+    def solve_part_two(self) -> int:
+        with self.open_input() as f:
+            graph = build_graph(f)
+        return count_all_contents(graph, "shiny gold") - 1
+
 
 def build_graph(f: TextIO) -> nx.DiGraph:
     result = nx.DiGraph()
@@ -34,11 +40,9 @@ def build_graph(f: TextIO) -> nx.DiGraph:
 def parse_description(bag: str) -> tuple[int, str]:
     pattern = re.compile(r"(\d* )?(.+) bags?")
     match = pattern.match(bag)
-    try:
-        qty = int(match.groups()[0])
-    except TypeError:
-        qty = 1
-    return qty, match.groups()[1].strip()
+    qty, desc = match.groups()
+    qty = 0 if qty is None else int(qty)
+    return qty, desc.strip()
 
 
 def count_distinct_can_contain(graph: nx.DiGraph, bag_description: str) -> int:
@@ -51,6 +55,16 @@ def count_distinct_can_contain(graph: nx.DiGraph, bag_description: str) -> int:
                 frontier.append(container)
                 containers.add(container)
     return len(containers)
+
+
+@cache
+def count_all_contents(graph: nx.DiGraph, bag_description: str) -> int:
+    result = 1  # result includes the current bag
+    for contained in graph.successors(bag_description):
+        edge_data = graph.get_edge_data(bag_description, contained)
+        if (weight := edge_data["weight"]) > 0:
+            result += weight * count_all_contents(graph, contained)
+    return result
 
 
 SAMPLE_INPUT = """\
@@ -75,10 +89,11 @@ def sample_input():
 @pytest.mark.parametrize(
     ("description", "expected"),
     [
-        ("light red bags", (1, "light red")),
+        ("light red bags", (0, "light red")),
         ("1 bright white bag", (1, "bright white")),
         ("2 muted yellow bags.", (2, "muted yellow")),
-    ]
+        ("no other bags.", (0, "no other")),
+    ],
 )
 def test_parse_description(description, expected):
     assert parse_description(description) == expected
@@ -88,3 +103,19 @@ def test_count_distinct_can_contain(sample_input):
     graph = build_graph(sample_input)
     result = count_distinct_can_contain(graph, "shiny gold")
     assert result == 4
+
+
+@pytest.mark.parametrize(
+    ("bag", "expected"),
+    [
+        ("faded blue", 1),
+        ("dotted black", 1),
+        ("vibrant plum", 12),
+        ("dark olive", 8),
+        ("shiny gold", 33),
+    ],
+)
+def test_count_all_contained(sample_input, bag, expected):
+    graph = build_graph(sample_input)
+    result = count_all_contents(graph, bag)
+    assert result == expected
