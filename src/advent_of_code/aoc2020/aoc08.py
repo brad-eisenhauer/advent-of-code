@@ -115,17 +115,19 @@ def sample_input():
 
 def test_read_program(sample_input):
     result = Program.read(sample_input)
-    expected = Program([
-        Instruction("nop", 0),
-        Instruction("acc", 1),
-        Instruction("jmp", 4),
-        Instruction("acc", 3),
-        Instruction("jmp", -3),
-        Instruction("acc", -99),
-        Instruction("acc", 1),
-        Instruction("jmp", -4),
-        Instruction("acc", 6),
-    ])
+    expected = Program(
+        [
+            Instruction("nop", 0),
+            Instruction("acc", 1),
+            Instruction("jmp", 4),
+            Instruction("acc", 3),
+            Instruction("jmp", -3),
+            Instruction("acc", -99),
+            Instruction("acc", 1),
+            Instruction("jmp", -4),
+            Instruction("acc", 6),
+        ]
+    )
     assert result == expected
 
 
