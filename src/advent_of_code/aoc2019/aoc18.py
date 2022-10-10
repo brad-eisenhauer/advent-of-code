@@ -1,8 +1,9 @@
 """Advent of Code 2019, day 18: https://adventofcode.com/2019/day/18"""
 from __future__ import annotations
 
-from collections import deque
-from dataclasses import dataclass, field, fields
+import logging
+from dataclasses import dataclass, field
+from heapq import heappush, heappop
 from io import StringIO
 from itertools import count
 from typing import Optional, Collection, TextIO, Any
@@ -13,6 +14,8 @@ import pytest
 
 from advent_of_code.base import Solution
 
+log = logging.getLogger("aoc")
+
 
 class AocSolution(Solution[int]):
     def __init__(self):
@@ -21,6 +24,7 @@ class AocSolution(Solution[int]):
     def solve_part_one(self) -> int:
         with self.open_input() as f:
             maze = Maze.parse(f)
+        maze.simplify()
         return maze.find_all_keys()
 
 
@@ -41,10 +45,13 @@ class State:
     location: Node
     keys: frozenset[str]
 
+    def __lt__(self, other) -> bool:
+        return len(self.keys) > len(other.keys)
+
 
 @dataclass(frozen=True)
 class Maze:
-    nodes: nx.Graph = field(hash=False, compare=False)
+    graph: nx.Graph = field(hash=False, compare=False)
     start: Node
     keys: set[str]
 
@@ -77,28 +84,58 @@ class Maze:
                 x1 = x + dx
                 y1 = y + dy
                 if (x1, y1) in nodes:
-                    graph.add_edge(nodes[(x, y)], nodes[(x1, y1)])
+                    graph.add_edge(nodes[(x, y)], nodes[(x1, y1)], weight=1)
+        log.debug("Raw maze has %d nodes.", len(nodes))
         return Maze(graph, start, keys)
+
+    def simplify(self, depth: int = 1):
+        g = self.graph
+        nodes_to_remove = []
+        for node in g.nodes:
+            if node is self.start or node.key:
+                continue
+            neighbors = list(g.neighbors(node))
+            match len(neighbors), node.door:
+                case 1, _:
+                    g.remove_edge(node, neighbors[0])
+                    nodes_to_remove.append(node)
+                case 2, None:
+                    weight = sum(g.get_edge_data(node, n)["weight"] for n in neighbors)
+                    g.add_edge(*neighbors, weight=weight)
+                    for n in neighbors:
+                        g.remove_edge(n, node)
+                    nodes_to_remove.append(node)
+                case _:
+                    ...
+        if nodes_to_remove:
+            g.remove_nodes_from(nodes_to_remove)
+            self.simplify(depth + 1)
+        else:
+            log.debug("Ran simplify %d times.", depth)
+            log.debug("Simplified maze has %d nodes.", len(g.nodes))
 
     def find_all_keys(self) -> int:
         initial_state = State(self.start, frozenset())
         visited_states = {initial_state: 0}
-        frontier = deque([initial_state])
+        frontier = [(0, initial_state)]
         while frontier:
-            current_state = frontier.popleft()
-            step_count = visited_states[current_state] + 1
-            for neighbor in self.nodes.neighbors(current_state.location):
+            _, current_state = heappop(frontier)
+            for neighbor in self.graph.neighbors(current_state.location):
                 if not neighbor.can_open(current_state.keys):
                     continue
+                step_count = (
+                    visited_states[current_state]
+                    + self.graph.get_edge_data(current_state.location, neighbor)["weight"]
+                )
                 keys = current_state.keys
                 if neighbor.key:
                     keys = keys | {neighbor.key}
                 if keys == self.keys:
                     return step_count
                 next_state = State(neighbor, keys)
-                if next_state not in visited_states:
+                if next_state not in visited_states or step_count < visited_states[next_state]:
                     visited_states[next_state] = step_count
-                    frontier.append(next_state)
+                    heappush(frontier, (step_count, next_state))
 
 
 SAMPLE_INPUT = """\
@@ -120,7 +157,13 @@ def test_parse_maze(sample_input, monkeypatch):
     result = Maze.parse(sample_input)
     graph = nx.Graph()
     nodes = [
-        Node(1, key="b"), Node(2), Node(3, door="A"), Node(4), Node(5), Node(6), Node(7, key="a")
+        Node(1, key="b"),
+        Node(2),
+        Node(3, door="A"),
+        Node(4),
+        Node(5),
+        Node(6),
+        Node(7, key="a"),
     ]
     graph.add_nodes_from(nodes)
     for left, right in zip(nodes, nodes[1:]):
@@ -131,4 +174,5 @@ def test_parse_maze(sample_input, monkeypatch):
 
 def test_find_all_keys(sample_input):
     maze = Maze.parse(sample_input)
+    maze.simplify()
     assert maze.find_all_keys() == 8
