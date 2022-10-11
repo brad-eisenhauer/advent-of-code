@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Iterable, Optional, Sequence, TextIO, Tuple, Union
 
 from advent_of_code.base import Solution
-from advent_of_code.util import partition
+from advent_of_code.util import partition, make_sequence
 
 
 class AocSolution(Solution[int]):
@@ -97,10 +97,12 @@ def run_game(boards: Sequence[Board], draws: Iterable[int]) -> Tuple[int, int]:
     for number in draws:
         mark_boards(boards, number)
         boards, winning_boards = partition(lambda board: board.has_won, boards)
+        winning_boards = make_sequence(winning_boards)
         if winning_boards:
             first_winning_score = first_winning_score or max(
                 board.score * number for board in winning_boards
             )
+        boards = make_sequence(boards)
         if len(boards) == 0:
             last_winning_score = min(board.score * number for board in winning_boards)
             break

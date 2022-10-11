@@ -147,11 +147,11 @@ def test_folds(sample_input):
     output = StringIO()
     points.print(output)
 
-    expected = """#####
-#   #
-#   #
-#   #
-#####
+    expected = """▒▒▒▒▒
+▒   ▒
+▒   ▒
+▒   ▒
+▒▒▒▒▒
 """
     output.seek(0)
     assert output.read() == expected

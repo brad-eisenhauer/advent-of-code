@@ -18,9 +18,9 @@ T = TypeVar("T")
 
 def partition(
     predicate: Callable[[T], bool], items: Iterable[T]
-) -> tuple[Sequence[T], Sequence[T]]:
+) -> tuple[Iterator[T], Iterator[T]]:
     """
-    Split items into two lists, based on some predicate condition
+    Split items into two sequences, based on some predicate condition
 
     Parameters
     ----------
@@ -31,12 +31,13 @@ def partition(
 
     Returns
     -------
-    Sequences of failing and passing items, respectively
+    Iterators of failing and passing items, respectively
     """
-    result = [], []
-    for item in items:
-        result[int(predicate(item))].append(item)
-    return result
+    tested_items = ((item, predicate(item)) for item in items)
+    failed, passed = tee(tested_items)
+    return (item for item, result in failed if not result), (
+        item for item, result in passed if result
+    )
 
 
 def greatest_common_divisor(a: int, b: int) -> int:
@@ -102,7 +103,7 @@ class Timer(ContextManager):
     def get_last_check_msg(self, check_time: float) -> str:
         if self.last_check is None:
             return ""
-        return f" ({self.get_formatted_time(check_time, self.last_check)} " "since last check)"
+        return f" ({self.get_formatted_time(check_time, self.last_check)} since last check)"
 
 
 class PriorityQueue(Generic[T]):
