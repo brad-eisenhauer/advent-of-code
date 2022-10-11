@@ -1,10 +1,20 @@
 import time
 from contextlib import contextmanager
 from datetime import date
+from heapq import heappop, heappush
 from itertools import islice, tee
 from os import getenv
 from pathlib import Path
-from typing import Callable, ContextManager, Iterable, Iterator, Optional, Sequence, TypeVar
+from typing import (
+    Callable,
+    ContextManager,
+    Generic,
+    Iterable,
+    Iterator,
+    Optional,
+    Sequence,
+    TypeVar,
+)
 
 import requests
 from dotenv import load_dotenv
@@ -119,3 +129,24 @@ class Timer(ContextManager):
         if self.last_check is None:
             return ""
         return f" ({self.get_formatted_time(check_time, self.last_check)} " "since last check)"
+
+
+class PriorityQueue(Generic[T]):
+    def __init__(self):
+        self._contents: list[T] = []
+
+    def __bool__(self):
+        return bool(self._contents)
+
+    def __len__(self):
+        return len(self._contents)
+
+    def peek(self) -> T:
+        return self._contents[0]
+
+    def pop(self) -> T:
+        _, result = heappop(self._contents)
+        return result
+
+    def push(self, priority: int, item: T):
+        heappush(self._contents, (priority, item))

@@ -3,16 +3,16 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from heapq import heappush, heappop
 from io import StringIO
 from itertools import count
-from typing import Optional, Collection, TextIO, Any
+from typing import Any, Collection, Optional, TextIO
 from uuid import uuid4
 
 import networkx as nx
 import pytest
 
 from advent_of_code.base import Solution
+from advent_of_code.util import PriorityQueue
 
 log = logging.getLogger("aoc")
 
@@ -117,9 +117,10 @@ class Maze:
     def find_all_keys(self) -> int:
         initial_state = State(self.start, frozenset())
         visited_states = {initial_state: 0}
-        frontier = [(0, initial_state)]
+        frontier = PriorityQueue()
+        frontier.push(0, initial_state)
         while frontier:
-            _, current_state = heappop(frontier)
+            current_state = frontier.pop()
             for neighbor in self.graph.neighbors(current_state.location):
                 if not neighbor.can_open(current_state.keys):
                     continue
@@ -135,7 +136,7 @@ class Maze:
                 next_state = State(neighbor, keys)
                 if next_state not in visited_states or step_count < visited_states[next_state]:
                     visited_states[next_state] = step_count
-                    heappush(frontier, (step_count, next_state))
+                    frontier.push(step_count, next_state)
 
 
 SAMPLE_INPUT = """\
