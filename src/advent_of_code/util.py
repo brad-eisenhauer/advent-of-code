@@ -1,10 +1,7 @@
 import time
 from contextlib import contextmanager
-from datetime import date
 from heapq import heappop, heappush
 from itertools import islice, tee
-from os import getenv
-from pathlib import Path
 from typing import (
     Callable,
     ContextManager,
@@ -16,30 +13,7 @@ from typing import (
     TypeVar,
 )
 
-import requests
-from dotenv import load_dotenv
-
 T = TypeVar("T")
-
-
-def get_input_path(day: int, year: int) -> Path:
-    resources_path = Path() / "resources" / str(year)
-    input_path = resources_path / f"input{day:02d}.txt"
-
-    if not input_path.exists():
-        input_path.parent.mkdir(parents=True, exist_ok=True)
-        download_input(input_path, day, year or date.today().year)
-
-    return input_path
-
-
-def download_input(download_path: Path, day: int, year: int):
-    load_dotenv()
-    download_url = f"https://adventofcode.com/{year}/day/{day}/input"
-    response = requests.get(download_url, cookies={"session": getenv("AOC_SESSION")})
-    response.raise_for_status()
-    with open(download_path, "w") as fp:
-        fp.write(response.content.decode())
 
 
 def partition(
