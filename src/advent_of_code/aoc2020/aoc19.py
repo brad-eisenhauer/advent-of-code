@@ -4,7 +4,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from io import StringIO
 from itertools import takewhile
-from typing import Iterator, Sequence, Iterable, Union
+from typing import Iterable, Iterator, Sequence, Union
 
 import pytest
 

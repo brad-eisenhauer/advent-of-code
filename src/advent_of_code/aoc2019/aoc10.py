@@ -5,7 +5,7 @@ import math
 from dataclasses import dataclass
 from io import StringIO
 from itertools import islice
-from typing import TextIO, Iterator, Iterable
+from typing import Iterable, Iterator, TextIO
 
 import pytest
 

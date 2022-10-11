@@ -5,6 +5,7 @@ from itertools import chain, permutations, tee
 import pytest
 
 from advent_of_code.base import Solution
+
 from .intcode import IntcodeMachine
 
 

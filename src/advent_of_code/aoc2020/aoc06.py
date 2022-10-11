@@ -2,7 +2,7 @@
 import operator
 from functools import reduce
 from io import StringIO
-from typing import TextIO, Iterator
+from typing import Iterator, TextIO
 
 import pytest
 

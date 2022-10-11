@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from io import StringIO
-from typing import Protocol, TypeVar, Generic, Type
+from typing import Generic, Protocol, Type, TypeVar
 
 import pytest
 

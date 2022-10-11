@@ -1,6 +1,6 @@
 """ Advent of Code 2021, Day 10: https://adventofcode.com/2021/day/10 """
 from io import StringIO
-from typing import TextIO, Iterator
+from typing import Iterator, TextIO
 
 import numpy as np
 import pytest

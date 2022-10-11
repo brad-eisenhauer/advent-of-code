@@ -1,7 +1,7 @@
 """Advent of Code 2020, day 4: https://adventofcode.com/2020/day/4"""
 import re
 from io import StringIO
-from typing import TextIO, Iterator, Any, Sequence, Protocol, NewType
+from typing import Any, Iterator, NewType, Protocol, Sequence, TextIO
 
 import pytest
 

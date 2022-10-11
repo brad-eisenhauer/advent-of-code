@@ -4,8 +4,8 @@ from __future__ import annotations
 from collections import defaultdict
 from enum import Enum
 from io import StringIO
-from itertools import takewhile, combinations, product
-from typing import Iterator, TextIO, Optional, Sequence
+from itertools import combinations, product, takewhile
+from typing import Iterator, Optional, Sequence, TextIO
 
 import numpy as np
 import pytest

@@ -6,7 +6,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from io import StringIO
-from typing import Iterator, TextIO, Optional, Iterable
+from typing import Iterable, Iterator, Optional, TextIO
 
 import pytest
 

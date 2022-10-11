@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property, reduce
 from io import StringIO
-from itertools import product, islice
+from itertools import islice, product
 from pathlib import Path
 from typing import Iterable, Iterator, Optional, TextIO
 

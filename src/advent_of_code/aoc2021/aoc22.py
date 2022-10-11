@@ -5,7 +5,7 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from io import StringIO
-from typing import Iterator, TextIO, Iterable, Optional
+from typing import Iterable, Iterator, Optional, TextIO
 
 import pytest
 

@@ -1,6 +1,6 @@
 """Advent of Code 2020, day 1: https://adventofcode.com/2020/day/1"""
 from io import StringIO
-from typing import TextIO, Optional
+from typing import Optional, TextIO
 
 import pytest
 

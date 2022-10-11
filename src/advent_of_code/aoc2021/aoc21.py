@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import cache
 from io import StringIO
 from itertools import product
-from typing import Iterator, TextIO, Iterable, Sequence
+from typing import Iterable, Iterator, Sequence, TextIO
 
 import numpy as np
 import pytest

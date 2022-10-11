@@ -7,7 +7,7 @@ from enum import Enum
 from io import StringIO
 from itertools import takewhile
 from pathlib import Path
-from typing import Iterator, TextIO, Callable, Optional
+from typing import Callable, Iterator, Optional, TextIO
 
 import pytest
 

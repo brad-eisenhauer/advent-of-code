@@ -3,7 +3,7 @@ import logging
 import sys
 from dataclasses import dataclass, field
 from itertools import islice
-from typing import Optional, Iterator, ClassVar, TextIO
+from typing import ClassVar, Iterator, Optional, TextIO
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine
 from advent_of_code.base import Solution

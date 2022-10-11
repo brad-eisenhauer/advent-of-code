@@ -4,11 +4,11 @@ from __future__ import annotations
 import logging
 import operator
 from enum import Enum, auto
-from functools import reduce, cached_property
+from functools import cached_property, reduce
 from io import StringIO
 from itertools import chain, product, takewhile
 from math import sqrt
-from typing import Iterable, Iterator, Optional, Sequence, TextIO, Tuple, Mapping
+from typing import Iterable, Iterator, Mapping, Optional, Sequence, TextIO, Tuple
 
 from advent_of_code.base import Solution
 from advent_of_code.util import make_sequence

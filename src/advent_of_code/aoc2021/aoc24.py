@@ -3,7 +3,7 @@ import operator
 from enum import Enum
 from io import StringIO
 from itertools import islice
-from typing import Iterable, Sequence, Optional, Callable
+from typing import Callable, Iterable, Optional, Sequence
 
 import pytest
 

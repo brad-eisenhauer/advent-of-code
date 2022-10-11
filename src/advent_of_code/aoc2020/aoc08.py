@@ -1,5 +1,6 @@
 """Advent of Code 2020, day 8: https://adventofcode.com/2020/day/8"""
 from __future__ import annotations
+
 from copy import deepcopy
 from dataclasses import dataclass
 from io import StringIO
