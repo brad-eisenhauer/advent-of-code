@@ -7,6 +7,8 @@ from functools import cache
 from io import StringIO
 from typing import Iterable, TextIO
 
+import pytest
+
 from advent_of_code.base import Solution
 
 
@@ -91,18 +93,14 @@ CN -> C
 """
 
 
-class ElementCountTests(unittest.TestCase):
-    def test_calc_element_count_range(self):
-        for source, steps, expected in (
-            (SAMPLE_INPUT, 10, 1588),
-            (SAMPLE_INPUT, 40, 2188189693529),
-            (None, 10, 3906),
-            (None, 40, 4441317262452),
-        ):
-            with self.subTest(source=source, steps=steps, expected=expected):
-                with (
-                    StringIO(source) if source is not None else open(get_input_path(14, 2021))
-                ) as fp:
-                    template, formula = read_input(fp)
-                result = formula.calc_element_count_range(template, steps)
-                self.assertEqual(expected, result)
+@pytest.fixture
+def sample_input():
+    with StringIO(SAMPLE_INPUT) as f:
+        yield f
+
+
+@pytest.mark.parametrize(("steps", "expected"), [(10, 1588), (40, 2188189693529)])
+def test_calc_element_count_range(sample_input, steps, expected):
+    template, formula = read_input(sample_input)
+    result = formula.calc_element_count_range(template, steps)
+    assert result == expected

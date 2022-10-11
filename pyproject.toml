@@ -29,3 +29,9 @@ typer = ">=0.6"
 
 [tool.poetry.scripts]
 aoc = "advent_of_code.cli:app"
+
+[tool.pytest.ini_options]
+python_files = "aoc*.py"
+testpaths = [
+    "src/advent_of_code"
+]
