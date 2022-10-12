@@ -99,21 +99,23 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture(params=range(len(SAMPLE_INPUTS)))
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f
 
 
-@pytest.mark.parametrize(("input_index", "expected"), [(0, (7, 5)), (1, (22, 10))])
-def test_calc_step_distribution(input_index, expected):
-    with StringIO(SAMPLE_INPUTS[input_index]) as f:
-        jolts = list(read_jolts(f))
+@pytest.mark.parametrize(
+    ("sample_input", "expected"), [(0, (7, 5)), (1, (22, 10))], indirect=["sample_input"]
+)
+def test_calc_step_distribution(sample_input, expected):
+    jolts = list(read_jolts(sample_input))
     assert calc_step_distribution(jolts) == expected
 
 
-@pytest.mark.parametrize(("input_index", "expected"), [(0, 8), (1, 19208)])
-def test_count_configurations(input_index, expected):
-    with StringIO(SAMPLE_INPUTS[input_index]) as f:
-        jolts = tuple(sorted(read_jolts(f)))
+@pytest.mark.parametrize(
+    ("sample_input", "expected"), [(0, 8), (1, 19208)], indirect=["sample_input"]
+)
+def test_count_configurations(sample_input, expected):
+    jolts = tuple(sorted(read_jolts(sample_input)))
     assert count_configurations(jolts) == expected

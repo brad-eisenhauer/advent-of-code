@@ -14,11 +14,22 @@ class AocSolution(Solution[int]):
         ...
 
 
-SAMPLE_INPUT = """\
-"""
+SAMPLE_INPUTS = [
+    """\
+""",
+]
 
 
 @pytest.fixture
-def sample_input():
-    with StringIO(SAMPLE_INPUT) as f:
+def sample_input(request):
+    with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f
+
+
+@pytest.mark.parametrize(
+    ("sample_input", "expected"),
+    [],
+    indirect=["sample_input"]
+)
+def test_foo(sample_input, expected):
+    ...
