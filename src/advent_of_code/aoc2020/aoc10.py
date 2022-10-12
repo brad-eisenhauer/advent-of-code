@@ -2,7 +2,7 @@
 from collections import Counter
 from functools import cache
 from io import StringIO
-from typing import TextIO, Iterator
+from typing import Iterator, TextIO
 
 import pytest
 
@@ -43,7 +43,9 @@ def count_configurations(adapters: tuple[int, ...], initial_voltage: int = 0) ->
             return 1 if (last_adapter - initial_voltage) <= 3 else 0
         case (next_adapter, *remainder) if (next_adapter - initial_voltage) <= 3:
             remainder = tuple(remainder)
-            return count_configurations(remainder, next_adapter) + count_configurations(remainder, initial_voltage)
+            return count_configurations(remainder, next_adapter) + count_configurations(
+                remainder, initial_voltage
+            )
         case _:
             return 0
 
@@ -94,7 +96,7 @@ SAMPLE_INPUTS = [
 34
 10
 3
-"""
+""",
 ]
 
 
@@ -104,18 +106,14 @@ def sample_input(request):
         yield f
 
 
-@pytest.mark.parametrize(
-    ("input_index", "expected"), [(0, (7, 5)), (1, (22, 10))]
-)
+@pytest.mark.parametrize(("input_index", "expected"), [(0, (7, 5)), (1, (22, 10))])
 def test_calc_step_distribution(input_index, expected):
     with StringIO(SAMPLE_INPUTS[input_index]) as f:
         jolts = read_jolts(f)
     assert calc_step_distribution(jolts) == expected
 
 
-@pytest.mark.parametrize(
-    ("input_index", "expected"), [(0, 8), (1, 19208)]
-)
+@pytest.mark.parametrize(("input_index", "expected"), [(0, 8), (1, 19208)])
 def test_count_configurations(input_index, expected):
     with StringIO(SAMPLE_INPUTS[input_index]) as f:
         jolts = tuple(sorted(read_jolts(f)))
