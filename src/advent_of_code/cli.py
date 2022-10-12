@@ -29,14 +29,28 @@ def init(
     day: int = typer.Argument(..., help="Puzzle day to create"),
     year: int = typer.Argument(CURRENT_YEAR, help="Puzzle year to create"),
 ):
+    output_path = Path(__file__).parent / f"aoc{year}" / f"aoc{day:02}.py"
+    prep_filesystem(output_path)
     env = Environment(
         loader=PackageLoader("advent_of_code"),
         autoescape=select_autoescape(),
     )
     template = env.get_template("aoc.py.jinja")
-    output_path = Path(__file__).parent / f"aoc{year}" / f"aoc{day:02}.py"
     with open(output_path, "w") as f:
         f.write(template.render(day=day, year=year))
+
+
+def prep_filesystem(module_path: Path):
+    if module_path.exists():
+        raise OSError("File already exists.")
+    pkg_path = module_path.parent
+    pkg_init_path = pkg_path / "__init__.py"
+    if not pkg_path.exists():
+        pkg_path.mkdir(parents=True)
+    elif not pkg_path.is_dir():
+        raise OSError(f"{pkg_path} exists but is not a directory.")
+    if not pkg_init_path.exists():
+        pkg_init_path.touch()
 
 
 @app.command(help="Run unit tests for selected puzzle")
