@@ -29,22 +29,21 @@ def read_jolts(f: TextIO) -> Iterator[int]:
     return (int(n) for n in f.readlines())
 
 
-def calc_step_distribution(jolts: list[int]) -> tuple[int, int]:
-    jolts = sorted(jolts + [0])
-    jolts.append(jolts[-1] + 3)
+def calc_step_distribution(adapters: list[int]) -> tuple[int, int]:
+    jolts = [0] + sorted(adapters) + [max(adapters) + 3]
     counts = Counter(b - a for a, b in zip(jolts, jolts[1:]))
     return counts[1], counts[3]
 
 
 @cache
-def count_configurations(adapters: tuple[int, ...], initial_voltage: int = 0) -> int:
+def count_configurations(adapters: tuple[int, ...], initial_joltage: int = 0) -> int:
     match adapters:
         case (last_adapter,):
-            return 1 if (last_adapter - initial_voltage) <= 3 else 0
-        case (next_adapter, *remainder) if (next_adapter - initial_voltage) <= 3:
+            return 1 if (last_adapter - initial_joltage) <= 3 else 0
+        case (next_adapter, *remainder) if (next_adapter - initial_joltage) <= 3:
             remainder = tuple(remainder)
             return count_configurations(remainder, next_adapter) + count_configurations(
-                remainder, initial_voltage
+                remainder, initial_joltage
             )
         case _:
             return 0
@@ -109,7 +108,7 @@ def sample_input(request):
 @pytest.mark.parametrize(("input_index", "expected"), [(0, (7, 5)), (1, (22, 10))])
 def test_calc_step_distribution(input_index, expected):
     with StringIO(SAMPLE_INPUTS[input_index]) as f:
-        jolts = read_jolts(f)
+        jolts = list(read_jolts(f))
     assert calc_step_distribution(jolts) == expected
 
 
