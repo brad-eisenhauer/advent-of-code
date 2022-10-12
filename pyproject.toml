@@ -31,7 +31,6 @@ typer = ">=0.6"
 aoc = "advent_of_code.cli:app"
 
 [tool.pytest.ini_options]
+addopts = "--cov=src/advent_of_code --cov-report=term-missing"
 python_files = "aoc*.py"
-testpaths = [
-    "src/advent_of_code"
-]
+testpaths = ["src/advent_of_code"]
