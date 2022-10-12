@@ -44,15 +44,13 @@ class PassportValidator:
 
     @classmethod
     def validate_year(cls, passport: Passport, year_range: range) -> bool:
-        if cls.KEY not in passport:
-            return False
         if len(passport[cls.KEY]) != 4:
             return False
         try:
             year = int(passport[cls.KEY])
             if year not in year_range:
                 return False
-        except ValueError:
+        except ValueError:  # year is not a valid int
             return False
         return True
 
@@ -62,8 +60,6 @@ class BirthYearValidator(PassportValidator):
 
     @classmethod
     def _validate(cls, passport: Passport) -> bool:
-        if cls.KEY not in passport:
-            return False
         return cls.validate_year(passport, range(1920, 2003))
 
 
@@ -165,7 +161,8 @@ def validate_passport(
     return all(validator.validate(passport, strict) for validator in validators)
 
 
-SAMPLE_INPUT = """\
+SAMPLE_INPUTS = [
+    """\
 ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
@@ -179,15 +176,69 @@ hgt:179cm
 
 hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in
-"""
+""",
+    # invalid passports
+    """\
+eyr:1972 cid:100
+hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926
+
+iyr:2019
+hcl:#602927 eyr:1967 hgt:170cm
+ecl:grn pid:012533040 byr:1946
+
+hcl:dab227 iyr:2012
+ecl:brn hgt:182cm pid:021572410 eyr:2020 byr:1992 cid:277
+
+hgt:59cm ecl:zzz
+eyr:2038 hcl:74454a iyr:2023
+pid:3556412378 byr:2007
+
+pid:087499704 hgt:74in ecl:foo iyr:2012 eyr:2030 byr:1980
+hcl:#623a2f
+
+hcl:#888785
+hgt:42 byr:2001 iyr:2015 cid:88
+pid:545766238 ecl:hzl
+eyr:2022
+
+eyr:2029 ecl:blu cid:129 byr:1989
+iyr:2014 pid:89056539 hcl:#a97842 hgt:165cm
+
+iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:09a154719
+
+pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:230 byr:1980
+hcl:#623a2f
+
+hcl:#888785
+hgt:164cm byr:2001 iyr:last cid:88
+pid:545766238 ecl:hzl
+eyr:2022
+""",
+    # valid passports
+    """\
+pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
+hcl:#623a2f
+
+eyr:2029 ecl:blu cid:129 byr:1989
+iyr:2014 pid:896056539 hcl:#a97842 hgt:165cm
+
+hcl:#888785
+hgt:164cm byr:2001 iyr:2015 cid:88
+pid:545766238 ecl:hzl
+eyr:2022
+
+iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719
+""",
+]
 
 
 @pytest.fixture
-def sample_input():
-    with StringIO(SAMPLE_INPUT) as f:
+def sample_input(request):
+    with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f
 
 
+@pytest.mark.parametrize("sample_input", [0], indirect=True)
 def test_parse_passports(sample_input):
     pp = list(parse_passports(sample_input))
     expected = [
@@ -231,7 +282,11 @@ def test_parse_passports(sample_input):
     assert pp == expected
 
 
-def test_validate_passport(sample_input):
-    results = [validate_passport(p) for p in parse_passports(sample_input)]
-    expected = [True, False, True, False]
+@pytest.mark.parametrize(
+    ("sample_input", "strict", "expected"),
+    [(0, False, [True, False, True, False]), (1, True, [False] * 10), (2, True, [True] * 4)],
+    indirect=["sample_input"],
+)
+def test_validate_passport(sample_input, strict, expected):
+    results = [validate_passport(p, strict=strict) for p in parse_passports(sample_input)]
     assert results == expected
