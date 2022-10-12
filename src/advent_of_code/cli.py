@@ -45,7 +45,7 @@ def test(
     year: int = typer.Argument(CURRENT_YEAR, help="Puzzle year to test"),
 ):
     file = Path(__file__).parent / f"aoc{year}" / f"aoc{day:02}.py"
-    pytest.main(file)
+    pytest.main([file, f"--cov=advent_of_code.aoc{year}.aoc{day:02}"])
 
 
 @app.command(help="Run solutions for selected puzzle")

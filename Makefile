@@ -5,4 +5,4 @@ format:
 
 .PHONY: test
 test:
-	pytest
+	pytest --cov=advent_of_code
