@@ -140,31 +140,36 @@ class Dijkstra(Generic[S]):
     def generate_next_states(self, state: S) -> Iterator[tuple[int, S]]:
         ...
 
-    def find_min_cost_to_goal(self, initial_state: S) -> Optional[int]:
-        result: Optional[S] = None
+    def find_min_cost_path(self, initial_state: S) -> Iterator[tuple[S, int]]:
+        goal_state: Optional[S] = None
         costs: dict[S, int] = {initial_state: 0}
         came_from: dict[S, Optional[S]] = {initial_state: None}
         frontier: PriorityQueue[S] = PriorityQueue()
         frontier.push(0, initial_state)
         while frontier:
             current_cost, current_state = frontier.pop()
-            if result and current_cost > costs[result]:
+            if goal_state and current_cost > costs[goal_state]:
                 break
             for cost, next_state in self.generate_next_states(current_state):
                 total_cost = current_cost + cost
-                if self.is_goal_state(next_state) and (
-                    result is None or total_cost < costs[result]
-                ):
-                    result = next_state
+                if self.is_goal_state(next_state) and (goal_state is None or total_cost < costs[goal_state]):
+                    goal_state = next_state
                 if next_state not in costs or total_cost < costs[next_state]:
                     costs[next_state] = total_cost
                     came_from[next_state] = current_state
                     frontier.push(total_cost, next_state)
-
-        # log path
-        state = result
+        result = []
+        state = goal_state
         while state is not None:
-            log.debug(state)
+            result.append((state, costs[state]))
             state = came_from[state]
 
-        return costs[result]
+        return reversed(result)
+
+    def find_min_cost_to_goal(self, initial_state: S) -> int:
+        result = -1
+        for _, result in self.find_min_cost_path(initial_state):
+            ...
+        if result < 0:
+            raise ValueError("No result found.")
+        return result
