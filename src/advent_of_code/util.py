@@ -14,6 +14,7 @@ from typing import (
 )
 
 T = TypeVar("T")
+S = TypeVar("S")
 
 
 def partition(
@@ -120,8 +121,35 @@ class PriorityQueue(Generic[T]):
         return self._contents[0]
 
     def pop(self) -> T:
-        _, result = heappop(self._contents)
-        return result
+        return heappop(self._contents)
 
     def push(self, priority: int, item: T):
         heappush(self._contents, (priority, item))
+
+
+class Dijkstra(Generic[S]):
+    def __init__(
+        self,
+        state_generator: Callable[[S], Iterator[tuple[int, S]]],
+        is_goal: Callable[[S], bool],
+    ):
+        self.state_generator = state_generator
+        self.is_goal = is_goal
+
+    def find_min_cost_to_goal(self, initial_state: S) -> Optional[int]:
+        result: Optional[int] = None
+        visited_states: dict[S, int] = {initial_state: 0}
+        frontier: PriorityQueue[S] = PriorityQueue()
+        frontier.push(0, initial_state)
+        while frontier:
+            current_cost, current_state = frontier.pop()
+            if result and current_cost > result:
+                return result
+            for cost, next_state in self.state_generator(current_state):
+                total_cost = current_cost + cost
+                if self.is_goal(next_state):
+                    result = total_cost if result is None else min(result, total_cost)
+                if next_state not in visited_states or total_cost < visited_states[next_state]:
+                    visited_states[next_state] = total_cost
+                    frontier.push(total_cost, next_state)
+        return result
