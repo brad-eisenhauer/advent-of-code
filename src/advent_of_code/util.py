@@ -1,3 +1,4 @@
+import logging
 import time
 from abc import abstractmethod
 from contextlib import contextmanager
@@ -13,6 +14,8 @@ from typing import (
     Sequence,
     TypeVar,
 )
+
+log = logging.getLogger("aoc")
 
 T = TypeVar("T")
 S = TypeVar("S")
@@ -138,19 +141,30 @@ class Dijkstra(Generic[S]):
         ...
 
     def find_min_cost_to_goal(self, initial_state: S) -> Optional[int]:
-        result: Optional[int] = None
-        visited_states: dict[S, int] = {initial_state: 0}
+        result: Optional[S] = None
+        costs: dict[S, int] = {initial_state: 0}
+        came_from: dict[S, Optional[S]] = {initial_state: None}
         frontier: PriorityQueue[S] = PriorityQueue()
         frontier.push(0, initial_state)
         while frontier:
             current_cost, current_state = frontier.pop()
-            if result and current_cost > result:
-                return result
+            if result and current_cost > costs[result]:
+                break
             for cost, next_state in self.generate_next_states(current_state):
                 total_cost = current_cost + cost
-                if self.is_goal_state(next_state):
-                    result = total_cost if result is None else min(result, total_cost)
-                if next_state not in visited_states or total_cost < visited_states[next_state]:
-                    visited_states[next_state] = total_cost
+                if self.is_goal_state(next_state) and (
+                    result is None or total_cost < costs[result]
+                ):
+                    result = next_state
+                if next_state not in costs or total_cost < costs[next_state]:
+                    costs[next_state] = total_cost
+                    came_from[next_state] = current_state
                     frontier.push(total_cost, next_state)
-        return result
+
+        # log path
+        state = result
+        while state is not None:
+            log.debug(state)
+            state = came_from[state]
+
+        return costs[result]
