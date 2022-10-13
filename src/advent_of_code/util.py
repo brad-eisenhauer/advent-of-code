@@ -1,4 +1,5 @@
 import time
+from abc import abstractmethod
 from contextlib import contextmanager
 from heapq import heappop, heappush
 from itertools import islice, tee
@@ -128,13 +129,13 @@ class PriorityQueue(Generic[T]):
 
 
 class Dijkstra(Generic[S]):
-    def __init__(
-        self,
-        state_generator: Callable[[S], Iterator[tuple[int, S]]],
-        is_goal: Callable[[S], bool],
-    ):
-        self.state_generator = state_generator
-        self.is_goal = is_goal
+    @abstractmethod
+    def is_goal_state(self, state: S) -> bool:
+        ...
+
+    @abstractmethod
+    def generate_next_states(self, state: S) -> Iterator[tuple[int, S]]:
+        ...
 
     def find_min_cost_to_goal(self, initial_state: S) -> Optional[int]:
         result: Optional[int] = None
@@ -145,9 +146,9 @@ class Dijkstra(Generic[S]):
             current_cost, current_state = frontier.pop()
             if result and current_cost > result:
                 return result
-            for cost, next_state in self.state_generator(current_state):
+            for cost, next_state in self.generate_next_states(current_state):
                 total_cost = current_cost + cost
-                if self.is_goal(next_state):
+                if self.is_goal_state(next_state):
                     result = total_cost if result is None else min(result, total_cost)
                 if next_state not in visited_states or total_cost < visited_states[next_state]:
                     visited_states[next_state] = total_cost
