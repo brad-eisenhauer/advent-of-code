@@ -1,11 +1,13 @@
 """Advent of Code 2019, day 17: https://adventofcode.com/2019/day/17"""
 from __future__ import annotations
 
-from itertools import product
-from typing import Iterable
+import logging
+from typing import Iterable, Iterator
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine
 from advent_of_code.base import Solution
+
+log = logging.getLogger("aoc")
 
 
 class AocSolution(Solution[int]):
@@ -17,8 +19,32 @@ class AocSolution(Solution[int]):
             program = IntcodeMachine.read_buffer(f)
         machine = IntcodeMachine(program)
         output = bytes(machine.run()).decode("ASCII")
+        for line in output.split():
+            log.debug(line)
         graph = Graph.from_strings(output.split())
         return calc_sum_of_alignment_parameters(graph)
+
+    def solve_part_two(self) -> int:
+        with self.open_input() as f:
+            program = IntcodeMachine.read_buffer(f)
+        program[0] = 2
+        control_lines = [
+            "A,A,B,C,B,C,B,C,C,A",
+            "R,8,L,4,R,4,R,10,R,8",
+            "L,12,L,12,R,8,R,8",
+            "R,10,R,4,R,4",
+            "n",
+        ]
+        control_chars = list(control_feed(control_lines))
+        machine = IntcodeMachine(program, input_stream=iter(control_chars))
+        result = list(machine.run())
+        return result[-1]
+
+
+def control_feed(lines: Iterable[str]) -> Iterator[int]:
+    for line in lines:
+        yield from line.encode("ASCII")
+        yield ord("\n")
 
 
 def calc_sum_of_alignment_parameters(graph: Graph) -> int:
