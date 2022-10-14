@@ -15,8 +15,11 @@ from typing import (
     TypeVar,
 )
 
+import networkx as nx
+
 log = logging.getLogger("aoc")
 
+N = TypeVar("N")
 T = TypeVar("T")
 S = TypeVar("S")
 
@@ -158,18 +161,58 @@ class Dijkstra(Generic[S]):
                     costs[next_state] = total_cost
                     came_from[next_state] = current_state
                     frontier.push(total_cost, next_state)
-        result = []
+        backtrack = []
         state = goal_state
         while state is not None:
-            result.append((state, costs[state]))
+            backtrack.append((state, costs[state]))
             state = came_from[state]
 
-        return reversed(result)
+        return reversed(backtrack)
 
     def find_min_cost_to_goal(self, initial_state: S) -> int:
         result = -1
-        for _, result in self.find_min_cost_path(initial_state):
-            ...
+        for state, result in self.find_min_cost_path(initial_state):
+            log.debug(state)
         if result < 0:
             raise ValueError("No result found.")
         return result
+
+
+class GraphSimplifier(Generic[N]):
+    DEAD_END = 1
+    HALLWAY = 2
+
+    def __init__(self, graph: nx.Graph):
+        self.graph = graph
+
+    @abstractmethod
+    def is_protected(self, node: N, mode: int) -> bool:
+        ...
+
+    def simplify(self, depth: int = 1):
+        g = self.graph
+        nodes_to_remove = []
+        for node in g.nodes:
+            neighbors = list(g.neighbors(node))
+            match len(neighbors):
+                case 1:  # dead end
+                    if self.is_protected(node, self.DEAD_END):
+                        continue
+                    nodes_to_remove.append(node)
+                    g.remove_edge(node, neighbors[0])
+                case 2:  # hallway
+                    if self.is_protected(node, self.HALLWAY):
+                        continue
+                    nodes_to_remove.append(node)
+                    weight = sum(g.get_edge_data(node, n)["weight"] for n in neighbors)
+                    for n in neighbors:
+                        g.remove_edge(node, n)
+                    g.add_edge(*neighbors, weight=weight)
+                case _:
+                    ...
+        if nodes_to_remove:
+            g.remove_nodes_from(nodes_to_remove)
+            self.simplify(depth + 1)
+        else:
+            log.debug("Ran simplify %d times.", depth)
+            log.debug("Simlified graph has %d nodes.", len(g.nodes))

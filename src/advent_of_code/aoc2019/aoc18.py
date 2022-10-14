@@ -13,7 +13,7 @@ import networkx as nx
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import Dijkstra
+from advent_of_code.util import Dijkstra, GraphSimplifier
 
 log = logging.getLogger("aoc")
 
@@ -31,7 +31,7 @@ class AocSolution(Solution[int]):
     def solve_maze(self, subdivide: bool) -> int:
         with self.open_input() as f:
             maze = Maze.parse(f, subdivide)
-        maze.simplify()
+        Simplifier(maze).simplify()
         initial_state = State(frozenset(maze.start))
         return Solver(maze).find_min_cost_to_goal(initial_state)
 
@@ -109,36 +109,20 @@ class Maze:
         log.debug("Raw maze has %d nodes and %d keys.", len(graph.nodes), len(keys))
         return Maze(graph, start, keys)
 
-    def simplify(self, depth: int = 1):
-        """Remove dead-ends; combine "straight" runs.
 
-        Dead-end doors, or doors with nothing "behind" them can be removed. Otherwise,
-        doors and keys must remain as-is.
-        """
-        g = self.graph
-        nodes_to_remove = []
-        for node in g.nodes:
-            if node in self.start or node.key:
-                continue
-            neighbors = list(g.neighbors(node))
-            match len(neighbors), node.door:
-                case 1, _:
-                    g.remove_edge(node, neighbors[0])
-                    nodes_to_remove.append(node)
-                case 2, None:
-                    weight = sum(g.get_edge_data(node, n)["weight"] for n in neighbors)
-                    g.add_edge(*neighbors, weight=weight)
-                    for n in neighbors:
-                        g.remove_edge(n, node)
-                    nodes_to_remove.append(node)
-                case _:
-                    ...
-        if nodes_to_remove:
-            g.remove_nodes_from(nodes_to_remove)
-            self.simplify(depth + 1)
-        else:
-            log.debug("Ran simplify %d times.", depth)
-            log.debug("Simplified maze has %d nodes.", len(g.nodes))
+class Simplifier(GraphSimplifier[Node]):
+    def __init__(self, maze: Maze):
+        super().__init__(maze.graph)
+        self.maze = maze
+
+    def is_protected(self, node: Node, mode: int) -> bool:
+        # start and key nodes are always protected; door nodes are protected in hallways, not
+        # dead ends.  All other nodes may be safely removed.
+        if node in self.maze.start or node.key:
+            return True
+        if node.door:
+            return mode == self.HALLWAY
+        return False
 
 
 class Solver(Dijkstra[State]):
@@ -210,6 +194,6 @@ def test_parse_maze(sample_input, monkeypatch):
 
 def test_find_all_keys(sample_input):
     maze = Maze.parse(sample_input)
-    maze.simplify()
+    Simplifier(maze).simplify()
     initial_state = State(frozenset(maze.start))
     assert Solver(maze).find_min_cost_to_goal(initial_state) == 8

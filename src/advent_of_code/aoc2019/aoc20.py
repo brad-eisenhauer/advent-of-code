@@ -13,7 +13,7 @@ import networkx as nx
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import Dijkstra
+from advent_of_code.util import Dijkstra, GraphSimplifier
 
 log = logging.getLogger("aoc")
 
@@ -25,13 +25,13 @@ class AocSolution(Solution[int]):
     def solve_part_one(self) -> int:
         with self.open_input() as f:
             maze = Maze.parse(f)
-        maze.simplify()
+        Simplifier(maze).simplify()
         return Solver(maze).find_min_cost_to_goal(State(maze.start))
 
     def solve_part_two(self) -> int:
         with self.open_input() as f:
             maze = Maze.parse(f)
-        maze.simplify()
+        Simplifier(maze).simplify()
         return Solver(maze, recursive=True).find_min_cost_to_goal(State(maze.start))
 
 
@@ -129,32 +129,13 @@ class Maze:
         log.debug("Raw maze has %d nodes.", len(graph.nodes))
         return Maze(graph, start)
 
-    def simplify(self, depth: int = 1):
-        """Remove dead-ends; combine "straight" runs."""
-        g = self.graph
-        nodes_to_remove: list[Node] = []
-        for node in g.nodes:
-            if node.tag:
-                continue
-            neighbors = list(g.neighbors(node))
-            match len(neighbors):
-                case 1:  # dead end
-                    g.remove_edge(node, neighbors[0])
-                    nodes_to_remove.append(node)
-                case 2:  # "hallway"
-                    weight = sum(g.get_edge_data(node, n)["weight"] for n in neighbors)
-                    g.add_edge(*neighbors, weight=weight)
-                    for n in neighbors:
-                        g.remove_edge(node, n)
-                    nodes_to_remove.append(node)
-                case _:
-                    ...
-        if nodes_to_remove:
-            g.remove_nodes_from(nodes_to_remove)
-            self.simplify(depth + 1)
-        else:
-            log.debug("Ran simplify %d times.", depth)
-            log.debug("Simplified maze has %d nodes.", len(g.nodes))
+
+class Simplifier(GraphSimplifier[Node]):
+    def __init__(self, maze: Maze):
+        super().__init__(maze.graph)
+    
+    def is_protected(self, node: Node, mode: int) -> bool:
+        return node.tag is not None
 
 
 class Solver(Dijkstra[State]):
@@ -296,7 +277,7 @@ def sample_input(request):
 )
 def test_calc_distance(sample_input, recursive, expected):
     maze = Maze.parse(sample_input)
-    maze.simplify()
+    Simplifier(maze).simplify()
     solver = Solver(maze, recursive=recursive)
     initial_state = State(maze.start)
     assert solver.find_min_cost_to_goal(initial_state) == expected
