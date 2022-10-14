@@ -137,8 +137,7 @@ class PriorityQueue(Generic[T]):
 
 class AStar(Generic[S]):
     """
-    A* algorithm implementation based on
-    https://www.redblobgames.com/pathfinding/a-star/introduction.html
+    A* implementation based on https://www.redblobgames.com/pathfinding/a-star/introduction.html
     """
     @abstractmethod
     def is_goal_state(self, state: S) -> bool:
@@ -153,42 +152,39 @@ class AStar(Generic[S]):
         """With no heuristic, A* is equivalent to Djikstra."""
         return 0
 
-    def find_min_cost_path(self, initial_state: S) -> Iterator[tuple[S, int]]:
-        goal_state: Optional[S] = None
+    def _find_min_cost_path(self, initial_state: S) -> tuple[Optional[S], dict[S, int], dict[S, Optional[S]]]:
         accumulated_cost: dict[S, int] = {initial_state: 0}
         came_from: dict[S, Optional[S]] = {initial_state: None}
         frontier: PriorityQueue[S] = PriorityQueue()
         frontier.push(0, initial_state)
+        state_count = 0
         while frontier:
             current_state = frontier.pop()
+            state_count += 1
+            if self.is_goal_state(current_state):
+                log.debug("Evaluated %d states.", state_count)
+                return current_state, accumulated_cost, came_from
             current_cost = accumulated_cost[current_state]
-            if goal_state and current_cost > accumulated_cost[goal_state]:
-                break
             for cost, next_state in self.generate_next_states(current_state):
                 total_cost = current_cost + cost
-                if self.is_goal_state(next_state) and (
-                    goal_state is None or total_cost < accumulated_cost[goal_state]
-                ):
-                    goal_state = next_state
                 if next_state not in accumulated_cost or total_cost < accumulated_cost[next_state]:
                     accumulated_cost[next_state] = total_cost
                     came_from[next_state] = current_state
                     frontier.push(total_cost + self.heuristic(next_state), next_state)
+        raise ValueError("Goal state not found.")
+
+    def find_min_cost_path(self, initial_state: S) -> Iterator[tuple[S, int]]:
+        goal_state, accumulated_cost, came_from = self._find_min_cost_path(initial_state)
         backtrack = []
         state = goal_state
         while state is not None:
             backtrack.append((state, accumulated_cost[state]))
             state = came_from[state]
-
         return reversed(backtrack)
 
     def find_min_cost_to_goal(self, initial_state: S) -> int:
-        result = -1
-        for state, result in self.find_min_cost_path(initial_state):
-            log.debug(state)
-        if result < 0:
-            raise ValueError("No result found.")
-        return result
+        goal_state, accumulated_cost, _ = self._find_min_cost_path(initial_state)
+        return accumulated_cost[goal_state]
 
 
 class GraphSimplifier(Generic[N]):
