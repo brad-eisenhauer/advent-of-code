@@ -13,7 +13,7 @@ import networkx as nx
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import Dijkstra, GraphSimplifier
+from advent_of_code.util import AStar, GraphSimplifier
 
 log = logging.getLogger("aoc")
 
@@ -125,7 +125,7 @@ class Simplifier(GraphSimplifier[Node]):
         return False
 
 
-class Solver(Dijkstra[State]):
+class Solver(AStar[State]):
     def __init__(self, maze: Maze):
         self.maze = maze
 

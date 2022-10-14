@@ -13,7 +13,7 @@ import networkx as nx
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import Dijkstra, GraphSimplifier
+from advent_of_code.util import AStar, GraphSimplifier
 
 log = logging.getLogger("aoc")
 
@@ -133,12 +133,12 @@ class Maze:
 class Simplifier(GraphSimplifier[Node]):
     def __init__(self, maze: Maze):
         super().__init__(maze.graph)
-    
+
     def is_protected(self, node: Node, mode: int) -> bool:
         return node.tag is not None
 
 
-class Solver(Dijkstra[State]):
+class Solver(AStar[State]):
     def __init__(self, maze: Maze, recursive: bool = False):
         self.maze = maze
         self.recursive = recursive
@@ -260,7 +260,7 @@ RE....#.#                           #......RF
   #############.#.#.###.###################  
                A O F   N                     
                A A D   M                     
-"""
+""",
 ]
 
 

@@ -128,43 +128,56 @@ class PriorityQueue(Generic[T]):
         return self._contents[0]
 
     def pop(self) -> T:
-        return heappop(self._contents)
+        _, result = heappop(self._contents)
+        return result
 
     def push(self, priority: int, item: T):
         heappush(self._contents, (priority, item))
 
 
-class Dijkstra(Generic[S]):
+class AStar(Generic[S]):
+    """
+    A* algorithm implementation based on
+    https://www.redblobgames.com/pathfinding/a-star/introduction.html
+    """
     @abstractmethod
     def is_goal_state(self, state: S) -> bool:
         ...
 
     @abstractmethod
     def generate_next_states(self, state: S) -> Iterator[tuple[int, S]]:
+        """For a given state, generate successor states and the transition cost."""
         ...
+
+    def heuristic(self, state: S) -> int:
+        """With no heuristic, A* is equivalent to Djikstra."""
+        return 0
 
     def find_min_cost_path(self, initial_state: S) -> Iterator[tuple[S, int]]:
         goal_state: Optional[S] = None
-        costs: dict[S, int] = {initial_state: 0}
+        accumulated_cost: dict[S, int] = {initial_state: 0}
         came_from: dict[S, Optional[S]] = {initial_state: None}
         frontier: PriorityQueue[S] = PriorityQueue()
         frontier.push(0, initial_state)
         while frontier:
-            current_cost, current_state = frontier.pop()
-            if goal_state and current_cost > costs[goal_state]:
+            current_state = frontier.pop()
+            current_cost = accumulated_cost[current_state]
+            if goal_state and current_cost > accumulated_cost[goal_state]:
                 break
             for cost, next_state in self.generate_next_states(current_state):
                 total_cost = current_cost + cost
-                if self.is_goal_state(next_state) and (goal_state is None or total_cost < costs[goal_state]):
+                if self.is_goal_state(next_state) and (
+                    goal_state is None or total_cost < accumulated_cost[goal_state]
+                ):
                     goal_state = next_state
-                if next_state not in costs or total_cost < costs[next_state]:
-                    costs[next_state] = total_cost
+                if next_state not in accumulated_cost or total_cost < accumulated_cost[next_state]:
+                    accumulated_cost[next_state] = total_cost
                     came_from[next_state] = current_state
-                    frontier.push(total_cost, next_state)
+                    frontier.push(total_cost + self.heuristic(next_state), next_state)
         backtrack = []
         state = goal_state
         while state is not None:
-            backtrack.append((state, costs[state]))
+            backtrack.append((state, accumulated_cost[state]))
             state = came_from[state]
 
         return reversed(backtrack)
