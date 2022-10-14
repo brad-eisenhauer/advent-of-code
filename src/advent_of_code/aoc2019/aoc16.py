@@ -16,9 +16,19 @@ class AocSolution(Solution[int]):
 
     def solve_part_one(self) -> int:
         with self.open_input() as f:
-            result = list(int(n) for n in f.read().strip())
+            result = [int(n) for n in f.read().strip()]
         for _ in range(100):
             result = calc_next_phase(result)
+        return int("".join(str(n) for n in result[:8]))
+
+    def solve_part_two(self) -> int:
+        with self.open_input() as f:
+            initial_value = f.read().strip()
+        start_index = int(initial_value[:7])
+        assert start_index > (len(initial_value) * 10000) // 2
+        result = [int(c) for c in (initial_value * 10000)[start_index:]]
+        for _ in range(100):
+            result = calc_back_half(result)
         return int("".join(str(n) for n in result[:8]))
 
 
@@ -43,6 +53,15 @@ def calc_next_phase(nums: list[int]) -> list[int]:
     expanded = np.array(nums * dim).reshape((dim, dim))
     result = np.abs((matrix * expanded).sum(axis=1)) % 10
     return list(result)
+
+
+def calc_back_half(nums: list[int]) -> list[int]:
+    result = []
+    acc = 0
+    for n in nums[::-1]:
+        acc = (acc + n) % 10
+        result.append(acc)
+    return list(reversed(result))
 
 
 def test_create_pattern_matrix():
