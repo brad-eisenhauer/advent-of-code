@@ -1,9 +1,12 @@
+import logging
 from dataclasses import dataclass, field
 from typing import Iterator, Optional, TextIO, TypeVar
 
 from advent_of_code.errors import IllegalOperationError
 
 T = TypeVar("T")
+
+log = logging.getLogger("aoc")
 
 
 @dataclass
@@ -56,7 +59,9 @@ class IntcodeMachine:
                 self.pointer += 4
             case 3:  # input (day 5)
                 [address] = self.read_address(modes, 1)
-                self.write(address, next(self.input_stream))
+                value = next(self.input_stream)
+                self.write(address, value)
+                log.debug("Read %d and stored at address %d.", value, address)
                 self.pointer += 2
             case 4:  # output (day 5)
                 [output] = self.read_values(modes, 1)
