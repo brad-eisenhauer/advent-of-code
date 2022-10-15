@@ -139,6 +139,7 @@ class AStar(Generic[S]):
     """
     A* implementation based on https://www.redblobgames.com/pathfinding/a-star/introduction.html
     """
+
     @abstractmethod
     def is_goal_state(self, state: S) -> bool:
         ...
@@ -152,7 +153,9 @@ class AStar(Generic[S]):
         """With no heuristic, A* is equivalent to Djikstra."""
         return 0
 
-    def _find_min_cost_path(self, initial_state: S) -> tuple[Optional[S], dict[S, int], dict[S, Optional[S]]]:
+    def _find_min_cost_path(
+        self, initial_state: S
+    ) -> tuple[Optional[S], dict[S, int], dict[S, Optional[S]]]:
         accumulated_cost: dict[S, int] = {initial_state: 0}
         came_from: dict[S, Optional[S]] = {initial_state: None}
         frontier: PriorityQueue[S] = PriorityQueue()

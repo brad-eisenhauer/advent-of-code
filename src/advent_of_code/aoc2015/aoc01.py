@@ -59,8 +59,6 @@ def test_calc_final_floor(instructions, expected):
     assert calc_final_floor(instructions) == expected
 
 
-@pytest.mark.parametrize(
-    ("instructions", "expected"), [(")", 1), ("()())", 5)]
-)
+@pytest.mark.parametrize(("instructions", "expected"), [(")", 1), ("()())", 5)])
 def test_calc_first_basement_entry(instructions, expected):
     assert calc_first_basement_entry(instructions) == expected
