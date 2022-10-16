@@ -93,6 +93,7 @@ class DroneSystem:
             - Tangent of maximum known angle inside the upper bound of the beam
             - Tangent of minimum known angle inside the lower bound of the beam
         """
+
         def find_middle(left: Point, right: Point) -> Point:
             return tuple((a + b) // 2 for a, b in zip(left, right))
 
