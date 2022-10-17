@@ -66,7 +66,6 @@ class Router:
         self.node_count = node_count
         self.queues = [PacketQueue(n) for n in range(node_count)]
         self.nodes = [NIC(program.copy(), queue) for queue in self.queues]
-        self.receivers = [deque() for _ in range(node_count)]
 
     def run(self, halt_on_nat: bool = True) -> int:
         nat = (0, 0)
@@ -79,20 +78,17 @@ class Router:
                 while response is not None:
                     is_idle = False
                     log.debug("Received response %d from %d.", response, i)
-                    rec = self.receivers[i]
-                    rec.append(response)
-                    if len(rec) > 2:
-                        address = rec.popleft()
-                        x = rec.popleft()
-                        y = rec.popleft()
-                        if address == 255:
-                            if halt_on_nat:
-                                return y
-                            nat = x, y
-                        else:
-                            log.debug("Sending (%d, %d) to %d.", x, y, address)
-                            self.queues[address].send(x)
-                            self.queues[address].send(y)
+                    address = response
+                    x = node.controller.multi_step()
+                    y = node.controller.multi_step()
+                    if address == 255:
+                        if halt_on_nat:
+                            return y
+                        nat = x, y
+                    else:
+                        log.debug("Sending (%d, %d) to %d.", x, y, address)
+                        self.queues[address].send(x)
+                        self.queues[address].send(y)
                     response = node.controller.multi_step()
             all_tried_to_read = all(q.was_read for q in self.queues)
             if all_tried_to_read and is_idle:
