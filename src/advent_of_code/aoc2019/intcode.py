@@ -34,6 +34,16 @@ class IntcodeMachine:
             raise IllegalOperationError("Attempted to run a halted machine.") from e
         return self.process_opcode(op_code, modes)
 
+    def multi_step(self, max_steps: int = 50) -> Optional[int]:
+        try:
+            for _ in range(max_steps):
+                result = self.step()
+                if result is not None:
+                    return result
+        except IllegalOperationError:
+            ...
+        return None
+
     def read(self, index: int) -> int:
         while index >= len(self.buffer):
             self.buffer.extend([0] * len(self.buffer))
@@ -61,7 +71,8 @@ class IntcodeMachine:
                 [address] = self.read_address(modes, 1)
                 value = next(self.input_stream)
                 self.write(address, value)
-                log.debug("Read %d and stored at address %d.", value, address)
+                if value != -1:
+                    log.debug("Read %d and stored at address %d.", value, address)
                 self.pointer += 2
             case 4:  # output (day 5)
                 [output] = self.read_values(modes, 1)
