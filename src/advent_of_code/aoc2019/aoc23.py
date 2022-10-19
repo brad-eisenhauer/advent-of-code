@@ -4,10 +4,7 @@ from __future__ import annotations
 import logging
 from collections import deque
 from dataclasses import dataclass, field
-from io import StringIO
 from typing import Iterator, Optional
-
-import pytest
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine
 from advent_of_code.base import Solution
@@ -102,24 +99,3 @@ class Router:
                 self.queues[0].send(x)
                 self.queues[0].send(y)
                 last_nat_y = y
-
-
-SAMPLE_INPUTS = [
-    """\
-""",
-]
-
-
-@pytest.fixture
-def sample_input(request):
-    with StringIO(SAMPLE_INPUTS[request.param]) as f:
-        yield f
-
-
-@pytest.mark.parametrize(
-    ("sample_input", "expected"),
-    [],
-    indirect=["sample_input"]
-)
-def test_foo(sample_input, expected):
-    ...
