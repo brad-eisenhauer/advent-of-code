@@ -32,11 +32,6 @@ class AocSolution(Solution[int]):
         return router.run(halt_on_nat=False)
 
 
-class NIC:
-    def __init__(self, program: list[int], queue: PacketQueue):
-        self.controller = IntcodeMachine(program, input_stream=queue)
-
-
 class PacketQueue(Iterator[int]):
     def __init__(self, address: int):
         self.address = address
@@ -57,47 +52,72 @@ class PacketQueue(Iterator[int]):
 
 
 @dataclass
-class Receiver:
-    contents: deque[int] = field(default_factory=deque)
+class Packet:
+    destination: int
+    content: tuple[int, int]
+
+
+class Halt(Exception):
+    def __init__(self, value: int):
+        self.value = value
 
 
 class Router:
     def __init__(self, program: list[int], node_count: int):
         self.node_count = node_count
         self.queues = [PacketQueue(n) for n in range(node_count)]
-        self.nodes = [NIC(program.copy(), queue) for queue in self.queues]
+        self.nics = [IntcodeMachine(program.copy(), queue) for queue in self.queues]
 
     def run(self, halt_on_nat: bool = True) -> int:
         nat = (0, 0)
         last_nat_y: Optional[int] = None
-        while True:
-            is_idle: bool = all(len(q.queue) == 0 for q in self.queues)
-            for i, node in enumerate(self.nodes):
-                self.queues[i].was_read = False
-                response = node.controller.multi_step()
-                while response is not None:
-                    is_idle = False
-                    log.debug("Received response %d from %d.", response, i)
-                    address = response
-                    x = node.controller.multi_step()
-                    y = node.controller.multi_step()
-                    if address == 255:
-                        if halt_on_nat:
-                            return y
-                        nat = x, y
-                    else:
-                        log.debug("Sending (%d, %d) to %d.", x, y, address)
-                        self.queues[address].send(x)
-                        self.queues[address].send(y)
-                    response = node.controller.multi_step()
-            all_tried_to_read = all(q.was_read for q in self.queues)
-            if all_tried_to_read and is_idle:
-                x, y = nat
-                if y == last_nat_y:
-                    return y
-                self.queues[0].send(x)
-                self.queues[0].send(y)
-                last_nat_y = y
+        try:
+            while True:
+                is_idle, nat = self._run_nics(halt_on_nat, nat)
+                all_tried_to_read = all(q.was_read for q in self.queues)
+                if all_tried_to_read and is_idle:
+                    last_nat_y = self._handle_idle_state(last_nat_y, nat)
+        except Halt as h:
+            return h.value
+
+    def _handle_idle_state(self, last_nat_y, nat):
+        x, y = nat
+        if y == last_nat_y:
+            raise Halt(y)
+        self.queues[0].send(x)
+        self.queues[0].send(y)
+        return y
+
+    def _run_nics(self, halt_on_nat, nat):
+        is_idle: bool = all(len(q.queue) == 0 for q in self.queues)
+        for i, nic in enumerate(self.nics):
+            for packet in self._run_single_nic(nic):
+                log.debug("Received packet %s from %d.", packet, i)
+                is_idle = False
+                nat = self._handle_packet(halt_on_nat, nat, packet)
+        return is_idle, nat
+
+    def _handle_packet(self, halt_on_nat, nat, packet):
+        x, y = packet.content
+        if packet.destination == 255:
+            if halt_on_nat:
+                raise Halt(y)
+            nat = packet.content
+        else:
+            log.debug("Sending %s to %d.", packet.content, packet.destination)
+            self.queues[packet.destination].send(x)
+            self.queues[packet.destination].send(y)
+        return nat
+
+    def _run_single_nic(self, nic: IntcodeMachine) -> Iterator[Packet]:
+        nic.input_stream.was_read = False
+        response = nic.multi_step()
+        while response is not None:
+            address = response
+            x = nic.multi_step()
+            y = nic.multi_step()
+            yield Packet(address, (x, y))
+            response = nic.multi_step()
 
 
 SAMPLE_INPUTS = [
