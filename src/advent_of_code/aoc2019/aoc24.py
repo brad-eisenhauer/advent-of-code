@@ -5,7 +5,7 @@ import math
 from dataclasses import dataclass
 from functools import cached_property
 from io import StringIO
-from typing import TextIO, Optional
+from typing import TextIO
 
 import pytest
 
@@ -32,9 +32,7 @@ class Board:
 
     @classmethod
     def read(cls, f: TextIO) -> Board:
-        result = tuple(
-            char == "#" for line in f.readlines() for char in line.strip()
-        )
+        result = tuple(char == "#" for line in f.readlines() for char in line.strip())
         return cls(result)
 
     @cached_property
@@ -42,7 +40,7 @@ class Board:
         return int(math.sqrt(len(self.spaces)))
 
     def calc_biodiversity_score(self) -> int:
-        return sum(n * 2 ** i for i, n in enumerate(self.spaces))
+        return sum(n * 2**i for i, n in enumerate(self.spaces))
 
     def step(self) -> Board:
         neighbor_sum = self._neighbor_sum()
@@ -53,7 +51,7 @@ class Board:
                     result.append(True)
                 case True, _:
                     result.append(False)
-                case (False, 1) | (False, 2):
+                case False, 1 | 2:
                     result.append(True)
                 case _:
                     result.append(status)
@@ -129,11 +127,7 @@ def sample_input(request):
         yield f
 
 
-@pytest.mark.parametrize(
-    ("sample_input", "expected"),
-    [(5, 2129920)],
-    indirect=["sample_input"]
-)
+@pytest.mark.parametrize(("sample_input", "expected"), [(5, 2129920)], indirect=["sample_input"])
 def test_calc_biodiversity_score(sample_input, expected):
     board = Board.read(sample_input)
     assert board.calc_biodiversity_score() == expected
@@ -141,10 +135,8 @@ def test_calc_biodiversity_score(sample_input, expected):
 
 @pytest.mark.parametrize(
     ("sample_input", "expected"),
-    [
-        (0, [1, 0, 0, 2, 0, 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 2, 1, 0, 2, 1, 0, 1, 1, 0, 0])
-    ],
-    indirect=['sample_input']
+    [(0, [1, 0, 0, 2, 0, 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 2, 1, 0, 2, 1, 0, 1, 1, 0, 0])],
+    indirect=["sample_input"],
 )
 def test_neighbor_sum(sample_input, expected):
     board = Board.read(sample_input)
@@ -152,9 +144,7 @@ def test_neighbor_sum(sample_input, expected):
 
 
 @pytest.mark.parametrize(
-    ("sample_input", "expected_index"),
-    [(0, 1), (1, 2), (2, 3), (3, 4)],
-    indirect=["sample_input"]
+    ("sample_input", "expected_index"), [(0, 1), (1, 2), (2, 3), (3, 4)], indirect=["sample_input"]
 )
 def test_step(sample_input, expected_index):
     board = Board.read(sample_input)
