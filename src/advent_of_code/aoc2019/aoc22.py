@@ -1,13 +1,15 @@
 """Advent of Code 2019, day 22: https://adventofcode.com/2019/day/22"""
 import logging
 from dataclasses import dataclass
+from functools import cache
 from io import StringIO
-from itertools import count
+from itertools import count, chain, repeat
 from typing import Iterable
 
 import pytest
 
 from advent_of_code.base import Solution
+from advent_of_code.util import greatest_common_divisor, mod_inverse
 
 log = logging.getLogger("aoc")
 
@@ -29,10 +31,12 @@ class AocSolution(Solution[int]):
         with self.open_input() as f:
             instructions = f.readlines()
         deck.shuffle(instructions)
-        for inst in deck.equivalent():
-            log.debug(inst)
-        # deck.shuffle(chain.from_iterable(repeat(deck.equivalent(), 101741582076661 - 1)))
-        # return deck.index_of(2020)
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug("Equivalent instructions:")
+            for inst in deck.equivalent():
+                log.debug("\t- %s", inst)
+        deck.shuffle(chain.from_iterable(repeat(deck.equivalent(), 101741582076661 - 1)))
+        return deck.index_of(2020)
 
 
 @dataclass
@@ -62,13 +66,13 @@ class Deck(Iterable[int]):
 
     def deal_with_increment(self, increment: int):
         # find the smallest n such that (n * increment % size) == 1
-        self.deal_interval *= self.calc_complementary_interval(increment)
+        self.deal_interval *= mod_inverse(increment, self.size)
         self.deal_interval %= self.size
 
     def index_of(self, value: int) -> int:
         result = value
         result -= self.top
-        result *= self.calc_complementary_interval(self.deal_interval)
+        result *= mod_inverse(self.deal_interval, self.size)
         result %= self.size
         return result
 
@@ -81,18 +85,13 @@ class Deck(Iterable[int]):
             elif "new stack" in instruction:
                 self.reverse()
 
-    def calc_complementary_interval(self, increment: int) -> int:
-        for n in count(1):
-            if (n * self.size + 1) % increment == 0:
-                return (n * self.size + 1) // increment
-
     def equivalent(self) -> list[str]:
         result = []
         if self.top:
             result.append(f"cut {self.top}")
         if self.deal_interval > 1:
             result.append(
-                f"deal with increment {self.calc_complementary_interval(self.deal_interval)}"
+                f"deal with increment {mod_inverse(self.deal_interval, self.size)}"
             )
         return result
 
