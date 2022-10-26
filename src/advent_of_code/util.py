@@ -1,4 +1,5 @@
 import logging
+import math
 import time
 from abc import abstractmethod
 from contextlib import contextmanager
@@ -65,6 +66,19 @@ def mod_inverse(a: int, b: int) -> int:
     if g != 1:
         raise ValueError(f"{a} and {b} are not coprime; cannot calculate modular inverse.")
     return x
+
+
+def mod_power(base: int, exp: int, mod: int) -> int:
+    if mod == 1:
+        return 0
+    result = 1
+    base %= mod
+    while exp > 0:
+        if exp % 2 == 1:
+            result = (result * base) % mod
+        exp >>= 1
+        base = (base * base) % mod
+    return result
 
 
 def least_common_multiple(a: int, b: int) -> int:
