@@ -29,7 +29,7 @@ class AocSolution(Solution[int]):
         deck = Deck(119315717514047)
         deck.shuffle(instructions)
         deck.repeat(101741582076661)
-        return deck.index_of(2020)
+        return deck.value_of(2020)
 
 
 @dataclass
@@ -45,6 +45,7 @@ class Deck(Iterable[int]):
     interval: int
         Difference in value between consecutive cards in the deck
     """
+
     size: int
     top: int = field(default=0, init=False)
     interval: int = field(default=1, init=False)
@@ -102,6 +103,9 @@ class Deck(Iterable[int]):
         result *= mod_inverse(self.interval, self.size)
         result %= self.size
         return result
+
+    def value_of(self, index: int) -> int:
+        return (self.top + (index * self.interval)) % self.size
 
 
 SAMPLE_INPUTS = [
