@@ -5,7 +5,7 @@ import math
 from dataclasses import dataclass, field
 from functools import cached_property
 from io import StringIO
-from typing import TextIO, Optional, ClassVar
+from typing import ClassVar, Optional, TextIO
 
 import pytest
 
