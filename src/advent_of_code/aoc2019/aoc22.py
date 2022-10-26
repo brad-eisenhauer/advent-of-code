@@ -1,15 +1,14 @@
 """Advent of Code 2019, day 22: https://adventofcode.com/2019/day/22"""
 import logging
-from dataclasses import dataclass
-from functools import cache
+from dataclasses import dataclass, field
 from io import StringIO
-from itertools import count, chain, repeat
+from itertools import takewhile
 from typing import Iterable
 
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import greatest_common_divisor, mod_inverse
+from advent_of_code.util import mod_inverse
 
 log = logging.getLogger("aoc")
 
@@ -22,59 +21,41 @@ class AocSolution(Solution[int]):
         deck = Deck(10007)
         with self.open_input() as f:
             deck.shuffle(f.readlines())
-        for instruction in deck.equivalent():
-            log.debug(instruction)
         return deck.index_of(2019)
 
     def solve_part_two(self) -> int:
-        deck = Deck(119315717514047)
         with self.open_input() as f:
             instructions = f.readlines()
+        deck = Deck(119315717514047)
         deck.shuffle(instructions)
-        if log.isEnabledFor(logging.DEBUG):
-            log.debug("Equivalent instructions:")
-            for inst in deck.equivalent():
-                log.debug("\t- %s", inst)
-        deck.shuffle(chain.from_iterable(repeat(deck.equivalent(), 101741582076661 - 1)))
+        deck.repeat(101741582076661)
         return deck.index_of(2020)
 
 
 @dataclass
 class Deck(Iterable[int]):
-    size: int
+    """State of the deck
 
-    def __post_init__(self):
-        self.top = 0
-        self.deal_interval = 1
+    Attributes
+    ----------
+    size: int
+        Number of cards in the deck
+    top: int
+        Value of the top card in the deck
+    interval: int
+        Difference in value between consecutive cards in the deck
+    """
+    size: int
+    top: int = field(default=0, init=False)
+    interval: int = field(default=1, init=False)
 
     def __iter__(self):
         for n in range(self.size):
-            yield (self.top + n * self.deal_interval) % self.size
+            yield (self.top + n * self.interval) % self.size
 
     @property
     def bottom(self) -> int:
-        return (self.top - self.deal_interval) % self.size
-
-    def cut(self, increment: int):
-        self.top += increment * self.deal_interval
-        self.top %= self.size
-
-    def reverse(self):
-        self.top = self.bottom
-        self.deal_interval *= -1
-        self.deal_interval %= self.size
-
-    def deal_with_increment(self, increment: int):
-        # find the smallest n such that (n * increment % size) == 1
-        self.deal_interval *= mod_inverse(increment, self.size)
-        self.deal_interval %= self.size
-
-    def index_of(self, value: int) -> int:
-        result = value
-        result -= self.top
-        result *= mod_inverse(self.deal_interval, self.size)
-        result %= self.size
-        return result
+        return (self.top - self.interval) % self.size
 
     def shuffle(self, instructions: Iterable[str]):
         for instruction in instructions:
@@ -85,14 +66,41 @@ class Deck(Iterable[int]):
             elif "new stack" in instruction:
                 self.reverse()
 
-    def equivalent(self) -> list[str]:
-        result = []
-        if self.top:
-            result.append(f"cut {self.top}")
-        if self.deal_interval > 1:
-            result.append(
-                f"deal with increment {mod_inverse(self.deal_interval, self.size)}"
-            )
+    def cut(self, increment: int):
+        self.top = (self.top + increment * self.interval) % self.size
+
+    def reverse(self):
+        self.top = self.bottom
+        self.interval = (self.interval * -1) % self.size
+
+    def deal_with_increment(self, increment: int):
+        self.interval = (self.interval * mod_inverse(increment, self.size)) % self.size
+
+    def repeat(self, n: int):
+        """Repeat the shuffles already applied
+
+        Parameters
+        ----------
+        n: int
+            Number of times to repeat the shuffle. n=1 leaves the deck as-is.
+        """
+        result_top = 0
+        result_interval = 1
+        while n > 0:
+            if n % 2 == 1:
+                result_top = (result_top + self.top * result_interval) % self.size
+                result_interval = (result_interval * self.interval) % self.size
+            n >>= 1
+            self.top = (self.top + self.top * self.interval) % self.size
+            self.interval = (self.interval * self.interval) % self.size
+        self.top = result_top
+        self.interval = result_interval
+
+    def index_of(self, value: int) -> int:
+        result = value
+        result -= self.top
+        result *= mod_inverse(self.interval, self.size)
+        result %= self.size
         return result
 
 
@@ -167,35 +175,25 @@ def test_shuffle(sample_input, size, expected):
     assert list(deck) == expected
 
 
-@pytest.mark.parametrize(
-    ("sample_input", "size"),
-    [(0, 10), (1, 10), (2, 10), (3, 10), (4, 10), (5, 10), (6, 10), (7, 10), (5, 15)],
-    indirect=["sample_input"],
-)
-def test_equivalent(sample_input, size):
-    deck1 = Deck(size)
-    deck1.shuffle(sample_input.readlines())
-    deck2 = Deck(size)
-    deck2.shuffle(deck1.equivalent())
-    assert list(deck2) == list(deck1)
-
-
-@pytest.mark.parametrize(
-    ("sample_input", "size", "expected"),
-    [
-        (0, 10, 1),
-        (1, 10, 0),
-        (2, 10, 1),
-        (3, 10, 8),
-        (4, 10, 6),
-        (5, 10, 1),
-        (6, 10, 9),
-        (7, 10, 7),
-        (5, 15, 6),
-    ],
-    indirect=["sample_input"],
-)
-def test_index_of(sample_input, size, expected):
+@pytest.mark.parametrize("sample_input", list(range(len(SAMPLE_INPUTS))), indirect=True)
+@pytest.mark.parametrize("size", [10, 16, 20, 25, 32, 50, 64, 100])
+@pytest.mark.parametrize("target", list(range(10)))
+def test_index_of(sample_input, size, target):
     deck = Deck(size)
     deck.shuffle(sample_input.readlines())
-    assert deck.index_of(3) == expected
+    expected = sum(1 for _ in takewhile(lambda n: n != target, deck))
+    assert deck.index_of(target) == expected
+
+
+@pytest.mark.parametrize("sample_input", list(range(len(SAMPLE_INPUTS))), indirect=True)
+@pytest.mark.parametrize("size", [10, 16, 20, 25, 32])
+@pytest.mark.parametrize("n", [1, 5, 10, 20, 50, 100, 250, 500, 1025])
+def test_repeat(sample_input, size, n):
+    instructions = sample_input.readlines()
+    expected = Deck(size)
+    for _ in range(n):
+        expected.shuffle(instructions)
+    deck = Deck(size)
+    deck.shuffle(instructions)
+    deck.repeat(n)
+    assert deck == expected
