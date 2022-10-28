@@ -99,7 +99,7 @@ def test_calc_earliest_departure(sample_input):
 @pytest.mark.parametrize(
     ("sample_input", "expected"),
     [(0, 1068781), (1, 3417), (2, 754018), (3, 779210), (4, 1261476), (5, 1202161486)],
-    indirect=["sample_input"]
+    indirect=["sample_input"],
 )
 def test_calc_earliest_consecutive_departures(sample_input, expected):
     _ = sample_input.readline()

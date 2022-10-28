@@ -80,7 +80,9 @@ class Ship:
                 case "L" | "R", 180:
                     self.waypoint = -wx, -wy
                 case "F", _:
-                    self.position = tuple(p + value * w for p, w in zip(self.position, self.waypoint))
+                    self.position = tuple(
+                        p + value * w for p, w in zip(self.position, self.waypoint)
+                    )
                 case _:
                     raise ValueError(f"Unrecognized command: {line}")
 
