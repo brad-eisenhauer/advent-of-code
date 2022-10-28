@@ -11,7 +11,8 @@ class AocSolution(Solution[int]):
         super().__init__({{ day }}, {{ year }})
 
     def solve_part_one(self) -> int:
-        ...
+        with self.open_input() as f:
+            ...
 
 
 SAMPLE_INPUTS = [
