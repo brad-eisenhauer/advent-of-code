@@ -3,6 +3,7 @@ from datetime import date
 from importlib import import_module
 from os import getenv
 from pathlib import Path
+from typing import Optional
 
 import pytest
 import requests
@@ -17,11 +18,16 @@ CURRENT_YEAR = date.today().year
 app = typer.Typer(name="aoc")
 
 log = logging.getLogger("aoc")
+app_state: dict = {}
 
 
 @app.callback()
-def main(debug: bool = False):
+def main(
+    debug: bool = typer.Option(False, help="Enable debug logging"),
+    input_file: Optional[str] = typer.Option(None, help="Input file name"),
+):
     logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
+    app_state["input_file"] = input_file
 
 
 @app.command(help="Create a stub solution for selected puzzle")
@@ -92,7 +98,7 @@ def load_solution(day: int, year: int) -> Solution:
     if solution_cls is None:
         raise TypeError(f"{module_name} contains no implementation of Solution.")
 
-    return solution_cls()
+    return solution_cls(input_file=app_state.get("input_file"))
 
 
 @app.command(help="Submit solution for selected puzzle")

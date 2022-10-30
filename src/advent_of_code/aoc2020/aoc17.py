@@ -93,9 +93,7 @@ def sample_input():
         yield f
 
 
-@pytest.mark.parametrize(
-    ("dimensions", "expected"), [(3, 112), (4, 848)]
-)
+@pytest.mark.parametrize(("dimensions", "expected"), [(3, 112), (4, 848)])
 def test_boot(sample_input, dimensions, expected):
     grid = Grid.read(sample_input, dimensions)
     result = boot(grid)

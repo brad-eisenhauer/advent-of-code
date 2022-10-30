@@ -8,8 +8,8 @@ from advent_of_code.base import Solution
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(5, 2015)
+    def __init__(self, **kwargs):
+        super().__init__(5, 2015, **kwargs)
 
     def solve_part_one(self) -> int:
         with self.open_input() as f:
@@ -60,7 +60,7 @@ def sample_input(request):
 @pytest.mark.parametrize(
     ("sample_input", "expected"),
     [(0, True), (1, False), (2, False), (3, False)],
-    indirect=["sample_input"]
+    indirect=["sample_input"],
 )
 def test_is_nice(sample_input, expected):
     assert is_nice(sample_input.readline().strip()) is expected

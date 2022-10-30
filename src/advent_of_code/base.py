@@ -2,7 +2,7 @@ from datetime import date
 from enum import Enum
 from os import getenv
 from pathlib import Path
-from typing import Generic, TypeVar
+from typing import Generic, Optional, TypeVar
 
 import requests
 from dotenv import load_dotenv
@@ -17,12 +17,13 @@ class PuzzlePart(str, Enum):
 
 
 class Solution(Generic[T]):
-    def __init__(self, day: int, year: int):
+    def __init__(self, day: int, year: int, input_file: Optional[str] = None):
         self.day = day
         self.year = year
+        self.input_file = input_file
 
     def open_input(self):
-        path = get_input_path(self.day, self.year)
+        path = self._get_input_path()
         return open(path)
 
     def solve_part(self, part: PuzzlePart) -> T:
@@ -42,16 +43,21 @@ class Solution(Generic[T]):
     def solve_part_two(self) -> T:
         raise NotImplementedError("Puzzle part two not yet implemented.")
 
+    def _get_input_path(self) -> Path:
+        resources_path = Path() / "resources" / str(self.year)
+        input_path = resources_path / (
+            self.input_file if self.input_file is not None else f"input{self.day:02d}.txt"
+        )
 
-def get_input_path(day: int, year: int) -> Path:
-    resources_path = Path() / "resources" / str(year)
-    input_path = resources_path / f"input{day:02d}.txt"
+        if not input_path.exists():
+            if self.input_file is not None:
+                raise FileNotFoundError(
+                    f"File {self.input_file} does not exist in {resources_path}."
+                )
+            input_path.parent.mkdir(parents=True, exist_ok=True)
+            download_input(input_path, self.day, self.year or date.today().year)
 
-    if not input_path.exists():
-        input_path.parent.mkdir(parents=True, exist_ok=True)
-        download_input(input_path, day, year or date.today().year)
-
-    return input_path
+        return input_path
 
 
 def download_input(download_path: Path, day: int, year: int):
