@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections import deque
+from functools import cache
 from io import StringIO
 from itertools import count, takewhile
 from typing import Iterable, TextIO, Iterator
@@ -20,6 +21,12 @@ class AocSolution(Solution[int]):
             decks = read_decks(f)
         winning_deck, _ = run_game(*decks)
         return winning_deck.calc_score()
+
+    def solve_part_two(self) -> int:
+        with self.open_input() as f:
+            decks = read_decks(f)
+        winner = run_recursive_game(*decks)
+        return winner.calc_score()
 
 
 class Deck(Iterator[int]):
@@ -42,11 +49,17 @@ class Deck(Iterator[int]):
     def __repr__(self):
         return f"Deck('{self.name}', [{', '.join(str(n) for n in self.cards)}])"
 
+    def __hash__(self):
+        return hash((self.name, *self.cards))
+
     def append(self, *cards: int):
         self.cards.extend(cards)
 
     def calc_score(self) -> int:
         return sum(i * c for i, c in zip(count(1), reversed(self.cards)))
+
+    def copy(self, n: int) -> Deck:
+        return Deck(self.name, deque(list(self.cards)[:n]))
 
 
 def read_decks(f: TextIO) -> tuple[Deck, Deck]:
@@ -68,6 +81,31 @@ def run_game(deck1: Deck, deck2: Deck) -> tuple[Deck, int]:
     if deck1.cards:
         return deck1, battle_count
     return deck2, battle_count
+
+
+@cache
+def run_recursive_game(deck1: Deck, deck2: Deck) -> Deck:
+    states: set[tuple[tuple[int], tuple[int]]] = set()
+    while deck1.cards and deck2.cards:
+        state = (tuple(deck1.cards), tuple(deck2.cards))
+        if state in states:
+            return deck1
+        states.add(state)
+        a = next(deck1)
+        b = next(deck2)
+        if len(deck1.cards) >= a and len(deck2.cards) >= b:
+            winner = run_recursive_game(deck1.copy(a), deck2.copy(b))
+        elif a > b:
+            winner = deck1
+        else:
+            winner = deck2
+        if winner.name == deck1.name:
+            deck1.append(a, b)
+        else:
+            deck2.append(b, a)
+    if deck1.cards:
+        return deck1
+    return deck2
 
 
 SAMPLE_INPUTS = [
@@ -115,3 +153,10 @@ def test_calc_score(sample_input):
     decks = read_decks(sample_input)
     winning_deck, _ = run_game(*decks)
     assert winning_deck.calc_score() == 306
+
+
+def test_run_recursive_game(sample_input):
+    deck1, deck2 = read_decks(sample_input)
+    winner = run_recursive_game(deck1, deck2)
+    assert winner == deck2
+    assert winner.calc_score() == 291
