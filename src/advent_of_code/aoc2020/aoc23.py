@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from io import StringIO
-from typing import Optional, TextIO, Iterator
+from typing import Iterator, Optional, TextIO
 
 import pytest
 

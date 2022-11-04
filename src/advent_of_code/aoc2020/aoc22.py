@@ -5,7 +5,7 @@ from collections import deque
 from functools import cache
 from io import StringIO
 from itertools import count, takewhile
-from typing import Iterable, TextIO, Iterator
+from typing import Iterable, Iterator, TextIO
 
 import pytest
 
