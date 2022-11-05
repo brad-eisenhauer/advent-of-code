@@ -14,8 +14,8 @@ log = logging.getLogger("aoc")
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(22, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(22, 2019, **kwargs)
 
     def solve_part_one(self) -> int:
         deck = Deck(10007)

@@ -11,8 +11,8 @@ BASE_PATTERN = [0, 1, 0, -1]
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(16, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(16, 2019, **kwargs)
 
     def solve_part_one(self) -> int:
         with self.open_input() as f:

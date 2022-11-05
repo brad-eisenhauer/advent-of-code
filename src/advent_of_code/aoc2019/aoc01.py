@@ -9,8 +9,8 @@ from advent_of_code.base import Solution
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(1, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(1, 2019, **kwargs)
         self.read_masses = cache(self._read_masses)
 
     def _read_masses(self) -> list[int]:

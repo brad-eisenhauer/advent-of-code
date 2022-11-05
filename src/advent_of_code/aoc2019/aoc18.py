@@ -19,8 +19,8 @@ log = logging.getLogger("aoc")
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(18, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(18, 2019, **kwargs)
 
     def solve_part_one(self) -> int:
         return self.solve_maze(subdivide=False)

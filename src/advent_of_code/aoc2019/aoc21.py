@@ -8,8 +8,8 @@ log = logging.getLogger("aoc")
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(21, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(21, 2019, **kwargs)
 
     def run_springscript(self, script: list[str]) -> int:
         with self.open_input() as f:

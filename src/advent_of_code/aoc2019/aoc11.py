@@ -8,8 +8,8 @@ from advent_of_code.base import Solution
 
 
 class AocSolution(Solution):
-    def __init__(self):
-        super().__init__(11, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(11, 2019, **kwargs)
 
     def create_robot(self) -> Robot:
         with self.open_input() as f:

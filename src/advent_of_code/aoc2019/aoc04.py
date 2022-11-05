@@ -8,8 +8,8 @@ from advent_of_code.base import Solution
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(4, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(4, 2019, **kwargs)
         self.read_valid_range = cache(self._read_valid_range)
 
     def _read_valid_range(self):

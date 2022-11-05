@@ -11,8 +11,8 @@ from advent_of_code.base import Solution
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(2, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(2, 2019, **kwargs)
 
     def get_intcode_machine(self) -> IntcodeMachine:
         with self.open_input() as f:

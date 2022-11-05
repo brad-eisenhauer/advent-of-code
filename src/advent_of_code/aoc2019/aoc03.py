@@ -15,8 +15,8 @@ UNIT_VECTORS = {"L": (-1, 0), "R": (1, 0), "U": (0, 1), "D": (0, -1)}
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(3, 2019)
+    def __init__(self, **kwargs):
+        super().__init__(3, 2019, **kwargs)
 
     def solve_part_one(self) -> int:
         with self.open_input() as f:
