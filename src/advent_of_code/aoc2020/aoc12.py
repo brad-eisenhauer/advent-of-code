@@ -11,8 +11,8 @@ Vector = tuple[int, ...]
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(12, 2020)
+    def __init__(self, **kwargs):
+        super().__init__(12, 2020, **kwargs)
 
     def solve_part_one(self) -> int:
         ship = Ship()

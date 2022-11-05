@@ -12,8 +12,8 @@ from advent_of_code.base import Solution
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(19, 2020)
+    def __init__(self, **kwargs):
+        super().__init__(19, 2020, **kwargs)
 
     def read_input(self) -> tuple[RuleBuilder, list[str]]:
         with self.open_input() as f:

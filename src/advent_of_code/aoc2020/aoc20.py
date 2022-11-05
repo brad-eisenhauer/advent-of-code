@@ -23,8 +23,8 @@ SEA_MONSTER = """
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(20, 2020)
+    def __init__(self, **kwargs):
+        super().__init__(20, 2020, **kwargs)
         self._image: Optional[Image] = None
 
     @property

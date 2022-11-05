@@ -13,8 +13,8 @@ PolicyT = TypeVar("PolicyT")
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(2, 2020)
+    def __init__(self, **kwargs):
+        super().__init__(2, 2020, **kwargs)
 
     def solve_part_one(self) -> int:
         with self.open_input() as f:
