@@ -7,7 +7,7 @@ from typing import Callable, Iterable, Iterator, TextIO, Tuple
 from advent_of_code.base import Solution
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(8, 2021, **kwargs)
 

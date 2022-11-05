@@ -12,7 +12,7 @@ from advent_of_code.base import Solution
 PolicyT = TypeVar("PolicyT")
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(2, 2020, **kwargs)
 

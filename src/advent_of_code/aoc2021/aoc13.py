@@ -18,7 +18,7 @@ from advent_of_code.util import partition
 Point = tuple[int, int]
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(13, 2021, **kwargs)
 

@@ -32,7 +32,7 @@ class FuelConsumptionMode(Enum):
     QUADRATIC = auto(), lambda d: d * (d + 1) // 2, lambda ps: np.round(np.average(ps)).astype(int)
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(7, 2021, **kwargs)
 

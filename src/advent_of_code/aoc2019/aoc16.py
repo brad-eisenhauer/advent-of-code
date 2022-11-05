@@ -10,7 +10,7 @@ from advent_of_code.base import Solution
 BASE_PATTERN = [0, 1, 0, -1]
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(16, 2019, **kwargs)
 

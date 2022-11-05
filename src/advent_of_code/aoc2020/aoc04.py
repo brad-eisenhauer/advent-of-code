@@ -10,7 +10,7 @@ from advent_of_code.base import Solution
 Passport = NewType("Passport", dict[str, Any])
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(4, 2020, **kwargs)
 

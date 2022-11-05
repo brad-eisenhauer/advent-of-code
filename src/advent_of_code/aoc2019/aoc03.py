@@ -14,7 +14,7 @@ Route = Iterable[str]
 UNIT_VECTORS = {"L": (-1, 0), "R": (1, 0), "U": (0, 1), "D": (0, -1)}
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(3, 2019, **kwargs)
 

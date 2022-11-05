@@ -13,7 +13,7 @@ from advent_of_code.util import mod_inverse
 log = logging.getLogger("aoc")
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(22, 2019, **kwargs)
 

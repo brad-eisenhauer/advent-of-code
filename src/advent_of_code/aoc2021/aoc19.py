@@ -15,7 +15,7 @@ from advent_of_code.base import Solution
 Vector = tuple[int, int, int]
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(19, 2021, **kwargs)
         self._composite_report: Optional[CompositeReport] = None

@@ -2,12 +2,13 @@ from datetime import date
 from enum import Enum
 from os import getenv
 from pathlib import Path
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Optional, TypeVar, Union
 
 import requests
 from dotenv import load_dotenv
 
 T = TypeVar("T")
+U = TypeVar("U")
 
 
 class PuzzlePart(str, Enum):
@@ -16,7 +17,7 @@ class PuzzlePart(str, Enum):
     Two = "two"
 
 
-class Solution(Generic[T]):
+class Solution(Generic[T, U]):
     def __init__(self, day: int, year: int, input_file: Optional[str] = None):
         self.day = day
         self.year = year
@@ -26,7 +27,7 @@ class Solution(Generic[T]):
         path = self._get_input_path()
         return open(path)
 
-    def solve_part(self, part: PuzzlePart) -> T:
+    def solve_part(self, part: PuzzlePart) -> Union[T, U]:
         match part:
             case PuzzlePart.All:
                 raise ValueError("Part argument must be 'one' or 'two'.")
@@ -40,7 +41,7 @@ class Solution(Generic[T]):
     def solve_part_one(self) -> T:
         raise NotImplementedError("Puzzle part one not yet implemented.")
 
-    def solve_part_two(self) -> T:
+    def solve_part_two(self) -> U:
         raise NotImplementedError("Puzzle part two not yet implemented.")
 
     def _get_input_path(self) -> Path:

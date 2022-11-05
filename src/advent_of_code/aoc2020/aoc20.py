@@ -22,7 +22,7 @@ SEA_MONSTER = """
 """
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(20, 2020, **kwargs)
         self._image: Optional[Image] = None

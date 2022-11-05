@@ -11,7 +11,7 @@ Point = tuple[int, ...]
 log = logging.getLogger("aoc")
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(19, 2019, **kwargs)
 

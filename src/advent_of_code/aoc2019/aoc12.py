@@ -12,7 +12,7 @@ from advent_of_code.base import Solution
 from advent_of_code.util import least_common_multiple
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(12, 2019, **kwargs)
 

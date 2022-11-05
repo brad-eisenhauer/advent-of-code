@@ -37,7 +37,7 @@ class ComputationMethod(Enum):
     )
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     method: ComputationMethod = ComputationMethod.DYNAMIC
 
     def __init__(self, **kwargs):

@@ -13,7 +13,7 @@ from advent_of_code.base import Solution
 from advent_of_code.util import greatest_common_divisor
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(10, 2019, **kwargs)
 

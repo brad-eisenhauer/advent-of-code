@@ -7,7 +7,7 @@ from advent_of_code.aoc2019.intcode import IntcodeMachine
 from advent_of_code.base import Solution
 
 
-class AocSolution(Solution):
+class AocSolution(Solution[int, None]):
     def __init__(self, **kwargs):
         super().__init__(11, 2019, **kwargs)
 

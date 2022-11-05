@@ -13,7 +13,7 @@ import pytest
 from advent_of_code.base import Solution
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(21, 2020, **kwargs)
 

@@ -21,7 +21,7 @@ OPERATORS = {
 }
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(16, 2021, **kwargs)
 

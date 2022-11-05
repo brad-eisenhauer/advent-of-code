@@ -18,7 +18,7 @@ MAX_ALLOWABLE_DEPTH = 4
 MAX_ALLOWABLE_LEAF = 9
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(18, 2021, **kwargs)
 

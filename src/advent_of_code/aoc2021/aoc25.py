@@ -15,7 +15,7 @@ from advent_of_code.base import Solution
 Vector = tuple[int, ...]
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(25, 2021, **kwargs)
 

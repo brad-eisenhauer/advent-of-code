@@ -7,7 +7,7 @@ from advent_of_code.base import Solution
 log = logging.getLogger("aoc")
 
 
-class AocSolution(Solution[int]):
+class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(21, 2019, **kwargs)
 
