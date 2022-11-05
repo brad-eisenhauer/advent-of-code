@@ -28,8 +28,8 @@ UNIT_MOVEMENTS = {
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(2, 2021)
+    def __init__(self, **kwargs):
+        super().__init__(2, 2021, **kwargs)
 
     def solve_part_one(self) -> int:
         ...  # TODO: implement 2021, day 2, part 1

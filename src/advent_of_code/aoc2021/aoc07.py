@@ -33,8 +33,8 @@ class FuelConsumptionMode(Enum):
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(7, 2021)
+    def __init__(self, **kwargs):
+        super().__init__(7, 2021, **kwargs)
 
     def solve(self, mode: FuelConsumptionMode) -> int:
         with self.open_input() as f:

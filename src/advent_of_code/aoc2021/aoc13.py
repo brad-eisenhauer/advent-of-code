@@ -19,8 +19,8 @@ Point = tuple[int, int]
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(13, 2021)
+    def __init__(self, **kwargs):
+        super().__init__(13, 2021, **kwargs)
 
     def solve_part_one(self) -> int:
         with self.open_input() as f:

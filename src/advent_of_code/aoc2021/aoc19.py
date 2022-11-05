@@ -16,8 +16,8 @@ Vector = tuple[int, int, int]
 
 
 class AocSolution(Solution[int]):
-    def __init__(self):
-        super().__init__(19, 2021)
+    def __init__(self, **kwargs):
+        super().__init__(19, 2021, **kwargs)
         self._composite_report: Optional[CompositeReport] = None
 
     @property
