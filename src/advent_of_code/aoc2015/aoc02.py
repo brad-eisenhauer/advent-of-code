@@ -5,7 +5,7 @@ import operator
 from functools import reduce
 from io import StringIO
 from itertools import combinations, product
-from typing import Collection, Callable
+from typing import Callable, Collection
 
 import pytest
 
