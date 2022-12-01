@@ -121,7 +121,12 @@ def submit(
     load_dotenv()
     url = f"https://adventofcode.com/{year}/day/{day}/answer"
     response = requests.post(
-        url, data={"level": level, "answer": result}, cookies={"session": getenv("AOC_SESSION")}
+        url,
+        data={"level": level, "answer": result},
+        cookies={"session": getenv("AOC_SESSION")},
+        headers={
+            "User-Agent": "github.com/brad-eisenhauer/advent-of-code by bradley.eisenhauer@gmail.com"
+        },
     )
     response.raise_for_status()
     content = response.content.decode()

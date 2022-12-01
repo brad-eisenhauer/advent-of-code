@@ -64,7 +64,13 @@ class Solution(Generic[T, U]):
 def download_input(download_path: Path, day: int, year: int):
     load_dotenv()
     download_url = f"https://adventofcode.com/{year}/day/{day}/input"
-    response = requests.get(download_url, cookies={"session": getenv("AOC_SESSION")})
+    response = requests.get(
+        download_url,
+        cookies={"session": getenv("AOC_SESSION")},
+        headers={
+            "User-Agent": "github.com/brad-eisenhauer/advent-of-code by bradley.eisenhauer@gmail.com"
+        },
+    )
     response.raise_for_status()
     with open(download_path, "w") as fp:
         fp.write(response.content.decode())
