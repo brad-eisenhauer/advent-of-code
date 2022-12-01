@@ -22,20 +22,19 @@ class AocSolution(Solution[int, int]):
             return calc_max_calories(f, 3)
 
 
+def calc_elf_calories(f: TextIO) -> Iterator[int]:
+    elf_calories = 0
+    for line in f:
+        if line == "\n":
+            yield elf_calories
+            elf_calories = 0
+        else:
+            elf_calories += int(line.strip())
+    yield elf_calories
+
+
 def calc_max_calories(f: TextIO, n: int) -> int:
-    lines = f.readlines()
-
-    def generate_totals(lines=lines) -> Iterator[int]:
-        elf_calories = 0
-        for line in lines:
-            if line == "\n":
-                yield elf_calories
-                elf_calories = 0
-            else:
-                elf_calories += int(line.strip())
-        yield elf_calories
-
-    elf_totals = sorted(generate_totals(), reverse=True)
+    elf_totals = sorted(calc_elf_calories(f), reverse=True)
     return sum(elf_totals[:n])
 
 
@@ -68,3 +67,7 @@ def sample_input():
 @pytest.mark.parametrize(("n", "expected"), [(1, 24000), (3, 45000)])
 def test_calc_max_calories(sample_input, n, expected):
     assert calc_max_calories(sample_input, n) == expected
+
+
+def test_calc_elf_calories(sample_input):
+    assert list(calc_elf_calories(sample_input)) == [6000, 4000, 11000, 24000, 10000]
