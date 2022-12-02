@@ -2,14 +2,20 @@
 from __future__ import annotations
 
 import re
+
+# import sys
 from abc import abstractmethod
 from dataclasses import dataclass
 from io import StringIO
-from typing import Optional, TextIO
+from itertools import combinations
+from typing import ClassVar, Optional, TextIO, TypeVar
 
 import pytest
 
 from advent_of_code.base import Solution
+
+# sys.setrecursionlimit(5000)
+T = TypeVar("T")
 
 
 class AocSolution(Solution[int, int]):
@@ -23,18 +29,30 @@ class AocSolution(Solution[int, int]):
 
 def count_on_at_end(instructions: TextIO) -> int:
     pattern = re.compile(r"^(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)")
-    grid = NULL_GRID
+    grid = BruteForceGrid()
     for line in instructions:
-        op, x1, y1, x2, y2 = pattern.match(line.strip()).groups()
-        other = BasicGrid(range(int(x1), int(x2) + 1), range(int(y1), int(y2) + 1))
+        op, *coords = pattern.match(line.strip()).groups()
+        x1, y1, x2, y2 = (int(n) for n in coords)
+        other = BasicGrid(range(x1, x2 + 1), range(y1, y2 + 1))
         match op:
             case "turn on":
-                grid = grid.turn_on(other)
+                grid |= BruteForceGrid.from_basic_grid(other)
             case "turn off":
-                grid = grid.turn_off(other)
+                grid -= BruteForceGrid.from_basic_grid(other)
             case "toggle":
-                grid = grid.toggle(other)
-    return grid.count()
+                grid ^= BruteForceGrid.from_basic_grid(other)
+    return len(grid)
+
+
+class BruteForceGrid(set[tuple[int, int]]):
+    @classmethod
+    def from_basic_grid(cls, grid: BasicGrid) -> BruteForceGrid:
+        points = [(x, y) for x in grid.xs for y in grid.ys]
+        return BruteForceGrid(points)
+
+
+def fs(*items: T) -> frozenset[T]:
+    return frozenset(items)
 
 
 class Grid:
@@ -42,37 +60,29 @@ class Grid:
     def count(self) -> int:
         ...
 
-    def turn_on(self, grid: BasicGrid) -> Grid:
-        return self | grid
-
-    def turn_off(self, grid: BasicGrid) -> Grid:
-        return self - grid
-
-    def toggle(self, grid: BasicGrid) -> Grid:
-        return self ^ grid
-
     @abstractmethod
-    def __and__(self, other):
+    def __and__(self, other: Grid) -> Grid:
         ...
 
-    def __or__(self, other):
-        if other is NULL_GRID:
+    def __or__(self, other: Grid) -> Grid:
+        if other is NullGrid:
             return self
-        return UnionGrid(self, other)
+        return UnionGrid(fs(self, other))
 
-    def __xor__(self, other):
-        if other is NULL_GRID:
-            return self
-        return XorGrid(self, other)
+    def __xor__(self, other: Grid) -> Grid:
+        left = self - other
+        right = other - self
+        return left | right
 
-    def __sub__(self, other):
-        if other is NULL_GRID:
+    def __sub__(self, other: Grid) -> Grid:
+        if other is NullGrid:
             return self
         return DifferenceGrid(self, other)
 
 
+@dataclass(frozen=True)
 class _NullGrid(Grid):
-    _instance: Optional[_NullGrid] = None
+    _instance: ClassVar[Optional[_NullGrid]] = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -82,20 +92,20 @@ class _NullGrid(Grid):
     def count(self) -> int:
         return 0
 
-    def __and__(self, other) -> Grid:
+    def __and__(self, other: Grid) -> Grid:
         return self._instance
 
-    def __or__(self, other) -> Grid:
+    def __or__(self, other: Grid) -> Grid:
         return other
 
-    def __xor__(self, other):
+    def __xor__(self, other: Grid) -> Grid:
         return other
 
-    def __sub__(self, other):
+    def __sub__(self, other: Grid) -> Grid:
         return self._instance
 
 
-NULL_GRID = _NullGrid()
+NullGrid = _NullGrid()
 
 
 @dataclass(frozen=True)
@@ -106,34 +116,61 @@ class BasicGrid(Grid):
     def count(self) -> int:
         return len(self.xs) * len(self.ys)
 
-    def __and__(self, g: Grid) -> Grid:
-        if isinstance(g, BasicGrid):
-            x_min = max([min(self.xs), min(g.xs)])
-            x_max = min([max(self.xs), max(g.xs)])
-            y_min = max([min(self.ys), min(g.ys)])
-            y_max = min([max(self.ys), max(g.ys)])
-            if x_max < x_min or y_max < y_min:
-                return NULL_GRID
-            return BasicGrid(range(x_min, x_max + 1), range(y_min, y_max + 1))
-        return g & self
+    def __and__(self, other: Grid) -> Grid:
+        if isinstance(other, BasicGrid):
+            xs = intersect_ranges(self.xs, other.xs)
+            ys = intersect_ranges(self.ys, other.ys)
+            if len(xs) == 0 or len(ys) == 0:
+                return NullGrid
+            return BasicGrid(xs, ys)
+        return other & self
+
+    def __or__(self, other: Grid) -> Grid:
+        if not isinstance(other, BasicGrid):
+            return other | self
+        if other in self:
+            return self
+        if self in other:
+            return other
+        return UnionGrid(fs(self, other))
+
+    def __contains__(self, item: BasicGrid) -> bool:
+        return self & item == item
+
+    def __sub__(self, other: Grid) -> Grid:
+        if isinstance(other, BasicGrid):
+            if self in other:
+                return NullGrid
+            if self & other is NullGrid:
+                return self
+        return super().__sub__(other)
+
+
+def intersect_ranges(left: range, right: range) -> range:
+    lower_bound = max(min(left), min(right))
+    upper_bound = min(max(left), max(right))
+    return range(lower_bound, upper_bound + 1)
 
 
 @dataclass(frozen=True)
 class UnionGrid(Grid):
-    left: Grid
-    right: Grid
+    contents: frozenset[Grid]
 
     def count(self) -> int:
-        return self.left.count() + self.right.count() - (self.left & self.right).count()
+        result = sum(g.count() for g in self.contents)
+        # TODO: subtract overlaps
+        return result
 
-    def __and__(self, g: Grid) -> Grid:
-        left_int = self.left & g
-        right_int = self.right & g
-        if left_int is NULL_GRID:
-            return right_int
-        if right_int is NULL_GRID:
-            return left_int
-        return left_int | right_int
+    def __or__(self, other: Grid) -> Grid:
+        if isinstance(other, UnionGrid):
+            return UnionGrid(self.contents | other.contents)
+        return UnionGrid(self.contents | {other})
+
+    def __and__(self, other: Grid) -> Grid:
+        return UnionGrid(frozenset(g & other for g in self.contents))
+
+    def __sub__(self, other: Grid) -> Grid:
+        return UnionGrid(frozenset(g - other for g in self.contents))
 
 
 @dataclass(frozen=True)
@@ -142,30 +179,11 @@ class DifferenceGrid(Grid):
     subtrahend: Grid
 
     def count(self) -> int:
-        return self.minuend.count() - (self.minuend & self.subtrahend).count()
+        intersection = self.minuend & self.subtrahend
+        return self.minuend.count() - intersection.count()
 
-    def __and__(self, g: Grid) -> Grid:
-        return (self.minuend & g) - self.subtrahend
-
-
-@dataclass(frozen=True)
-class XorGrid(Grid):
-    left: Grid
-    right: Grid
-
-    def count(self) -> int:
-        return (
-            self.left.count() + self.right.count() - 2 * (self.left & self.right).count()
-        )
-
-    def __and__(self, g: Grid) -> Grid:
-        left_part = self.left - self.right
-        right_part = self.right - self.left
-        if left_part is NULL_GRID:
-            return right_part & g
-        if right_part is NULL_GRID:
-            return left_part & g
-        return (left_part | right_part) & g
+    def __and__(self, other: Grid) -> Grid:
+        return (self.minuend & other) - self.subtrahend
 
 
 SAMPLE_INPUTS = [
@@ -174,14 +192,83 @@ turn on 0,0 through 999,999
 toggle 0,0 through 999,0
 turn off 499,499 through 500,500
 """,
+    """\
+turn on 0,0 through 1,1
+turn on 1,1 through 2,2
+turn on 1,0 through 3,1
+""",
 ]
 
 
 @pytest.fixture
-def sample_input():
-    with StringIO(SAMPLE_INPUTS[0]) as f:
+def sample_input(request):
+    with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f
 
 
-def test_count_on_at_end(sample_input):
-    assert count_on_at_end(sample_input) == 998996
+@pytest.mark.parametrize(
+    ("sample_input", "expected"), [(0, 998996), (1, 10)], indirect=["sample_input"]
+)
+def test_count_on_at_end(sample_input, expected):
+    assert count_on_at_end(sample_input) == expected
+
+
+UNIT_GRID = BasicGrid(range(0, 1), range(0, 1))
+
+
+@pytest.mark.parametrize(
+    ("left", "right", "expected"),
+    [
+        (
+            BasicGrid(range(0, 1), range(0, 2)),
+            BasicGrid(range(1, 2), range(0, 2)),
+            UnionGrid(fs(BasicGrid(range(0, 1), range(0, 2)), BasicGrid(range(1, 2), range(0, 2)))),
+        ),
+        (UNIT_GRID, NullGrid, UNIT_GRID),
+        (UNIT_GRID, UNIT_GRID, UNIT_GRID),
+    ],
+)
+def test_union(left, right, expected):
+    assert left | right == expected
+
+
+@pytest.mark.parametrize(
+    ("left", "right", "expected"),
+    [
+        (UNIT_GRID, UNIT_GRID, NullGrid),
+        (UNIT_GRID, NullGrid, UNIT_GRID),
+    ],
+)
+def test_xor(left, right, expected):
+    assert left ^ right == expected
+
+
+@pytest.mark.parametrize(
+    ("left", "right", "expected"),
+    [
+        (UNIT_GRID, UNIT_GRID, UNIT_GRID),
+        (UNIT_GRID, BasicGrid(range(0, 2), range(0, 2)), UNIT_GRID),
+        (BasicGrid(range(-1, 1), range(-1, 1)), BasicGrid(range(0, 2), range(0, 2)), UNIT_GRID),
+    ],
+)
+def test_intersect(left, right, expected):
+    assert left & right == expected
+
+
+@pytest.mark.parametrize(
+    ("left", "right", "expected"),
+    [
+        (
+            BasicGrid(range(0, 2), range(0, 2)),
+            BasicGrid(range(1, 3), range(0, 2)),
+            BasicGrid(range(0, 1), range(0, 2)),
+        ),
+        (
+            BasicGrid(range(0, 5), range(0, 5)),
+            BasicGrid(range(0, 5), range(1, 4)),
+            UnionGrid(fs(BasicGrid(range(0, 1), range(0, 5)), BasicGrid(range(4, 5), range(0, 5)))),
+        ),
+    ],
+)
+def test_subtract(left, right, expected):
+    assert left - right == expected
