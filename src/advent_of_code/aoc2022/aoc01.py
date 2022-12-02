@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from io import StringIO
+from itertools import islice
 from typing import Iterator, TextIO
 
 import pytest
@@ -29,7 +30,7 @@ def calc_elf_calories(f: TextIO) -> Iterator[int]:
             yield elf_calories
             elf_calories = 0
         else:
-            elf_calories += int(line.strip())
+            elf_calories += int(line)
     yield elf_calories
 
 
