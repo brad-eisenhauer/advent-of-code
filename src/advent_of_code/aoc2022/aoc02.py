@@ -46,7 +46,11 @@ class Shape(IntEnum):
         return False
 
 
-BEATS: dict[Shape, Shape] = {Shape.Rock: Shape.Scissors, Shape.Paper: Shape.Rock, Shape.Scissors: Shape.Paper}
+BEATS: dict[Shape, Shape] = {
+    Shape.Rock: Shape.Scissors,
+    Shape.Paper: Shape.Rock,
+    Shape.Scissors: Shape.Paper,
+}
 RESULTS: dict[str, Optional[bool]] = {"X": False, "Y": None, "Z": True}
 
 
@@ -68,9 +72,12 @@ def calc_move(opponent: Shape, result: Optional[bool]) -> Shape:
 
 def calc_strategy_score(f: TextIO, interpret_as_result: bool = False) -> int:
     if interpret_as_result:
+
         def calc_player_move(o: Shape, p: str) -> Shape:
             return calc_move(o, RESULTS[p])
+
     else:
+
         def calc_player_move(o: Shape, p: str) -> Shape:
             return Shape.from_str(p)
 
