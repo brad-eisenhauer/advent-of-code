@@ -1,5 +1,4 @@
 import logging
-import math
 import time
 from abc import abstractmethod
 from contextlib import contextmanager
@@ -143,7 +142,7 @@ class Timer(ContextManager):
 
 class PriorityQueue(Generic[T]):
     def __init__(self):
-        self._contents: list[T] = []
+        self._contents: list[tuple[int, T]] = []
 
     def __bool__(self):
         return bool(self._contents)
@@ -254,4 +253,4 @@ class GraphSimplifier(Generic[N]):
             self.simplify(depth + 1)
         else:
             log.debug("Ran simplify %d times.", depth)
-            log.debug("Simlified graph has %d nodes.", len(g.nodes))
+            log.debug("Simplified graph has %d nodes.", len(g.nodes))
