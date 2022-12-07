@@ -6,7 +6,7 @@ from io import StringIO
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import mod_power
+from advent_of_code.util.math import mod_power
 
 
 class AocSolution(Solution[int, int]):

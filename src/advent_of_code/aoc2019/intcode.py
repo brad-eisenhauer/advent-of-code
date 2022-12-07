@@ -2,11 +2,13 @@ import logging
 from dataclasses import dataclass, field
 from typing import Iterator, Optional, TextIO, TypeVar
 
-from advent_of_code.errors import IllegalOperationError
-
 T = TypeVar("T")
 
 log = logging.getLogger("aoc")
+
+
+class IllegalOperationError(RuntimeError):
+    ...
 
 
 @dataclass

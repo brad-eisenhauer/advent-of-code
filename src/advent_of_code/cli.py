@@ -1,4 +1,6 @@
 import logging
+import time
+from contextlib import contextmanager
 from datetime import date
 from importlib import import_module
 from os import getenv
@@ -12,7 +14,6 @@ from dotenv import load_dotenv
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from advent_of_code.base import USER_AGENT, PuzzlePart, Solution
-from advent_of_code.util import timer
 
 CURRENT_YEAR = date.today().year
 app = typer.Typer(name="aoc")
@@ -136,3 +137,13 @@ def submit(
         raise typer.Exit(1)
     else:
         print("Duplicate submission. Please, don't do that again.")
+
+
+@contextmanager
+def timer():
+    start = time.monotonic()
+    try:
+        yield
+    finally:
+        end = time.monotonic()
+        print(f"Elapsed time: {(end - start) * 1000} ms")

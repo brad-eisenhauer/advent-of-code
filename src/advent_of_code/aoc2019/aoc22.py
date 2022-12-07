@@ -8,7 +8,7 @@ from typing import Iterable
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import mod_inverse
+from advent_of_code.util.math import mod_inverse
 
 log = logging.getLogger("aoc")
 

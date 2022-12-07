@@ -1,19 +1,7 @@
 import logging
-import time
-from abc import abstractmethod
-from contextlib import contextmanager
 from heapq import heappop, heappush
-from itertools import islice, tee
-from typing import (
-    Callable,
-    ContextManager,
-    Generic,
-    Iterable,
-    Iterator,
-    Optional,
-    Sequence,
-    TypeVar,
-)
+from abc import abstractmethod
+from typing import TypeVar, Generic, Iterator, Optional
 
 import networkx as nx
 
@@ -22,122 +10,6 @@ log = logging.getLogger("aoc")
 N = TypeVar("N")
 T = TypeVar("T")
 S = TypeVar("S")
-
-
-def partition(
-    predicate: Callable[[T], bool], items: Iterable[T]
-) -> tuple[Iterator[T], Iterator[T]]:
-    """
-    Split items into two sequences, based on some predicate condition
-
-    Parameters
-    ----------
-    predicate
-        Boolean function by which to categorize items
-    items
-        Items to be categorized
-
-    Returns
-    -------
-    Iterators of failing and passing items, respectively
-    """
-    tested_items = ((item, predicate(item)) for item in items)
-    failed, passed = tee(tested_items)
-    return (item for item, result in failed if not result), (
-        item for item, result in passed if result
-    )
-
-
-def greatest_common_divisor(a: int, b: int) -> int:
-    gcd, _, _ = extended_gcd(a, b)
-    return gcd
-
-
-def extended_gcd(a: int, b: int) -> tuple[int, int, int]:
-    if b == 0:
-        return a, 1, 0
-    gcd, x, y = extended_gcd(b, a % b)
-    return gcd, y, x - (a // b) * y
-
-
-def mod_inverse(a: int, b: int) -> int:
-    g, x, _ = extended_gcd(a, b)
-    if g != 1:
-        raise ValueError(f"{a} and {b} are not coprime; cannot calculate modular inverse.")
-    return x
-
-
-def mod_power(base: int, exp: int, mod: int) -> int:
-    if mod == 1:
-        return 0
-    result = 1
-    base %= mod
-    while exp > 0:
-        if exp % 2 == 1:
-            result = (result * base) % mod
-        exp >>= 1
-        base = (base * base) % mod
-    return result
-
-
-def least_common_multiple(a: int, b: int) -> int:
-    return a // greatest_common_divisor(a, b) * b
-
-
-@contextmanager
-def timer():
-    start = time.monotonic()
-    try:
-        yield
-    finally:
-        end = time.monotonic()
-        print(f"Elapsed time: {(end - start) * 1000} ms")
-
-
-def make_sequence(items: Iterable[T]) -> Sequence[T]:
-    if isinstance(items, Sequence):
-        return items
-    return tuple(items)
-
-
-def create_windows(items: Iterable[T], n: int) -> Iterator[tuple[T, ...]]:
-    iterators = tee(items, n)
-    offset_iterators = (islice(iterator, offset, None) for offset, iterator in enumerate(iterators))
-    return zip(*offset_iterators)
-
-
-class Timer(ContextManager):
-    def __init__(self):
-        self.start: float = 0.0
-        self.last_check: Optional[float] = None
-        self.check_index = 0
-
-    def __enter__(self):
-        self.start = time.time()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.check("Elapsed time")
-
-    def check(self, label: Optional[str] = None):
-        check_time = time.time()
-        self.check_index += 1
-        message = (
-            f"[{self.check_index}] {label or 'Time check'}: "
-            f"{self.get_formatted_time(check_time)}"
-        )
-        message += self.get_last_check_msg(check_time)
-        print(message)
-        self.last_check = check_time
-
-    def get_formatted_time(self, end: float, start: Optional[float] = None) -> str:
-        start = start or self.start
-        return f"{(end - start) * 1000:0.3f} ms"
-
-    def get_last_check_msg(self, check_time: float) -> str:
-        if self.last_check is None:
-            return ""
-        return f" ({self.get_formatted_time(check_time, self.last_check)} since last check)"
 
 
 class PriorityQueue(Generic[T]):

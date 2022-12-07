@@ -10,7 +10,7 @@ from typing import Iterable, Iterator, TextIO
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import greatest_common_divisor
+from advent_of_code.util.math import greatest_common_divisor
 
 
 class AocSolution(Solution[int, int]):

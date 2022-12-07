@@ -6,7 +6,7 @@ from typing import Iterator, Optional, Sequence, TextIO
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import AStar
+from advent_of_code.util.pathfinder import AStar
 
 Point = tuple[int, int]
 

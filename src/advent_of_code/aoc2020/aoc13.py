@@ -5,7 +5,7 @@ from typing import Optional, TextIO
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import greatest_common_divisor, least_common_multiple
+from advent_of_code.util.math import least_common_multiple
 
 
 class AocSolution(Solution[int, int]):

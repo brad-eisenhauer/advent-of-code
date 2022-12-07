@@ -13,7 +13,7 @@ import networkx as nx
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util import AStar, GraphSimplifier
+from advent_of_code.util.pathfinder import AStar, GraphSimplifier
 
 log = logging.getLogger("aoc")
 
