@@ -4,7 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from functools import cached_property
 from io import StringIO
-from typing import Callable, Optional, Protocol, TextIO, TypeVar
+from itertools import chain
+from typing import Callable, Iterable, Optional, Protocol, TextIO, TypeVar
 
 import pytest
 
@@ -64,26 +65,24 @@ class Directory:
     def size(self) -> int:
         return sum(item.size for item in self.contents.values())
 
-    def fold(self, f: Callable[[FileSystemObject], T], r: Callable[[T, ...], T]) -> T:
-        sub_items = [item.fold(f, r) for item in self.contents.values()]
-        return r(f(self), *sub_items)
+    def fold(self, f: Callable[[FileSystemObject], T], r: Callable[[Iterable[T]], T]) -> T:
+        return r(chain((f(self),), (item.fold(f, r) for item in self.contents.values())))
 
     def sum_of_small_dir_sizes(self, limit: int = 100000) -> int:
         return self.fold(
-            lambda item: item.size if isinstance(item, Directory) and item.size <= limit else 0,
-            lambda *xs: sum(xs),
+            lambda item: item.size if isinstance(item, Directory) and item.size <= limit else 0, sum
         )
 
     def find_smallest_dir_greater_than(self, limit: int) -> Optional[Directory]:
-        def min_size(*dirs: Optional[Directory]) -> Optional[Directory]:
+        def min_size(dirs: Iterable[Optional[Directory]]) -> Optional[Directory]:
             try:
-                return min(filter(lambda d: d is not None, dirs), key=lambda d: d.size)
+                return min((d for d in dirs if d is not None), key=lambda d: d.size)
             except ValueError:
                 return None
 
         return self.fold(
             lambda item: item if isinstance(item, Directory) and item.size >= limit else None,
-            min_size
+            min_size,
         )
 
 
