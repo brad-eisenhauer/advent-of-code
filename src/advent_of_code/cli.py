@@ -11,7 +11,7 @@ import typer
 from dotenv import load_dotenv
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-from advent_of_code.base import PuzzlePart, Solution
+from advent_of_code.base import USER_AGENT, PuzzlePart, Solution
 from advent_of_code.util import timer
 
 CURRENT_YEAR = date.today().year
@@ -124,9 +124,7 @@ def submit(
         url,
         data={"level": level, "answer": result},
         cookies={"session": getenv("AOC_SESSION")},
-        headers={
-            "User-Agent": "github.com/brad-eisenhauer/advent-of-code by bradley.eisenhauer@gmail.com"
-        },
+        headers={"User-Agent": USER_AGENT},
     )
     response.raise_for_status()
     content = response.content.decode()

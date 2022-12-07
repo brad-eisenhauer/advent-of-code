@@ -7,6 +7,8 @@ from typing import Generic, Optional, TypeVar, Union
 import requests
 from dotenv import load_dotenv
 
+USER_AGENT = "github.com/brad-eisenhauer/advent-of-code by bradley.eisenhauer@gmail.com"
+
 T = TypeVar("T")
 U = TypeVar("U")
 
@@ -67,9 +69,7 @@ def download_input(download_path: Path, day: int, year: int):
     response = requests.get(
         download_url,
         cookies={"session": getenv("AOC_SESSION")},
-        headers={
-            "User-Agent": "github.com/brad-eisenhauer/advent-of-code by bradley.eisenhauer@gmail.com"
-        },
+        headers={"User-Agent": USER_AGENT},
     )
     response.raise_for_status()
     with open(download_path, "w") as fp:
