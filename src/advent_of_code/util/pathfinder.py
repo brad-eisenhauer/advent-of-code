@@ -1,7 +1,7 @@
 import logging
-from heapq import heappop, heappush
 from abc import abstractmethod
-from typing import TypeVar, Generic, Iterator, Optional
+from heapq import heappop, heappush
+from typing import Generic, Iterator, Optional, TypeVar
 
 import networkx as nx
 

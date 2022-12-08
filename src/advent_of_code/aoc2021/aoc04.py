@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Iterable, Optional, Sequence, TextIO, Tuple, Union
 
 from advent_of_code.base import Solution
-from advent_of_code.util import partition, make_sequence
+from advent_of_code.util import make_sequence, partition
 
 
 class AocSolution(Solution[int, int]):

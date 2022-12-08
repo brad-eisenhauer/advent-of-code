@@ -47,8 +47,8 @@ class IntcodeMachine:
         return None
 
     def read(self, index: int) -> int:
-        while index >= len(self.buffer):
-            self.buffer.extend([0] * len(self.buffer))
+        if index >= len(self.buffer):
+            return 0
         return self.buffer[index]
 
     def write(self, index: int, value: int):

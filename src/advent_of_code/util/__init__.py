@@ -1,6 +1,6 @@
 import time
-from itertools import tee, islice
-from typing import Callable, Iterable, Iterator, Sequence, ContextManager, Optional, TypeVar
+from itertools import islice, tee
+from typing import Callable, ContextManager, Iterable, Iterator, Optional, Sequence, TypeVar
 
 T = TypeVar("T")
 

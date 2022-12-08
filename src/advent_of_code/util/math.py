@@ -5,7 +5,7 @@ def greatest_common_divisor(a: int, b: int) -> int:
 
 def extended_gcd(a: int, b: int) -> tuple[int, int, int]:
     if b == 0:
-        return a, 1, 0
+        return abs(a), 1, 0
     gcd, x, y = extended_gcd(b, a % b)
     return gcd, y, x - (a // b) * y
 
