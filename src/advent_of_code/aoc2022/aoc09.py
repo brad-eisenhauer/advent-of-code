@@ -35,11 +35,18 @@ def track_tail_movement(f: TextIO, tail_count: int = 1) -> set[Vector]:
     for line in f:
         d, reps = line.split()
         for _ in range(int(reps)):
-            knots[0] = move(knots[0], UNIT_VECTORS[d])
-            for i in range(1, len(knots)):
-                knots[i] = catch_up(knots[i - 1], knots[i])
+            step(knots, d)
             tail_positions.add(knots[-1])
     return tail_positions
+
+
+def step(knots: list[Vector], d: str):
+    knots[0] = move(knots[0], UNIT_VECTORS[d])
+    for i in range(1, len(knots)):
+        next_knot = catch_up(knots[i - 1], knots[i])
+        if next_knot == knots[i]:
+            break
+        knots[i] = next_knot
 
 
 def move(initial: Vector, direction: Vector) -> Vector:
