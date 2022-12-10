@@ -17,7 +17,7 @@ name = "advent-of-code"
 version = "0.1.0"
 description = ""
 authors = ["Brad Eisenhauer <bradley.eisenhauer@gmail.com>"]
-include = ["templates/*.jinja"]
+include = ["templates/*.jinja", "resources/*"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -28,6 +28,7 @@ parsy = "*"
 python-dotenv = "*"
 pytest = ">=7.1"
 pytest-cov = "*"
+pyyaml = ">=6.0"
 requests = "*"
 typer = ">=0.6"
 
