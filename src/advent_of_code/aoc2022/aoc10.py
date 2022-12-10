@@ -9,9 +9,10 @@ from typing import Callable, Iterable, Iterator
 import pytest
 
 from advent_of_code.base import Solution
+from advent_of_code.util.ocr import to_string
 
 
-class AocSolution(Solution[int, None]):
+class AocSolution(Solution[int, str]):
     def __init__(self, **kwargs):
         super().__init__(10, 2022, **kwargs)
 
@@ -21,15 +22,17 @@ class AocSolution(Solution[int, None]):
         with self.open_input() as f:
             return sum_signal_strengths(cpu.run_filter(f, filter), n=6)
 
-    def solve_part_two(self) -> None:
+    def solve_part_two(self) -> str:
         cpu = CPU()
+        lines = []
         with self.open_input() as f:
             output = cpu.run(f)
             while True:
                 line = build_line(islice(output, 40))
-                if not line:
+                if not line.strip():
                     break
-                print(line)
+                lines.append(line)
+        return to_string(lines)
 
 
 @dataclass

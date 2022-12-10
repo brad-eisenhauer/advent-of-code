@@ -1,4 +1,5 @@
 """Advent of Code 2019, Day 08: https://adventofcode.com/2019/day/8"""
+import sys
 from collections import Counter
 from io import StringIO
 from typing import Iterator, TextIO
@@ -6,9 +7,10 @@ from typing import Iterator, TextIO
 import pytest
 
 from advent_of_code.base import Solution
+from advent_of_code.util.ocr import DEFAULT_BLOCK, PrintToString
 
 
-class AocSolution(Solution[int, int]):
+class AocSolution(Solution[int, str]):
     def __init__(self, **kwargs):
         super().__init__(8, 2019, **kwargs)
 
@@ -25,15 +27,17 @@ class AocSolution(Solution[int, int]):
 
         return min_zeros_counts["1"] * min_zeros_counts["2"]
 
-    def solve_part_two(self):
+    def solve_part_two(self) -> str:
         with self.open_input() as f:
             data = f.readline().strip()
         image = SifImage((25, 6), data)
-        image.print()
+        with (converter := PrintToString()) as out_file:
+            image.print(out_file)
+        return converter.to_string()
 
 
 class SifImage:
-    BLOCK = "▒"
+    BLOCK = DEFAULT_BLOCK
 
     def __init__(self, dims: tuple[int, int], data: str):
         self.dims = dims
@@ -53,11 +57,11 @@ class SifImage:
             base = "".join(b if l == "2" else l for l, b in zip(layer, base))
         return base
 
-    def print(self):
+    def print(self, f: TextIO = sys.stdout):
         printable = self.render().replace("0", " ").replace("1", self.BLOCK)
         width, _ = self.dims
         for index in range(0, len(printable), width):
-            print(printable[index : index + width])
+            f.write(printable[index : index + width] + "\n")
 
 
 SAMPLE_INPUT = """\
