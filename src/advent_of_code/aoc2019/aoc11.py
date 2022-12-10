@@ -1,13 +1,15 @@
 """Advent of Code 2019, Day 11: https://adventofcode.com/2019/day/11"""
 from __future__ import annotations
 
-from typing import Iterator
+import sys
+from typing import Iterator, TextIO
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine
 from advent_of_code.base import Solution
+from advent_of_code.util.ocr import DEFAULT_BLOCK, PrintToString
 
 
-class AocSolution(Solution[int, None]):
+class AocSolution(Solution[int, str]):
     def __init__(self, **kwargs):
         super().__init__(11, 2019, **kwargs)
 
@@ -21,15 +23,17 @@ class AocSolution(Solution[int, None]):
         robot.run()
         return len(robot.panels)
 
-    def solve_part_two(self):
+    def solve_part_two(self) -> str:
         robot = self.create_robot()
         robot.panels[(0, 0)] = 1
         robot.run()
-        robot.print_panels()
+        with (converter := PrintToString()) as f:
+            robot.print_panels(f)
+        return converter.to_string()
 
 
 class Robot:
-    BLOCK = "▒"
+    BLOCK = DEFAULT_BLOCK
 
     def __init__(self, program):
         self.brain = IntcodeMachine(program, input_stream=self.eyes())
@@ -66,7 +70,7 @@ class Robot:
     def advance(self):
         self.location = tuple(a + b for a, b in zip(self.location, self.orientation))
 
-    def print_panels(self):
+    def print_panels(self, f: TextIO = sys.stdout):
         mins = maxes = (0, 0)
         for panel in self.panels:
             mins = tuple(min(*xs) for xs in zip(mins, panel))
@@ -76,4 +80,4 @@ class Robot:
                 self.BLOCK if self.panels.get((col_idx, row_idx)) else " "
                 for col_idx in range(mins[0], maxes[0] + 1)
             )
-            print(row)
+            f.write(row[1:].rstrip() + "\n")

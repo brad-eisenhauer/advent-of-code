@@ -16,7 +16,8 @@ def to_string(blocks: list[str], block_char: str = DEFAULT_BLOCK) -> str:
     def generate_chars() -> Iterator[str]:
         for i in range(char_count):
             block = tuple(
-                line[5 * i : 5 * i + 4].replace(block_char, DEFAULT_BLOCK) for line in blocks
+                line[5 * i : 5 * i + 4].rstrip().replace(block_char, DEFAULT_BLOCK)
+                for line in blocks
             )
             yield refs[block]
 
@@ -27,7 +28,9 @@ def load_references() -> dict[tuple[str, ...], str]:
     with open(resource_filename("advent_of_code", "resources/ocr.yaml")) as f:
         letters_to_blocks = yaml.safe_load(f)["characters"]
     atexit.register(cleanup_resources)
-    return {tuple(blocks): char for char, blocks in letters_to_blocks.items()}
+    return {
+        tuple(line.rstrip() for line in block): char for char, block in letters_to_blocks.items()
+    }
 
 
 class PrintToString(ContextManager[TextIO]):
@@ -43,5 +46,5 @@ class PrintToString(ContextManager[TextIO]):
 
     def to_string(self) -> str:
         self._buffer.seek(0)
-        blocks = [line[:-1] for line in self._buffer.readlines()]
+        blocks = [line.rstrip() for line in self._buffer.readlines()]
         return to_string(blocks, self._block_char)
