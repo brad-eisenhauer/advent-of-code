@@ -288,5 +288,5 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm+all,linux,vim
 
-# Ignore resources folder; downloadable from website
-resources
+# Ignore input folder; downloadable from website
+input

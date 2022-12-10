@@ -47,7 +47,7 @@ class Solution(Generic[T, U]):
         raise NotImplementedError("Puzzle part two not yet implemented.")
 
     def _get_input_path(self) -> Path:
-        resources_path = Path() / "resources" / str(self.year)
+        resources_path = Path() / "input" / str(self.year)
         input_path = resources_path / (
             self.input_file if self.input_file is not None else f"input{self.day:02d}.txt"
         )
