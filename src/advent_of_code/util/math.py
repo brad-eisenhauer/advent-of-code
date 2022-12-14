@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def greatest_common_divisor(a: int, b: int) -> int:
     gcd, _, _ = extended_gcd(a, b)
     return gcd
@@ -32,3 +35,7 @@ def mod_power(base: int, exp: int, mod: int) -> int:
 
 def least_common_multiple(a: int, b: int) -> int:
     return a // greatest_common_divisor(a, b) * b
+
+
+def clamp(n: int, mn: int, mx: int) -> int:
+    return min(mx, max(mn, n))

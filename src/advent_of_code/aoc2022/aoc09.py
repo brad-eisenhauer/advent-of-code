@@ -7,6 +7,7 @@ from typing import TextIO
 import pytest
 
 from advent_of_code.base import Solution
+from advent_of_code.util.math import clamp
 
 Vector = tuple[int, ...]
 
@@ -59,10 +60,6 @@ def catch_up(head: Vector, tail: Vector) -> Vector:
         return tail
     movement = tuple(clamp(n, -1, 1) for n in delta)
     return move(tail, movement)
-
-
-def clamp(n: int, mn: int, mx: int) -> int:
-    return min(mx, max(mn, n))
 
 
 SAMPLE_INPUTS = [
