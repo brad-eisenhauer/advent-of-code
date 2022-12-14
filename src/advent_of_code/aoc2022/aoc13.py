@@ -1,16 +1,18 @@
 """Advent of Code 2022, day 13: https://adventofcode.com/2022/day/13"""
 from __future__ import annotations
 
+import logging
 import operator
 from ast import literal_eval
-from functools import cmp_to_key, reduce
+from functools import reduce
 from io import StringIO
-from itertools import chain
-from typing import Iterable, Iterator, TextIO, Union
+from typing import Iterable, Iterator, Sequence, TextIO, Union
 
 import pytest
 
 from advent_of_code.base import Solution
+
+log = logging.getLogger("aoc")
 
 
 class AocSolution(Solution[int, int]):
@@ -28,7 +30,7 @@ class AocSolution(Solution[int, int]):
 
 PacketElement = Union[int, list["PacketElement"]]
 Packet = list[PacketElement]
-MARKERS: Iterable[Packet] = ([[2]], [[6]])
+MARKERS: Sequence[Packet] = ([[2]], [[6]])
 
 
 def find_correct_packets(f: TextIO) -> Iterator[int]:
@@ -64,9 +66,9 @@ def compare_elements(left: PacketElement, right: PacketElement) -> int:
         case _, []:
             return 1
         case l, r:
-            if isinstance(l, int):
+            if not isinstance(l, list):
                 l = [l]
-            if isinstance(r, int):
+            if not isinstance(r, list):
                 r = [r]
             result = compare_elements(l[0], r[0])
             if result == 0:
@@ -74,14 +76,16 @@ def compare_elements(left: PacketElement, right: PacketElement) -> int:
             return result
 
 
-def calc_decode_key(packets: Iterable[Packet]) -> int:
-    compiled_packets = compile_packets(packets)
-    indexes = [compiled_packets.index(m) + 1 for m in MARKERS]
-    return reduce(operator.mul, indexes)
-
-
-def compile_packets(packets: Iterable[Packet]) -> list[Packet]:
-    return sorted(chain(MARKERS, packets), key=cmp_to_key(compare_elements))
+def calc_decode_key(packets: Iterable[Packet], markers: Sequence[Packet] = MARKERS) -> int:
+    marker_indexes = [i + 1 for i in range(len(markers))]
+    for packet in packets:
+        for i, marker in enumerate(markers):
+            if compare_elements(packet, marker) < 0:
+                # assumes markers are sorted ascending
+                for j in range(i, len(marker_indexes)):
+                    marker_indexes[j] += 1
+                break
+    return reduce(operator.mul, marker_indexes)
 
 
 SAMPLE_INPUTS = [
@@ -148,30 +152,6 @@ def test_find_correct_packets(sample_input):
 def test_read_all_packets(sample_input):
     packet_count = sum(1 for _ in read_all_packets(sample_input))
     assert packet_count == 16
-
-
-def test_compile_packets(sample_input):
-    expected = [
-        [],
-        [[]],
-        [[[]]],
-        [1, 1, 3, 1, 1],
-        [1, 1, 5, 1, 1],
-        [[1], [2, 3, 4]],
-        [1, [2, [3, [4, [5, 6, 0]]]], 8, 9],
-        [1, [2, [3, [4, [5, 6, 7]]]], 8, 9],
-        [[1], 4],
-        [[2]],
-        [3],
-        [[4, 4], 4, 4],
-        [[4, 4], 4, 4, 4],
-        [[6]],
-        [7, 7, 7],
-        [7, 7, 7, 7],
-        [[8, 7, 6]],
-        [9],
-    ]
-    assert compile_packets(read_all_packets(sample_input)) == expected
 
 
 def test_calc_decode_key(sample_input):
