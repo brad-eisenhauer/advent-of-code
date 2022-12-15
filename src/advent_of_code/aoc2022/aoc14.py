@@ -91,7 +91,6 @@ class Cave:
                     break
             else:
                 return loc
-
         return None
 
     def run_sim(self):
