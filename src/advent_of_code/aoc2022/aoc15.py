@@ -5,7 +5,7 @@ import re
 from dataclasses import dataclass
 from functools import cached_property
 from io import StringIO
-from typing import Iterable, ClassVar, Iterator
+from typing import ClassVar, Iterable, Iterator
 
 import pytest
 
@@ -25,6 +25,11 @@ class AocSolution(Solution[int, int]):
         for sensor in sensor_array:
             covered -= {sensor.nearest_beacon}
         return len(covered)
+
+    def solve_part_two(self) -> int:
+        with self.open_input() as f:
+            sensor_array = [Sensor.parse(line) for line in f]
+        return find_uncovered(sensor_array, range(4_000_001))
 
 
 Vector: tuple[int, ...]
@@ -54,6 +59,32 @@ class Sensor:
         max_offset = self.beacon_distance - abs(y - sensor_y)
         for x in range(sensor_x - max_offset, sensor_x + max_offset + 1):
             yield x, y
+
+    def covers(self, loc: Vector) -> bool:
+        dist = sum(abs(a - b) for a, b in zip(loc, self.loc))
+        return dist <= self.beacon_distance
+
+    def boundary(self) -> Iterator[Vector]:
+        d = self.beacon_distance + 1
+        loc_x, loc_y = self.loc
+        for x, y in zip(range(loc_x, loc_x + d), range(loc_y + d, loc_y, -1)):
+            yield x, y
+        for x, y in zip(range(loc_x + d, loc_x, -1), range(loc_y, loc_y - d, -1)):
+            yield x, y
+        for x, y in zip(range(loc_x, loc_x - d, -1), range(loc_y - d, loc_y)):
+            yield x, y
+        for x, y in zip(range(loc_x - d, loc_x), range(loc_y, loc_y + d)):
+            yield x, y
+
+
+def find_uncovered(sensor_array: list[Sensor], bounds: range) -> Vector:
+    for sensor in sensor_array:
+        for loc in sensor.boundary():
+            x, y = loc
+            if x not in bounds or y not in bounds:
+                continue
+            if not any(s.covers(loc) for s in sensor_array):
+                return 4_000_000 * x + y
 
 
 SAMPLE_INPUTS = [
@@ -95,3 +126,7 @@ def test_sensor_covers_in_row(sensor_array):
     for sensor in sensor_array:
         covered -= {sensor.nearest_beacon}
     assert len(covered) == 26
+
+
+def test_find_uncovered(sensor_array):
+    assert find_uncovered(sensor_array, range(0, 21)) == 56_000_011
