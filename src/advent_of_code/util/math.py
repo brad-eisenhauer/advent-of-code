@@ -1,4 +1,4 @@
-from __future__ import annotations
+from typing import Optional
 
 
 def greatest_common_divisor(a: int, b: int) -> int:
@@ -39,3 +39,25 @@ def least_common_multiple(a: int, b: int) -> int:
 
 def clamp(n: int, mn: int, mx: int) -> int:
     return min(mx, max(mn, n))
+
+
+def sign(n: int) -> int:
+    if n == 0:
+        return 0
+    return n // abs(n)
+
+
+def intersect_ranges(left: range, right: range) -> range:
+    inter_min = max(min(left), min(right))
+    inter_max = min(max(left), max(right))
+    return range(inter_min, inter_max + 1)
+
+
+def union_ranges(left: range, right: range) -> Optional[range]:
+    match intersect_ranges(left, right):
+        case range(a, b) if b >= a - 1:
+            union_min = min(min(left), min(right))
+            union_max = max(max(left), max(right))
+            return range(union_min, union_max + 1)
+        case _:
+            return None

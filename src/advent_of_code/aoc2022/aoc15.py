@@ -5,6 +5,7 @@ import re
 from dataclasses import dataclass
 from functools import cached_property
 from io import StringIO
+from itertools import combinations
 from typing import ClassVar, Iterable, Iterator
 
 import pytest
@@ -29,7 +30,8 @@ class AocSolution(Solution[int, int]):
     def solve_part_two(self) -> int:
         with self.open_input() as f:
             sensor_array = [Sensor.parse(line) for line in f]
-        return find_uncovered(sensor_array, range(4_000_001))
+        beacon = find_uncovered(sensor_array)
+        return calc_tuning_frequency(beacon)
 
 
 Vector: tuple[int, ...]
@@ -54,11 +56,12 @@ class Sensor:
     def beacon_distance(self) -> int:
         return sum(abs(a - b) for a, b in zip(self.loc, self.nearest_beacon))
 
-    def covers_in_row(self, y: int) -> Iterator[Vector]:
+    def covers_in_row(self, y: int) -> range:
         sensor_x, sensor_y = self.loc
         max_offset = self.beacon_distance - abs(y - sensor_y)
-        for x in range(sensor_x - max_offset, sensor_x + max_offset + 1):
-            yield x, y
+        if max_offset < 0:
+            return range(0)
+        return range(sensor_x - max_offset, sensor_x + max_offset + 1)
 
     def covers(self, loc: Vector) -> bool:
         dist = sum(abs(a - b) for a, b in zip(loc, self.loc))
@@ -77,14 +80,20 @@ class Sensor:
             yield x, y
 
 
-def find_uncovered(sensor_array: list[Sensor], bounds: range) -> Vector:
-    for sensor in sensor_array:
-        for loc in sensor.boundary():
-            x, y = loc
-            if x not in bounds or y not in bounds:
-                continue
-            if not any(s.covers(loc) for s in sensor_array):
-                return 4_000_000 * x + y
+def find_uncovered(sensor_array: list[Sensor]) -> Vector:
+    pairs: list[tuple[Sensor, Sensor]] = []
+    for left, right in combinations(sensor_array, 2):
+        dist = sum(abs(a - b) for a, b in zip(left.loc, right.loc))
+        if dist == left.beacon_distance + right.beacon_distance + 2:
+            pairs.append((left, right))
+    assert len(pairs) >= 2
+    candidates = set(pairs[0][0].boundary()) & set(pairs[0][1].boundary())
+    return next(c for c in candidates if not any(s.covers(c) for s in sensor_array))
+
+
+def calc_tuning_frequency(loc: Vector) -> int:
+    x, y = loc
+    return 4_000_000 * x + y
 
 
 SAMPLE_INPUTS = [
@@ -129,4 +138,5 @@ def test_sensor_covers_in_row(sensor_array):
 
 
 def test_find_uncovered(sensor_array):
-    assert find_uncovered(sensor_array, range(0, 21)) == 56_000_011
+    loc = find_uncovered(sensor_array)
+    assert calc_tuning_frequency(loc) == 56_000_011

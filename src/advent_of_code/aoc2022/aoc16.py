@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, replace, field
+from dataclasses import dataclass, field, replace
 from io import StringIO
 from itertools import product
 from typing import Iterator, TextIO, TypeVar
