@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from functools import reduce
 from io import StringIO
 from time import monotonic
-from typing import Collection, Iterator
+from typing import Collection, Iterator, Mapping
 
 import pytest
 
@@ -29,7 +29,7 @@ class AocSolution(Solution[int, int]):
             text = f.readlines()
         for i, line in enumerate(text):
             blueprint = Blueprint.parse(line)
-            print(f"Calculating for blueprint {blueprint.id} ({i + 1} of {len(text)})... ", end="")
+            print(f"Calculating for blueprint {blueprint.id} ({i + 1} of {len(text)})...")
             start = monotonic()
             geode_count = calc_geodes_collected(blueprint)
             print(f"Collected {geode_count} geodes in {monotonic() - start:.1f} seconds.")
@@ -44,12 +44,11 @@ class Recipe:
     produces: str
     materials: dict[str, int] = field(default_factory=dict)
 
-    def can_make_with(self, inventory: Inventory) -> bool:
-        inv_materials = dict(inventory.materials)
-        for resource, qty_on_hand in self.materials.items():
-            if inv_materials.get(resource, 0) < qty_on_hand:
-                return False
-        return True
+    def can_make_with(self, inv_materials: Mapping[str, int]) -> bool:
+        return all(
+            qty_required <= inv_materials.get(resource, 0)
+            for resource, qty_required in self.materials.items()
+        )
 
 
 @dataclass
@@ -68,12 +67,12 @@ class Blueprint:
             while materials and materials[0] is not None:
                 recipe.materials[materials[1]] = int(materials[0])
                 materials = materials[2:]
-            recipes.insert(0, recipe)
+            recipes.append(recipe)
             recipe_part = recipe_part[match_.end() :]
         return Blueprint(int(id_part.split()[1]), recipes)
 
 
-@dataclass(frozen=True)
+@dataclass(unsafe_hash=True)
 class Inventory:
     materials: tuple[tuple[str, int], ...]
     robots: tuple[str, ...]
@@ -83,11 +82,17 @@ class Inventory:
             return self.robots < other.robots
         return self.materials < other.materials
 
-    def calc_next_materials(self) -> dict[str, int]:
+    def calc_next_materials(self) -> Mapping[str, int]:
         mats = defaultdict(int, self.materials)
         for name in self.robots:
             mats[name] += 1
         return mats
+
+    def get_materials_as_dict(self) -> Mapping[str, int]:
+        return dict(self.materials)
+
+    def count_robots(self) -> Mapping[str, int]:
+        return Counter(self.robots)
 
 
 @dataclass(frozen=True)
@@ -102,11 +107,9 @@ class State:
 
 
 class Navigator(AStar[State]):
-    def __init__(
-        self, blueprint: Blueprint, target_product: str = "geode"
-    ):
+    def __init__(self, blueprint: Blueprint, target_resource: str = "geode"):
         self._blueprint = blueprint
-        self._target_product = target_product
+        self._target_resource = target_resource
         self._max_consumption = reduce(
             lambda acc, r: {
                 m: max(r.materials.get(m, 0), acc.get(m, 0)) for m in set(acc) | set(r.materials)
@@ -119,42 +122,54 @@ class Navigator(AStar[State]):
         return state.time_remaining == 0
 
     def generate_next_states(self, state: State) -> Iterator[tuple[int, State]]:
-        time_remaining = state.time_remaining - 1
+        post_time = state.time_remaining - 1  # time remaining at the end of succeeding minute
         robot_counts = Counter(state.inventory.robots)
 
         for recipe in self._blueprint.recipes:
+            # If we're already gathering as much of a resource each minute as we could ever
+            # consume, it will never be our limiting resource. There's no point in building
+            # robots to gather more.
             if (
                 recipe.produces in self._max_consumption
                 and robot_counts.get(recipe.produces, 0) >= self._max_consumption[recipe.produces]
             ):
                 continue
-            if not recipe.can_make_with(state.inventory):
+            # Check if we have the resources to build this robot.
+            if not recipe.can_make_with(state.inventory.get_materials_as_dict()):
                 continue
-            cost = 0 if recipe.produces == self._target_product else time_remaining
+            # Add resources that will be gathered.
             materials = state.inventory.calc_next_materials()
+            # Remove resources to build the next robot.
             for resource, qty in recipe.materials.items():
                 materials[resource] -= qty
-            next_inv = Inventory(
-                materials=tuple(materials.items()),
-                robots=(recipe.produces, *state.inventory.robots),
+            next_state = State(
+                inventory=Inventory(
+                    materials=tuple(materials.items()),
+                    robots=(recipe.produces, *state.inventory.robots),
+                ),
+                time_remaining=post_time,
             )
-            next_state = State(inventory=next_inv, time_remaining=time_remaining)
+            # Without resource constraints, we could build one robot to gather our target
+            # resource every minute. Each such robot would eventually gather a quantity of the
+            # resource equal to `post_time`. The cost of building something else, or building
+            # nothing, is therefore equal to `post_time`.
+            cost = 0 if recipe.produces == self._target_resource else post_time
             yield cost, next_state
 
         # produce nothing; just gather materials
         materials = state.inventory.calc_next_materials()
         next_inv = Inventory(materials=tuple(materials.items()), robots=state.inventory.robots)
-        yield time_remaining, State(next_inv, time_remaining)
+        yield post_time, State(next_inv, post_time)
 
     def heuristic(self, state: State) -> int:
-        for target_recipe in self._blueprint.recipes:
-            if target_recipe.produces == self._target_product:
-                break
-        if target_recipe.can_make_with(state.inventory):
+        """Conservative minimal cost to end"""
+        target_recipe = next(
+            r for r in self._blueprint.recipes if r.produces == self._target_resource
+        )
+        if target_recipe.can_make_with(state.inventory.get_materials_as_dict()):
             return 0
-        materials = state.inventory.calc_next_materials()
-        next_inv = Inventory(materials=tuple(materials.items()), robots=state.inventory.robots)
-        if target_recipe.can_make_with(next_inv):
+        next_mats = state.inventory.calc_next_materials()
+        if target_recipe.can_make_with(next_mats):
             return max(0, state.time_remaining - 1)
         return max(0, 2 * state.time_remaining - 3)
 
@@ -168,13 +183,15 @@ def calc_geodes_collected(blueprint: Blueprint, time: int = 24) -> int:
             log.debug("%d: %s", final_state.time_remaining, final_state.inventory.robots)
     else:
         final_state, _, _ = geode_nav._find_min_cost_path(initial_state)
-    return dict(final_state.inventory.materials).get("geode", 0)
+    return final_state.inventory.get_materials_as_dict().get("geode", 0)
 
 
 SAMPLE_INPUTS = [
     """\
 Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
 Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
+Blueprint 3: Each ore robot costs 1 ore. Each clay robot costs 1 ore. Each obsidian robot costs 1 ore and 1 clay. Each geode robot costs 0 ore and 0 obsidian.
+Blueprint 4: Each ore robot costs 1 ore. Each clay robot costs 1 ore. Each obsidian robot costs 1 ore and 1 clay. Each geode robot costs 1 ore and 1 obsidian.
 """,
 ]
 
@@ -185,20 +202,43 @@ def sample_input():
         yield f
 
 
+@pytest.fixture()
+def blueprint(sample_input, request):
+    line = sample_input.readlines()[request.param]
+    return Blueprint.parse(line)
+
+
 def test_blueprint_parse(sample_input):
     assert Blueprint.parse(sample_input.readline()) == Blueprint(
         id=1,
         recipes=[
-            Recipe("geode", {"ore": 2, "obsidian": 7}),
-            Recipe("obsidian", {"ore": 3, "clay": 14}),
-            Recipe("clay", {"ore": 2}),
             Recipe("ore", {"ore": 4}),
+            Recipe("clay", {"ore": 2}),
+            Recipe("obsidian", {"ore": 3, "clay": 14}),
+            Recipe("geode", {"ore": 2, "obsidian": 7}),
         ],
     )
 
 
-@pytest.mark.parametrize(("blueprint_index", "expected"), [(0, 9), (1, 12)])
-def test_calc_geodes_collected(sample_input, blueprint_index, expected):
-    line = sample_input.readlines()[blueprint_index]
-    blueprint = Blueprint.parse(line)
+@pytest.mark.parametrize(
+    ("blueprint", "expected"), [(0, 9), (1, 12), (2, 276), (3, 171)], indirect=["blueprint"]
+)
+def test_calc_geodes_collected(blueprint, expected):
     assert calc_geodes_collected(blueprint) == expected
+
+
+@pytest.mark.parametrize("blueprint", list(range(4)), indirect=True)
+def test_cost_plus_geodes_is_constant(blueprint):
+    allotted_time = 24
+    nav = Navigator(blueprint)
+    initial_state = State(
+        inventory=Inventory(materials=(), robots=("ore",)), time_remaining=allotted_time
+    )
+
+    final_state, costs, _ = nav._find_min_cost_path(initial_state)
+
+    expected_total = allotted_time * (allotted_time - 1) // 2
+    assert (
+        final_state.inventory.get_materials_as_dict().get("geode") + costs[final_state]
+        == expected_total
+    )

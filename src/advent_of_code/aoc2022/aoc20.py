@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from io import StringIO
-from typing import TextIO, Optional
+from typing import Optional, TextIO
 
 import pytest
 
