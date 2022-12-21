@@ -23,20 +23,30 @@ class AocSolution(Solution[int, int]):
         super().__init__(19, 2022, **kwargs)
 
     def solve_part_one(self) -> int:
-        max_geode_count = 0
-        max_geode_blueprint = None
         with self.open_input() as f:
             text = f.readlines()
+        result = 0
         for i, line in enumerate(text):
             blueprint = Blueprint.parse(line)
             print(f"Calculating for blueprint {blueprint.id} ({i + 1} of {len(text)})...")
             start = monotonic()
             geode_count = calc_geodes_collected(blueprint)
             print(f"Collected {geode_count} geodes in {monotonic() - start:.1f} seconds.")
-            if geode_count > max_geode_count:
-                max_geode_count = geode_count
-                max_geode_blueprint = blueprint
-        return max_geode_count * max_geode_blueprint.id
+            result += geode_count * blueprint.id
+        return result
+
+    def solve_part_two(self) -> int:
+        with self.open_input() as f:
+            text = f.readlines()[:3]
+        result = 1
+        for line in text:
+            blueprint = Blueprint.parse(line)
+            print(f"Calculating for blueprint {blueprint.id}...")
+            start = monotonic()
+            geode_count = calc_geodes_collected(blueprint, time=32)
+            print(f"Collected {geode_count} geodes in {monotonic() - start:.1f} seconds.")
+            result *= geode_count
+        return result
 
 
 @dataclass
