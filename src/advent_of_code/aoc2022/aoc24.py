@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cache
 from io import StringIO
 from typing import Iterator, TextIO
 
@@ -32,7 +33,7 @@ Vector = tuple[int, ...]
 UNIT_VECTORS: dict[str, Vector] = {">": (1, 0), "<": (-1, 0), "^": (0, -1), "v": (0, 1)}
 
 
-@dataclass()
+@dataclass(frozen=True)
 class Blizzard:
     loc: Vector
     movement: Vector
@@ -44,10 +45,13 @@ class Blizzard:
 
 @dataclass()
 class Valley:
-    blizzards: list[Blizzard]
+    blizzards: set[Blizzard]
     bounds: Vector
     enter: Vector
     exit: Vector
+
+    def __post_init__(self):
+        self.has_blizzard = cache(self._has_blizzard)
 
     @classmethod
     def parse(cls, f: TextIO) -> Valley:
@@ -64,11 +68,18 @@ class Valley:
                     blizzards.append(Blizzard((x - 1, y), UNIT_VECTORS[char]))
         height = y
         return Valley(
-            blizzards=blizzards,
+            blizzards=set(blizzards),
             bounds=(width, height),
             enter=(enter, -1),
             exit=(exit, height),
         )
+
+    def _has_blizzard(self, loc: Vector, time: int) -> bool:
+        for v in UNIT_VECTORS.values():
+            origin = tuple((a - time * b) % c for a, b, c in zip(loc, v, self.bounds))
+            if Blizzard(origin, v) in self.blizzards:
+                return True
+        return False
 
 
 @dataclass(frozen=True, order=True)
@@ -81,30 +92,25 @@ class Navigator(AStar[State]):
     def __init__(self, valley: Valley):
         self._valley = valley
         self._goal = valley.exit
-        self._blizzard_locs: list[set[Vector]] = [set(b.loc for b in valley.blizzards)]
-        bs = valley.blizzards
-        for _ in range(1, least_common_multiple(*valley.bounds)):
-            bs = [b.advance(valley.bounds) for b in bs]
-            self._blizzard_locs.append(set(b.loc for b in bs))
 
     def is_goal_state(self, state: State) -> bool:
         return state.elf == self._goal
 
     def generate_next_states(self, state: State) -> Iterator[tuple[int, State]]:
-        next_blizzard_locs = self._blizzard_locs[(state.time + 1) % len(self._blizzard_locs)]
+        time = state.time + 1
         for v in UNIT_VECTORS.values():
             loc = tuple(a + b for a, b in zip(state.elf, v))
             x, y = loc
             if (
                 0 <= x < self._valley.bounds[0]
                 and 0 <= y < self._valley.bounds[1]
-                and loc not in next_blizzard_locs
+                and not self._valley.has_blizzard(loc, time)
             ):
-                yield 1, State(loc, state.time + 1)
+                yield 1, State(loc, time)
             if loc in [self._valley.enter, self._valley.exit]:
-                yield 1, State(loc, state.time + 1)
-        if state.elf not in next_blizzard_locs:
-            yield 1, State(state.elf, state.time + 1)
+                yield 1, State(loc, time)
+        if state.elf in [self._valley.enter, self._valley.exit] or not self._valley.has_blizzard(state.elf, time):
+            yield 1, State(state.elf, time)
 
     def heuristic(self, state: State) -> int:
         return sum(abs(a - b) for a, b in zip(state.elf, self._valley.exit))
@@ -156,7 +162,7 @@ def sample_input(request):
         (
             0,
             Valley(
-                blizzards=[Blizzard((0, 1), (1, 0)), Blizzard((3, 3), (0, 1))],
+                blizzards={Blizzard((0, 1), (1, 0)), Blizzard((3, 3), (0, 1))},
                 bounds=(5, 5),
                 enter=(0, -1),
                 exit=(4, 5),
@@ -165,7 +171,7 @@ def sample_input(request):
         (
             1,
             Valley(
-                blizzards=[
+                blizzards={
                     Blizzard((0, 0), (1, 0)),
                     Blizzard((1, 0), (1, 0)),
                     Blizzard((3, 0), (-1, 0)),
@@ -185,7 +191,7 @@ def sample_input(request):
                     Blizzard((3, 3), (0, -1)),
                     Blizzard((4, 3), (0, -1)),
                     Blizzard((5, 3), (1, 0)),
-                ],
+                },
                 bounds=(6, 4),
                 enter=(0, -1),
                 exit=(5, 4),
@@ -196,6 +202,34 @@ def sample_input(request):
 )
 def test_valley_parse(sample_input, expected):
     assert Valley.parse(sample_input) == expected
+
+
+@pytest.mark.parametrize(
+    ("sample_input", "loc", "time", "expected"),
+    [
+        (0, (1, 1), 1, True),
+        (0, (0, 0), 1, False),
+        (0, (3, 0), 2, True),
+        (0, (0, 1), 5, True),
+        (1, (2, 1), 0, False),
+        (1, (2, 1), 1, False),
+        (1, (2, 1), 2, True),
+        (1, (2, 1), 3, True),
+        (1, (2, 1), 4, False),
+        (1, (2, 1), 5, True),
+        (1, (2, 1), 6, True),
+        (1, (2, 1), 7, False),
+        (1, (2, 1), 8, True),
+        (1, (2, 1), 9, True),
+        (1, (2, 1), 10, True),
+        (1, (2, 1), 11, True),
+        (1, (2, 1), 12, False),
+    ],
+    indirect=["sample_input"],
+)
+def test_valley_has_blizzard(sample_input, loc, time, expected):
+    vally = Valley.parse(sample_input)
+    assert vally.has_blizzard(loc, time) is expected
 
 
 @pytest.mark.parametrize(
