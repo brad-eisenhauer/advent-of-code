@@ -1,16 +1,18 @@
 """Advent of Code 2022, day 17: https://adventofcode.com/2022/day/17"""
 from __future__ import annotations
 
+import logging
 from collections import deque
-from dataclasses import dataclass
-from functools import cache
+from dataclasses import dataclass, field
 from io import StringIO
-from itertools import chain, islice, repeat, takewhile
+from itertools import chain, repeat, takewhile
 from typing import ClassVar, Iterable, Iterator, Optional, TextIO
 
 import pytest
 
 from advent_of_code.base import Solution
+
+log = logging.getLogger("aoc")
 
 
 class AocSolution(Solution[int, int]):
@@ -21,27 +23,18 @@ class AocSolution(Solution[int, int]):
         with self.open_input() as f:
             directions = f.readline().rstrip()
         shapes = parse_all_shapes(StringIO(SHAPES))
-        result, max_fall = drop_shapes(
+        result = drop_shapes(
             Shape.empty(),
             2022,
             chain.from_iterable(repeat(shapes)),
             chain.from_iterable(repeat(directions)),
         )
-        print(f"Max fall was {max_fall}.")
         return result
 
     def solve_part_two(self) -> int:
         with self.open_input() as f:
             directions = f.readline().rstrip()
-        shapes = parse_all_shapes(StringIO(SHAPES))
-        result, max_fall = drop_shapes(
-            Shape.empty(),
-            int(1e12),
-            chain.from_iterable(repeat(shapes)),
-            chain.from_iterable(repeat(directions)),
-        )
-        print(f"Max fall was {max_fall}.")
-        return result
+        return calc_height_for_large_stack(1_000_000_000_000, directions)
 
 
 Vector = tuple[int, ...]
@@ -141,9 +134,9 @@ def parse_all_shapes(f: TextIO) -> list[Shape]:
 
 
 def drop_shape(
-    boundary: Shape, shape: Shape, directions: tuple[str, ...]
+    boundary: Shape, shape: Shape, directions: Iterator[str], height: int
 ) -> tuple[Shape, Shape, int]:
-    """
+    """Drop a single shape
 
     Parameters
     ----------
@@ -156,12 +149,14 @@ def drop_shape(
     -------
     Dropped shape at rest, resulting boundary, and number of directions consumed
     """
-    shape = shape.translate((2, 4))
-    boundary = boundary.extend((x, y) for x in range(7) for y in range(1, shape.height() + 1))
+    shape = shape.translate((2, height + 4))
+    boundary = boundary.extend(
+        (x, y) for x in range(7) for y in range(height + 1, shape.height() + 1)
+    )
     directions_consumed = 0
     while True:
         # push
-        direction, *directions = directions
+        direction = next(directions)
         directions_consumed += 1
         next_shape = shape.translate(UNIT_VECTORS[direction])
         if boundary.contains(next_shape):
@@ -179,29 +174,86 @@ def drop_shapes(
     n: int,
     shapes: Iterator[Shape],
     directions: Iterator[str],
-    chunk_size: int = 36,
-) -> tuple[int, int]:
+) -> int:
     height = 0
-    max_fall = 0
-    chunked_directions: tuple[str, ...] = ()
-    memoized_drop_shape = cache(drop_shape)
     for i in range(n):
-        chunked_directions = (
-            *chunked_directions,
-            *islice(directions, chunk_size - len(chunked_directions)),
+        shape, boundary, _ = drop_shape(boundary, next(shapes), directions, height)
+        height = max(height, shape.height())
+        if i % 50 == 49:
+            boundary.trim()
+    return height
+
+
+@dataclass(frozen=True)
+class State:
+    shape_index: int
+    direction_index: int
+    relative_height_history: tuple[int, ...]
+    height: int = field(compare=False)
+
+
+HISTORY_COMPARISON_LENGTH = 50
+
+
+def find_cycle(
+    boundary: Shape, shapes: list[Shape], directions: str
+) -> tuple[list[State], int, int]:
+    direction_count = len(directions)
+    shape_count = len(shapes)
+    states: list[State] = [State(-1, -1, (), 0)]
+    last_state = states[0]
+
+    shapes = chain.from_iterable(repeat(shapes))
+    directions = chain.from_iterable(repeat(directions))
+    last_cycle_height_per_shape: Optional[tuple[int, int]] = None
+
+    while True:
+        shape, boundary, d_count = drop_shape(boundary, next(shapes), directions, last_state.height)
+        new_height = max(last_state.height, shape.height())
+        states.append(
+            State(
+                shape_index=(last_state.shape_index + 1) % shape_count,
+                direction_index=(last_state.direction_index + d_count) % direction_count,
+                relative_height_history=(
+                    new_height - last_state.height,
+                    *last_state.relative_height_history[: HISTORY_COMPARISON_LENGTH - 1],
+                ),
+                height=new_height,
+            ),
         )
-        next_shape = next(shapes)
-        start_height = next_shape.height()
-        shape, boundary, d_count = memoized_drop_shape(boundary, next_shape, chunked_directions)
-        fall = start_height - shape.height() + 4
-        max_fall = max(max_fall, fall)
-        delta_height = shape.height()
-        chunked_directions = chunked_directions[d_count:]
-        boundary = boundary.trim()
-        if delta_height > 0:
-            boundary = boundary.translate((0, -delta_height))
-            height += delta_height
-    return height, max_fall
+        p2 = len(states) - 1
+        p1 = p2 // 2
+
+        if states[p1] == states[p2]:
+            log.debug("Found cycle at indices %d, %d: %s --> %s", p1, p2, states[p1], states[p2])
+            delta_height = states[p2].height - states[p1].height
+            if last_cycle_height_per_shape is None:
+                last_cycle_height_per_shape = delta_height, p2 - p1
+            else:
+                dh1, dp1 = last_cycle_height_per_shape
+                if p2 - p1 > dp1 and dh1 * (p2 - p1) == delta_height * dp1:
+                    return states, p1, p2
+
+        if p2 % 50 == 49:
+            boundary = boundary.trim()
+
+        last_state = states[-1]
+
+
+def calc_height_for_large_stack(n: int, directions: str) -> int:
+    shapes = parse_all_shapes(StringIO(SHAPES))
+    states, p1, p2 = find_cycle(Shape.empty(), shapes, directions)
+    shapes_remaining = n - (p2 + 1)
+
+    if shapes_remaining <= 0:
+        return states[n - 1].height
+
+    cycles_remaining = shapes_remaining // (p2 - p1)
+    remainder = shapes_remaining % (p2 - p1)
+    result = states[p2].height
+    result += cycles_remaining * (states[p2].height - states[p1].height)
+    result += states[p1 + remainder].height - states[p1].height
+    return result
 
 
 SAMPLE_INPUTS = [
@@ -217,16 +269,17 @@ def sample_input():
         yield f
 
 
-def test_drop_shapes(sample_input):
+@pytest.mark.parametrize(("rock_count", "expected"), [(9, 17), (2022, 3068)])
+def test_drop_shapes(sample_input, rock_count, expected):
     directions = sample_input.readline().rstrip()
     shapes = parse_all_shapes(StringIO(SHAPES))
-    result, _ = drop_shapes(
+    result = drop_shapes(
         Shape.empty(),
-        9,
+        rock_count,
         chain.from_iterable(repeat(shapes)),
         chain.from_iterable(repeat(directions)),
     )
-    assert result == 17
+    assert result == expected
 
 
 def test_parse_all_shapes():
@@ -234,3 +287,8 @@ def test_parse_all_shapes():
     shapes = parse_all_shapes(f)
     assert len(shapes) == 5
     assert shapes[2] == Shape.from_iterable([(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)])
+
+
+def test_calc_1trillion_blocks(sample_input):
+    directions = sample_input.readline().rstrip()
+    assert calc_height_for_large_stack(1_000_000_000_000, directions) == 1514285714288
