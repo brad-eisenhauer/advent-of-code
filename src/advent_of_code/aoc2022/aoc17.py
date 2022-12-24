@@ -22,19 +22,12 @@ class AocSolution(Solution[int, int]):
     def solve_part_one(self) -> int:
         with self.open_input() as f:
             directions = f.readline().rstrip()
-        shapes = parse_all_shapes(StringIO(SHAPES))
-        result = drop_shapes(
-            Shape.empty(),
-            2022,
-            chain.from_iterable(repeat(shapes)),
-            chain.from_iterable(repeat(directions)),
-        )
-        return result
+        return calc_height(2022, directions)
 
     def solve_part_two(self) -> int:
         with self.open_input() as f:
             directions = f.readline().rstrip()
-        return calc_height_for_large_stack(1_000_000_000_000, directions)
+        return calc_height(1_000_000_000_000, directions)
 
 
 Vector = tuple[int, ...]
@@ -169,21 +162,6 @@ def drop_shape(
             return shape, boundary - shape, directions_consumed
 
 
-def drop_shapes(
-    boundary: Shape,
-    n: int,
-    shapes: Iterator[Shape],
-    directions: Iterator[str],
-) -> int:
-    height = 0
-    for i in range(n):
-        shape, boundary, _ = drop_shape(boundary, next(shapes), directions, height)
-        height = max(height, shape.height())
-        if i % 50 == 49:
-            boundary.trim()
-    return height
-
-
 @dataclass(frozen=True)
 class State:
     shape_index: int
@@ -200,12 +178,11 @@ def find_cycle(
 ) -> tuple[list[State], int, int]:
     direction_count = len(directions)
     shape_count = len(shapes)
-    states: list[State] = [State(-1, -1, (), 0)]
+    states: list[State] = [State(0, 0, (), 0)]
     last_state = states[0]
 
     shapes = chain.from_iterable(repeat(shapes))
     directions = chain.from_iterable(repeat(directions))
-    last_cycle_height_per_shape: Optional[tuple[int, int]] = None
 
     while True:
         shape, boundary, d_count = drop_shape(boundary, next(shapes), directions, last_state.height)
@@ -225,14 +202,7 @@ def find_cycle(
         p1 = p2 // 2
 
         if states[p1] == states[p2]:
-            log.debug("Found cycle at indices %d, %d: %s --> %s", p1, p2, states[p1], states[p2])
-            delta_height = states[p2].height - states[p1].height
-            if last_cycle_height_per_shape is None:
-                last_cycle_height_per_shape = delta_height, p2 - p1
-            else:
-                dh1, dp1 = last_cycle_height_per_shape
-                if p2 - p1 > dp1 and dh1 * (p2 - p1) == delta_height * dp1:
-                    return states, p1, p2
+            return states, p1, p2
 
         if p2 % 50 == 49:
             boundary = boundary.trim()
@@ -240,13 +210,13 @@ def find_cycle(
         last_state = states[-1]
 
 
-def calc_height_for_large_stack(n: int, directions: str) -> int:
+def calc_height(n: int, directions: str) -> int:
     shapes = parse_all_shapes(StringIO(SHAPES))
     states, p1, p2 = find_cycle(Shape.empty(), shapes, directions)
-    shapes_remaining = n - (p2 + 1)
+    shapes_remaining = n - p2
 
     if shapes_remaining <= 0:
-        return states[n - 1].height
+        return states[n].height
 
     cycles_remaining = shapes_remaining // (p2 - p1)
     remainder = shapes_remaining % (p2 - p1)
@@ -269,19 +239,6 @@ def sample_input():
         yield f
 
 
-@pytest.mark.parametrize(("rock_count", "expected"), [(9, 17), (2022, 3068)])
-def test_drop_shapes(sample_input, rock_count, expected):
-    directions = sample_input.readline().rstrip()
-    shapes = parse_all_shapes(StringIO(SHAPES))
-    result = drop_shapes(
-        Shape.empty(),
-        rock_count,
-        chain.from_iterable(repeat(shapes)),
-        chain.from_iterable(repeat(directions)),
-    )
-    assert result == expected
-
-
 def test_parse_all_shapes():
     f = StringIO(SHAPES)
     shapes = parse_all_shapes(f)
@@ -289,6 +246,7 @@ def test_parse_all_shapes():
     assert shapes[2] == Shape.from_iterable([(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)])
 
 
-def test_calc_1trillion_blocks(sample_input):
+@pytest.mark.parametrize(("count", "expected"), [(2022, 3068), (1_000_000_000_000, 1514285714288)])
+def test_calc_height(sample_input, count, expected):
     directions = sample_input.readline().rstrip()
-    assert calc_height_for_large_stack(1_000_000_000_000, directions) == 1514285714288
+    assert calc_height(count, directions) == expected
