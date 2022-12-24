@@ -25,7 +25,7 @@ app_state: dict = {}
 @app.callback()
 def main(
     debug: bool = typer.Option(False, help="Enable debug logging"),
-    input_file: Optional[str] = typer.Option(None, help="Input file name"),
+    input_file: Optional[str] = typer.Option(None, help="Alternate input file name"),
 ):
     logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
     app_state["input_file"] = input_file
@@ -146,4 +146,4 @@ def timer():
         yield
     finally:
         end = time.monotonic()
-        print(f"Elapsed time: {(end - start) * 1000} ms")
+        print(f"Elapsed time: {(end - start) * 1000:.3f} ms")

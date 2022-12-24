@@ -70,9 +70,7 @@ def propose_moves(elves: list[Vector], move_index: int) -> Iterator[Vector]:
 
 def make_moves(elves: list[Vector], proposed_moves: list[Vector]) -> list[Vector]:
     proposed_counts = Counter(proposed_moves)
-    return [
-        new if proposed_counts[new] < 2 else old for new, old in zip(proposed_moves, elves)
-    ]
+    return [new if proposed_counts[new] < 2 else old for new, old in zip(proposed_moves, elves)]
 
 
 def run(elves: list[Vector], n: int, move_index: int = 0) -> list[Vector]:
