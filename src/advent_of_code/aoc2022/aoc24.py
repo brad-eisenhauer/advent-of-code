@@ -113,7 +113,7 @@ class Navigator(AStar[State]):
             yield 1, State(state.elf, time)
 
     def heuristic(self, state: State) -> int:
-        return sum(abs(a - b) for a, b in zip(state.elf, self._valley.exit))
+        return sum(abs(a - b) for a, b in zip(state.elf, self._goal))
 
 
 def calc_time_to_exit(valley: Valley, go_back_for_snacks: bool = False) -> int:
