@@ -109,7 +109,9 @@ class Navigator(AStar[State]):
                 yield 1, State(loc, time)
             if loc in [self._valley.enter, self._valley.exit]:
                 yield 1, State(loc, time)
-        if state.elf in [self._valley.enter, self._valley.exit] or not self._valley.has_blizzard(state.elf, time):
+        if state.elf in [self._valley.enter, self._valley.exit] or not self._valley.has_blizzard(
+            state.elf, time
+        ):
             yield 1, State(state.elf, time)
 
     def heuristic(self, state: State) -> int:
