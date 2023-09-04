@@ -1,26 +1,16 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
-[tool.black]
-line-length = 100
-
-[tool.isort]
-profile = "black"
-known_first_party = "advent_of_code"
-line_length = 100
-force_single_line = false
-combine_as_imports = true
-
-[tool.poetry]
+[project]
 name = "advent-of-code"
 version = "0.1.0"
 description = ""
 authors = ["Brad Eisenhauer <bradley.eisenhauer@gmail.com>"]
 include = ["templates/*.jinja", "resources/*"]
+requires-python = ">=3.10"
 
-[tool.poetry.dependencies]
-python = "^3.10"
+[project.dependencies]
 jinja2 = "*"
 networkx = "*"
 pandas = ">=1.2"
@@ -32,10 +22,47 @@ pyyaml = ">=6.0"
 requests = "*"
 typer = ">=0.6"
 
-[tool.poetry.scripts]
+[project.scripts]
 aoc = "advent_of_code.cli:app"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+known_first_party = "advent_of_code"
+line_length = 100
+force_single_line = false
+combine_as_imports = true
 
 [tool.pytest.ini_options]
 addopts = "--cov-report=term-missing"
 python_files = "aoc*.py"
 testpaths = ["src/advent_of_code"]
+
+[tool.ruff]
+line-length = 100
+select = [
+    "A", # Builtins
+    "B", # Bugbear
+    "C", # Comprehensions (C4*), Mccabe (C901)
+    "D", # PyDocStyle
+    "E", # PyCodeStyle, Eradicate (E800)
+    "F", # Pyflakes
+    "N", # PEP8 Naming
+    "PT", # Pytest Style
+    "S", # Bandit
+    "SIM", # Simplify
+    "W", # PyCodeStyle
+]
+ignore = ["A003", "B9"]
+
+[tool.ruff.mccabe]
+max-complexity = 8
+
+[tool.ruff.per-file-ignores]
+# Ignore function call for default args in CLI.
+"src/advent_of_code/cli.py" = ["B800"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
