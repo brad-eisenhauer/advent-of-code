@@ -1,5 +1,6 @@
 import logging
-from abc import abstractmethod
+from abc import abstractmethod, ABC
+from collections import deque
 from heapq import heappop, heappush
 from typing import Generic, Iterator, Optional, TypeVar
 
@@ -12,31 +13,31 @@ T = TypeVar("T")
 S = TypeVar("S")
 
 
-class PriorityQueue(Generic[T]):
-    def __init__(self):
-        self._contents: list[tuple[int, T]] = []
-
-    def __bool__(self):
-        return bool(self._contents)
-
-    def __len__(self):
-        return len(self._contents)
-
-    def peek(self) -> T:
-        return self._contents[0]
-
-    def pop(self) -> T:
-        _, result = heappop(self._contents)
-        return result
-
-    def push(self, priority: int, item: T):
-        heappush(self._contents, (priority, item))
-
-
-class AStar(Generic[S]):
+class AStar(Generic[S], ABC):
     """
     A* implementation based on https://www.redblobgames.com/pathfinding/a-star/introduction.html
     """
+
+    class Queue:
+        """Priority queue"""
+        def __init__(self):
+            self._contents: list[tuple[int, S]] = []
+
+        def __bool__(self):
+            return bool(self._contents)
+
+        def __len__(self):
+            return len(self._contents)
+
+        def peek(self) -> S:
+            return self._contents[0]
+
+        def pop(self) -> S:
+            _, result = heappop(self._contents)
+            return result
+
+        def push(self, priority: int, item: S):
+            heappush(self._contents, (priority, item))
 
     @abstractmethod
     def is_goal_state(self, state: S) -> bool:
@@ -56,7 +57,7 @@ class AStar(Generic[S]):
     ) -> tuple[Optional[S], dict[S, int], dict[S, Optional[S]]]:
         accumulated_cost: dict[S, int] = {initial_state: 0}
         came_from: dict[S, Optional[S]] = {initial_state: None}
-        frontier: PriorityQueue[S] = PriorityQueue()
+        frontier = self.Queue()
         frontier.push(0, initial_state)
         state_count = 0
         while frontier:
@@ -86,6 +87,28 @@ class AStar(Generic[S]):
     def find_min_cost_to_goal(self, initial_state: S) -> int:
         goal_state, accumulated_cost, _ = self._find_min_cost_path(initial_state)
         return accumulated_cost[goal_state]
+
+
+class BFS(AStar[S], ABC):
+    class Queue:
+        """Simple queue"""
+        def __init__(self):
+            self._contents: deque[S] = deque()
+
+        def __bool__(self):
+            return bool(self._contents)
+
+        def __len__(self):
+            return len(self._contents)
+
+        def peek(self) -> S:
+            return self._contents[0]
+
+        def pop(self) -> S:
+            return self._contents.popleft()
+
+        def push(self, _priority: int, item: S):
+            self._contents.append(item)
 
 
 class GraphSimplifier(Generic[N]):
