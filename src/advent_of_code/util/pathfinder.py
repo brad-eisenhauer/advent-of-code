@@ -1,5 +1,5 @@
 import logging
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from collections import deque
 from heapq import heappop, heappush
 from typing import Generic, Iterator, Optional, TypeVar
@@ -20,6 +20,7 @@ class AStar(Generic[S], ABC):
 
     class Queue:
         """Priority queue"""
+
         def __init__(self):
             self._contents: list[tuple[int, S]] = []
 
@@ -92,6 +93,7 @@ class AStar(Generic[S], ABC):
 class BFS(AStar[S], ABC):
     class Queue:
         """Simple queue"""
+
         def __init__(self):
             self._contents: deque[S] = deque()
 
