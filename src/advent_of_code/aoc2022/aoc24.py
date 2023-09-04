@@ -9,7 +9,6 @@ from typing import Iterator, TextIO
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util.math import least_common_multiple
 from advent_of_code.util.pathfinder import AStar
 
 
