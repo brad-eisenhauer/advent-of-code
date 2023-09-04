@@ -26,9 +26,10 @@ class AocSolution(Solution[int, int]):
 def calc_min_number(secret: str, zero_prefix_len: int = 5) -> int:
     for n in count(1):
         bytes_ = f"{secret}{n}".encode("ASCII")
-        hash = md5(bytes_)
+        hash = md5(bytes_, usedforsecurity=False)
         if hash.hexdigest().startswith("0" * zero_prefix_len):
             return n
+    raise ValueError("No number found.")
 
 
 SAMPLE_INPUTS = [
