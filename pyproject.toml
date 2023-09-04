@@ -12,6 +12,7 @@ authors = [
 requires-python = ">=3.10"
 dependencies = [
     "jinja2",
+    "multimethod",
     "networkx",
     "pandas>=1.2",
     "parsy",
