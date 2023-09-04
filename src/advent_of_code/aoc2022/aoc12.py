@@ -7,7 +7,7 @@ from typing import Callable, Iterator
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util.pathfinder import AStar
+from advent_of_code.util.pathfinder import BFS
 
 
 class AocSolution(Solution[int, int]):
@@ -32,7 +32,7 @@ class AocSolution(Solution[int, int]):
 Position = tuple[int, int]
 
 
-class Navigator(AStar[Position]):
+class Navigator(BFS[Position]):
     def __init__(
         self, map: list[str], start: str, goal: str, condition: Callable[[int, int], bool]
     ):
