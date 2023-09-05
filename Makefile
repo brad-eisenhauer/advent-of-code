@@ -18,3 +18,7 @@ install: ## Install the current package plus dependencies into the current envir
 .PHONY: install-no-deps
 install-no-deps: ## Install the current package without dependencies into the current environment.
 	python -m pip install --no-deps --editable .
+
+.PHONY: clean-cache
+clean-cache:
+	find ./src -type d -name __pycache__ -prune -exec rm -rf '{}' \;
