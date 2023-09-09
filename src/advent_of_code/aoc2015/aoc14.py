@@ -101,7 +101,6 @@ def reindeer():
     return [Reindeer("Comet", 14, 10, 127), Reindeer("Dancer", 16, 11, 162)]
 
 
-
 def test_load_reindeer(sample_input, reindeer):
     reindeer = list(load_reindeer(sample_input))
     assert reindeer == reindeer
@@ -112,7 +111,7 @@ def test_load_reindeer(sample_input, reindeer):
     [
         (Reindeer("Comet", 14, 10, 127), 1000, 1120),
         (Reindeer("Dancer", 16, 11, 162), 1000, 1056),
-    ]
+    ],
 )
 def test_calc_distance(reindeer, time, expected):
     assert reindeer.calc_distance(time) == expected
