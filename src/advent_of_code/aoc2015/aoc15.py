@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import logging
-from collections import defaultdict
+from collections import defaultdict, deque
 from dataclasses import dataclass
 from io import StringIO
 from itertools import permutations
-from typing import Any, Iterable, Iterator, Optional
+from typing import Any, Callable, Iterable, Iterator, Optional
 
 import pytest
 
@@ -29,7 +29,7 @@ class AocSolution(Solution[int, int]):
     def solve_part_two(self) -> int:
         with self.open_input() as f:
             ingredients = [Ingredient.from_str(line.strip()) for line in f]
-        result = calc_optimal_recipe(ingredients, 100, 500)
+        result = find_optimal_recipe_calorie_constrained(ingredients, 100, 500)
         log.debug(result)
         return result.score()
 
@@ -54,6 +54,26 @@ def find_optimal_recipe(ingredients: list[Ingredient], total_qty: int) -> Recipe
     while True:
         initial_recipe = best_recipe
         for var_recipe in best_recipe.generate_variations():
+            if var_recipe.score() > best_score:
+                best_recipe = var_recipe
+                best_score = var_recipe.score()
+        if best_recipe == initial_recipe:
+            return best_recipe
+
+
+def find_optimal_recipe_calorie_constrained(
+    ingredients: list[Ingredient], total_qty: int, calorie_count: int
+) -> Recipe:
+    predicate = lambda r: r.contents()["calories"] == calorie_count
+
+    best_recipe = Recipe.equal_parts(ingredients, total_qty)
+    best_score = best_recipe.score() if predicate(best_recipe) else 0
+
+    while True:
+        initial_recipe = best_recipe
+        for var_recipe in best_recipe.generate_variations_multigen(
+            12, lambda r: r.contents()["calories"] == calorie_count
+        ):
             if var_recipe.score() > best_score:
                 best_recipe = var_recipe
                 best_score = var_recipe.score()
@@ -130,6 +150,24 @@ class Recipe:
             new_qtys[m] -= 1
             if all(q >= 0 for q in new_qtys):
                 yield Recipe(zip(ings, new_qtys))
+
+    def generate_variations_multigen(
+        self, target_n: int, predicate: Callable[[Recipe], bool]
+    ) -> Iterator[Iterator]:
+        """BFS for recipe variations passing the stated predicate."""
+        frontier = deque([self])
+        visited = set([self])
+        result_count = 0
+        while frontier and result_count < target_n:
+            next_recipe = frontier.pop()
+            for variation in next_recipe.generate_variations():
+                if variation in visited:
+                    continue
+                if predicate(variation):
+                    yield variation
+                    result_count += 1
+                visited.add(variation)
+                frontier.appendleft(variation)
 
 
 def generate_quantities(ingredient_count: int, total_qty: int) -> Iterator[tuple[int, ...]]:
