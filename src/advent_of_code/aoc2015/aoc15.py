@@ -5,6 +5,7 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from io import StringIO
+from itertools import permutations
 from typing import Any, Iterable, Iterator, Optional
 
 import pytest
@@ -21,7 +22,7 @@ class AocSolution(Solution[int, int]):
     def solve_part_one(self) -> int:
         with self.open_input() as f:
             ingredients = [Ingredient.from_str(line.strip()) for line in f]
-        result = calc_optimal_recipe(ingredients, 100)
+        result = find_optimal_recipe(ingredients, 100)
         log.debug(result)
         return result.score()
 
@@ -47,6 +48,19 @@ def calc_optimal_recipe(
     return max(candidate_recipes, key=lambda r: r.score())
 
 
+def find_optimal_recipe(ingredients: list[Ingredient], total_qty: int) -> Recipe:
+    best_recipe = Recipe.equal_parts(ingredients, total_qty)
+    best_score = best_recipe.score()
+    while True:
+        initial_recipe = best_recipe
+        for var_recipe in best_recipe.generate_variations():
+            if var_recipe.score() > best_score:
+                best_recipe = var_recipe
+                best_score = var_recipe.score()
+        if best_recipe == initial_recipe:
+            return best_recipe
+
+
 @dataclass(frozen=True)
 class Ingredient:
     name: str
@@ -67,6 +81,15 @@ class Ingredient:
 
 
 class Recipe:
+    @classmethod
+    def equal_parts(cls, ingredients: list[Ingredient], total_qty: int) -> Recipe:
+        ingredient_count = len(ingredients)
+        qty = total_qty // ingredient_count
+        additional_qty = total_qty - (ingredient_count * qty)
+        return cls(
+            (ing, qty + (1 if i < additional_qty else 0)) for i, ing in enumerate(ingredients)
+        )
+
     def __init__(self, ingredients: Iterable[tuple[Ingredient, int]]):
         self.ingredients = tuple(ingredients)
 
@@ -98,6 +121,15 @@ class Recipe:
             if prop != "calories":
                 result *= max(0, amt)
         return result
+
+    def generate_variations(self) -> Iterator[Recipe]:
+        ings, qtys = zip(*self.ingredients)
+        for p, m in permutations(range(len(qtys)), 2):
+            new_qtys = list(qtys)
+            new_qtys[p] += 1
+            new_qtys[m] -= 1
+            if all(q >= 0 for q in new_qtys):
+                yield Recipe(zip(ings, new_qtys))
 
 
 def generate_quantities(ingredient_count: int, total_qty: int) -> Iterator[tuple[int, ...]]:
