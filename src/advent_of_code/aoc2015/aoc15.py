@@ -6,7 +6,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from io import StringIO
 from itertools import permutations
-from typing import Any, Callable, Iterable, Iterator, Optional
+from typing import IO, Any, Callable, Iterable, Iterator, Optional
 
 import pytest
 
@@ -29,56 +29,9 @@ class AocSolution(Solution[int, int]):
     def solve_part_two(self) -> int:
         with self.open_input() as f:
             ingredients = [Ingredient.from_str(line.strip()) for line in f]
-        result = find_optimal_recipe_calorie_constrained(ingredients, 100, 500)
+        result = find_optimal_recipe(ingredients, 100, 500)
         log.debug(result)
         return result.score()
-
-
-def calc_optimal_recipe(
-    ingredients: list[Ingredient], total_qty: int, target_calorie_count: Optional[int] = None
-) -> Recipe:
-    all_recipes = (
-        Recipe(zip(ingredients, qtys)) for qtys in generate_quantities(len(ingredients), total_qty)
-    )
-    candidate_recipes = (
-        all_recipes
-        if target_calorie_count is None
-        else (r for r in all_recipes if r.contents()["calories"] == target_calorie_count)
-    )
-    return max(candidate_recipes, key=lambda r: r.score())
-
-
-def find_optimal_recipe(ingredients: list[Ingredient], total_qty: int) -> Recipe:
-    best_recipe = Recipe.equal_parts(ingredients, total_qty)
-    best_score = best_recipe.score()
-    while True:
-        initial_recipe = best_recipe
-        for var_recipe in best_recipe.generate_variations():
-            if var_recipe.score() > best_score:
-                best_recipe = var_recipe
-                best_score = var_recipe.score()
-        if best_recipe == initial_recipe:
-            return best_recipe
-
-
-def find_optimal_recipe_calorie_constrained(
-    ingredients: list[Ingredient], total_qty: int, calorie_count: int
-) -> Recipe:
-    predicate = lambda r: r.contents()["calories"] == calorie_count
-
-    best_recipe = Recipe.equal_parts(ingredients, total_qty)
-    best_score = best_recipe.score() if predicate(best_recipe) else 0
-
-    while True:
-        initial_recipe = best_recipe
-        for var_recipe in best_recipe.generate_variations_multigen(
-            12, lambda r: r.contents()["calories"] == calorie_count
-        ):
-            if var_recipe.score() > best_score:
-                best_recipe = var_recipe
-                best_score = var_recipe.score()
-        if best_recipe == initial_recipe:
-            return best_recipe
 
 
 @dataclass(frozen=True)
@@ -151,7 +104,7 @@ class Recipe:
             if all(q >= 0 for q in new_qtys):
                 yield Recipe(zip(ings, new_qtys))
 
-    def generate_variations_multigen(
+    def generate_constrained_variations(
         self, target_n: int, predicate: Callable[[Recipe], bool]
     ) -> Iterator[Iterator]:
         """BFS for recipe variations passing the stated predicate."""
@@ -170,38 +123,43 @@ class Recipe:
                 frontier.appendleft(variation)
 
 
-def generate_quantities(ingredient_count: int, total_qty: int) -> Iterator[tuple[int, ...]]:
-    acc = [0] * ingredient_count
+def find_optimal_recipe(
+    ingredients: list[Ingredient], total_qty: int, calorie_count: Optional[int] = None
+) -> Recipe:
+    if calorie_count is None:
+        predicate = lambda _: True
+        generator = lambda r: r.generate_variations()
+    else:
+        predicate = lambda r: r.contents()["calories"] == calorie_count
+        generator = lambda r: r.generate_constrained_variations(12, predicate)
 
-    def _inner(idx) -> Iterator[tuple[int, ...]]:
-        running_total = sum(acc[:idx])
-        if idx == len(acc) - 1:
-            acc[idx] = total_qty - running_total
-            yield tuple(acc)
-            return
-        for qty in range(0, total_qty - running_total + 1):
-            acc[idx] = qty
-            yield from _inner(idx + 1)
+    best_recipe = Recipe.equal_parts(ingredients, total_qty)
+    best_score = best_recipe.score() if predicate(best_recipe) else 0
 
-    return _inner(0)
+    while True:
+        initial_recipe = best_recipe
+        for var_recipe in generator(best_recipe):
+            if var_recipe.score() > best_score:
+                best_recipe = var_recipe
+                best_score = var_recipe.score()
+        if best_recipe == initial_recipe:
+            return best_recipe
 
 
-SAMPLE_INPUTS = [
-    """\
+SAMPLE_INPUTS = """\
 Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8
 Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3
-""",
-]
+"""
 
 
 @pytest.fixture
-def sample_input():
-    with StringIO(SAMPLE_INPUTS[0]) as f:
+def sample_input() -> Iterator[IO]:
+    with StringIO(SAMPLE_INPUTS) as f:
         yield f
 
 
 @pytest.fixture
-def ingredients():
+def ingredients() -> list[Ingredient]:
     return [
         Ingredient("Butterscotch", capacity=-1, durability=-2, flavor=6, texture=3, calories=8),
         Ingredient("Cinnamon", capacity=2, durability=3, flavor=-2, texture=-1, calories=3),
@@ -209,15 +167,15 @@ def ingredients():
 
 
 @pytest.fixture
-def recipe(ingredients: list[Ingredient]):
+def recipe(ingredients: list[Ingredient]) -> Recipe:
     return Recipe(zip(ingredients, [44, 56]))
 
 
-def test_ingredient_from_str(sample_input, ingredients):
+def test_ingredient_from_str(sample_input: IO, ingredients: list[Ingredient]):
     assert [Ingredient.from_str(line) for line in sample_input] == ingredients
 
 
-def test_recipe_contents(recipe):
+def test_recipe_contents(recipe: Recipe):
     assert recipe.contents() == {
         "capacity": 68,
         "durability": 80,
@@ -227,16 +185,14 @@ def test_recipe_contents(recipe):
     }
 
 
-def test_recipe_score(recipe):
+def test_recipe_score(recipe: Recipe):
     assert recipe.score() == 62842880
 
 
-def test_generate_quantities():
-    results = list(generate_quantities(2, 100))
-    assert len(results) == 101
-    for result in results:
-        assert sum(result) == 100
-
-
-def test_calc_optimal_recipe(ingredients, recipe):
-    assert calc_optimal_recipe(ingredients, 100) == recipe
+@pytest.mark.parametrize(("calorie_target", "expected"), [(None, [44, 56]), (500, [40, 60])])
+def test_find_optimal_recipe(
+    ingredients: list[Ingredient], calorie_target: int, expected: list[int]
+):
+    assert find_optimal_recipe(ingredients, 100, calorie_target) == Recipe(
+        zip(ingredients, expected)
+    )
