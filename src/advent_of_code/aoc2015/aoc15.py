@@ -22,23 +22,29 @@ class AocSolution(Solution[int, int]):
         with self.open_input() as f:
             ingredients = [Ingredient.from_str(line.strip()) for line in f]
         result = calc_optimal_recipe(ingredients, 100)
+        log.debug(result)
         return result.score()
 
     def solve_part_two(self) -> int:
         with self.open_input() as f:
             ingredients = [Ingredient.from_str(line.strip()) for line in f]
         result = calc_optimal_recipe(ingredients, 100, 500)
+        log.debug(result)
         return result.score()
 
 
-def calc_optimal_recipe(ingredients: list[Ingredient], total_qty: int, target_calorie_count: Optional[int] = None) -> Recipe:
-    solution = max(
-        r
-        for qtys in generate_quantities(len(ingredients), total_qty)
-        for r in (Recipe(zip(ingredients, qtys)),)
-        if target_calorie_count is None or r.contents()["calories"] == target_calorie_count
+def calc_optimal_recipe(
+    ingredients: list[Ingredient], total_qty: int, target_calorie_count: Optional[int] = None
+) -> Recipe:
+    all_recipes = (
+        Recipe(zip(ingredients, qtys)) for qtys in generate_quantities(len(ingredients), total_qty)
     )
-    return solution
+    candidate_recipes = (
+        all_recipes
+        if target_calorie_count is None
+        else (r for r in all_recipes if r.contents()["calories"] == target_calorie_count)
+    )
+    return max(candidate_recipes, key=lambda r: r.score())
 
 
 @dataclass(frozen=True)
@@ -62,7 +68,21 @@ class Ingredient:
 
 class Recipe:
     def __init__(self, ingredients: Iterable[tuple[Ingredient, int]]):
-        self.ingredients = list(ingredients)
+        self.ingredients = tuple(ingredients)
+
+    def __hash__(self) -> int:
+        return hash((Recipe, self.ingredients))
+
+    def __eq__(self, other: Any) -> bool:
+        return (
+            isinstance(other, Recipe)
+            and hash(self) == hash(other)
+            and self.ingredients == other.ingredients
+        )
+
+    def __repr__(self) -> str:
+        contents = ", ".join(f"({i.name}, {qty})" for i, qty in self.ingredients)
+        return f"Recipe([{contents}])"
 
     def contents(self) -> dict[str, int]:
         result = defaultdict(int)
@@ -79,29 +99,21 @@ class Recipe:
                 result *= max(0, amt)
         return result
 
-    def __lt__(self, other: Any) -> bool:
-        if not isinstance(other, Recipe):
-            raise TypeError(f"Unsupported operand '<' between types 'Recipe' and '{type(other)}'.")
-        self_score = self.score()
-        other_score = other.score()
-        if self_score or other_score:
-            return self_score < other_score
-        # If both scores are zero we compare by lowest property scores
-        self_props = sorted(self.contents().values())
-        other_props = sorted(other.contents().values())
-        return self_props < other_props
-
-    def __eq__(self, other: Any) -> bool:
-        return isinstance(other, Recipe) and self.ingredients == other.ingredients
-
 
 def generate_quantities(ingredient_count: int, total_qty: int) -> Iterator[tuple[int, ...]]:
-    if ingredient_count == 1:
-        yield (total_qty,)
-    else:
-        for qty in range(total_qty + 1):
-            for qtys in generate_quantities(ingredient_count - 1, total_qty - qty):
-                yield (qty, *qtys)
+    acc = [0] * ingredient_count
+
+    def _inner(idx) -> Iterator[tuple[int, ...]]:
+        running_total = sum(acc[:idx])
+        if idx == len(acc) - 1:
+            acc[idx] = total_qty - running_total
+            yield tuple(acc)
+            return
+        for qty in range(0, total_qty - running_total + 1):
+            acc[idx] = qty
+            yield from _inner(idx + 1)
+
+    return _inner(0)
 
 
 SAMPLE_INPUTS = [
@@ -125,9 +137,10 @@ def ingredients():
         Ingredient("Cinnamon", capacity=2, durability=3, flavor=-2, texture=-1, calories=3),
     ]
 
+
 @pytest.fixture
-def recipe(ingredients):
-    return Recipe(list(zip(ingredients, [44, 56])))
+def recipe(ingredients: list[Ingredient]):
+    return Recipe(zip(ingredients, [44, 56]))
 
 
 def test_ingredient_from_str(sample_input, ingredients):
@@ -143,18 +156,16 @@ def test_recipe_contents(recipe):
         "calories": 520,
     }
 
+
 def test_recipe_score(recipe):
     assert recipe.score() == 62842880
 
 
-def test_recipe_lt(ingredients, recipe):
-    recipe_2 = Recipe(list(zip(ingredients, [43, 57])))
-    assert recipe_2 < recipe
-
-
 def test_generate_quantities():
-    result_count = sum(1 for _ in generate_quantities(2, 100))
-    assert result_count == 101
+    results = list(generate_quantities(2, 100))
+    assert len(results) == 101
+    for result in results:
+        assert sum(result) == 100
 
 
 def test_calc_optimal_recipe(ingredients, recipe):
