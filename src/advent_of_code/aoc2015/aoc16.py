@@ -7,7 +7,6 @@ from typing import Optional
 
 from advent_of_code.base import Solution
 
-
 MFCSAM = {
     "children": 3,
     "cats": 7,
