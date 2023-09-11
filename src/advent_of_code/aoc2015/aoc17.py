@@ -36,7 +36,9 @@ def count_storage_combos(quantity: int, containers: tuple[int, ...]) -> int:
     return sum(1 for _ in generate_storage_combos(quantity, containers))
 
 
-def generate_storage_combos(quantity: int, containers: tuple[int, ...]) -> Iterator[tuple[int, ...]]:
+def generate_storage_combos(
+    quantity: int, containers: tuple[int, ...]
+) -> Iterator[tuple[int, ...]]:
     if quantity == 0:
         yield ()
         return
