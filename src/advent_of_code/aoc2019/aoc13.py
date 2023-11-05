@@ -1,9 +1,8 @@
 """Advent of Code 2019, Day 13: https://adventofcode.com/2019/day/13"""
 import logging
-import sys
 from dataclasses import dataclass, field
 from itertools import islice
-from typing import ClassVar, Iterator, Optional, TextIO
+from typing import ClassVar, Iterator, Optional
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine
 from advent_of_code.base import Solution

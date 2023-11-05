@@ -99,13 +99,13 @@ David would gain 41 happiness units by sitting next to Carol.
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
 
 
-@pytest.fixture
+@pytest.fixture()
 def guest_arranger(sample_input):
     return GuestArranger.load(sample_input)
 

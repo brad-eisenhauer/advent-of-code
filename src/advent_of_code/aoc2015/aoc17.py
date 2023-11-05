@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from collections import Counter
-from functools import lru_cache
 from io import StringIO
 from typing import IO, Iterator
 
@@ -58,13 +57,13 @@ SAMPLE_INPUTS = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS) as f:
         yield f
 
 
-@pytest.fixture
+@pytest.fixture()
 def containers(sample_input):
     return tuple(int(c) for c in sample_input)
 

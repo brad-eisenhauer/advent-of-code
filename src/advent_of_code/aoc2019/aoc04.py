@@ -73,14 +73,14 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp
 
 
 @pytest.mark.parametrize(
-    "n,strict,is_valid",
+    ("n", "strict", "is_valid"),
     (
         (111111, False, True),
         (111111, True, False),

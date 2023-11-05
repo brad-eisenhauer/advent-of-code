@@ -117,7 +117,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

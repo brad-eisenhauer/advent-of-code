@@ -305,7 +305,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp
@@ -381,7 +381,7 @@ def test_generate_variations_1(sample_input):
             assert True
             break
     else:
-        assert False
+        raise AssertionError()
 
 
 def test_find_overlap(sample_input):

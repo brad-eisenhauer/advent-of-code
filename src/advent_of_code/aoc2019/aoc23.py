@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Iterator, Optional
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine

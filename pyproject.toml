@@ -48,7 +48,7 @@ select = [
     "A", # Builtins
     "B", # Bugbear
     "C", # Comprehensions (C4*), Mccabe (C901)
-    "D", # PyDocStyle
+    # "D", # PyDocStyle
     "E", # PyCodeStyle, Eradicate (E800)
     "F", # Pyflakes
     "N", # PEP8 Naming

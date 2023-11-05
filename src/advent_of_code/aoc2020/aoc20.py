@@ -16,9 +16,9 @@ from advent_of_code.util import make_sequence
 log = logging.getLogger("aoc")
 
 SEA_MONSTER = """
-                  # 
+                  #
 #    ##    ##    ###
- #  #  #  #  #  #   
+ #  #  #  #  #  #
 """
 
 
@@ -112,7 +112,7 @@ def read_tiles(fp: TextIO) -> Iterator[Tile]:
             tile_id = int(id_line.split()[1][:-1])
             tile_data = takewhile(lambda s: s.strip() != "", fp)
             yield Tile(tile_id, tile_data)
-    except (IOError, ValueError, IndexError) as e:
+    except (IOError, ValueError, IndexError):
         ...
 
 

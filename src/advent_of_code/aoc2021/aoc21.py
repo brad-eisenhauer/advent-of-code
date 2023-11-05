@@ -33,7 +33,7 @@ Turn    Player 1                 Player 2
   8     +2 =>           x + 2    +1 =>           y + 4
   9     +0 =>           x + 2    +9 => y + 13 => y + 3
  10     +8 => x + 10 => x        +7 => y + 10 => y
- 
+
 Over the course of 10 turns, each player visits a subset of spaces:
 
 We can map out the scores each player achieves on each turn based on their initial
@@ -51,7 +51,7 @@ Pos    Player 1                        Player 2
   8    4 8 10 10 8 4 8 10 10 8 = 80    3 6 7 6 3 8 1 2 1 8   = 45
   9    5 9 1 1 9 5 9 1 1 9     = 50    4 7 8 7 4 9 2 3 2 9   = 55
  10    6 10 2 2 10 6 10 2 2 10 = 60    5 8 9 8 5 10 3 4 3 10 = 65
- 
+
 Based on these tables, it is a simple calculation to establish how many turns it would
 take each player to reach 1000 points, or how many points each player would have, given
 a fixed number of turns.
@@ -69,7 +69,7 @@ Total    Occurrences
     7    6
     8    3
     9    1
-    
+
 Given a game state, there are seven possible states after the next player's turn, each
 representing one or more "universes" in which that new state occurs. In this case,
 "state" refers to the combined players' positions and scores. In theory there are
@@ -112,7 +112,7 @@ def parse_input(fp: TextIO) -> tuple[int, ...]:
 # region Part 1
 
 
-ROLLS = list((n - 4) % 10 for n in range(10, 0, -1)) * 2
+ROLLS = [(n - 4) % 10 for n in range(10, 0, -1)] * 2
 TURN_SCORES = tuple(
     {
         start: [(start + total_roll - 1) % 10 + 1 for total_roll in np.cumsum(ROLLS[player::2])]
@@ -256,9 +256,9 @@ def count_outcomes(state: GameState2) -> tuple[int, int]:
             )
             # reverse subsequent results, since we've flipped "current" and "next" players
             other_results = reversed(count_outcomes(new_state))
-            result = list(
+            result = [
                 current + count * subsequent for current, subsequent in zip(result, other_results)
-            )
+            ]
 
     return tuple(result)
 
@@ -272,7 +272,7 @@ Player 2 starting position: 8
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

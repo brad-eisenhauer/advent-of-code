@@ -61,11 +61,14 @@ def apply_algorithm(
     """
     match algo[0], algo[-1]:
         case 1, 1:
-            calc_new_field_value = lambda _: 1
+            def calc_new_field_value(_):
+                return 1
         case 1, 0:
-            calc_new_field_value = lambda fv: int(not fv)
+            def calc_new_field_value(fv):
+                return int(not fv)
         case _:
-            calc_new_field_value = lambda _: 0
+            def calc_new_field_value(_):
+                return 0
 
     for _ in range(iterations):
         # Pad the initial image on all sides with two layers of the field value. One
@@ -162,7 +165,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

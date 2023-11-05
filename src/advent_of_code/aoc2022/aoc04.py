@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from io import StringIO
-from typing import Optional, TextIO
+from typing import TextIO
 
 import pytest
 
@@ -28,7 +28,7 @@ def count_either_contains(f: TextIO) -> int:
     for line in f:
         left, right = parse_line(line)
         intersection = intersect_ranges(left, right)
-        if intersection == left or intersection == right:
+        if intersection in (left, right):
             result += 1
     return result
 
@@ -70,7 +70,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

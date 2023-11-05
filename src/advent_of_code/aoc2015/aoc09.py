@@ -9,7 +9,7 @@ import networkx as nx
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util.pathfinder import AStar, S
+from advent_of_code.util.pathfinder import AStar
 
 
 class AocSolution(Solution[int, int]):
@@ -93,7 +93,7 @@ Dublin to Belfast = 141
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

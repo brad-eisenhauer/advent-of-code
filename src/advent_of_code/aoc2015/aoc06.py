@@ -66,7 +66,7 @@ turn off 499,499 through 500,500
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

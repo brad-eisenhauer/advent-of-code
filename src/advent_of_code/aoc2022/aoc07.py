@@ -99,10 +99,7 @@ def explore(terminal: TextIO) -> Directory:
         tokens = line.split()
         match tokens:
             case ["$", "cd", "/"]:
-                if current_dir is None:
-                    current_dir = Directory("/")
-                else:
-                    current_dir = find_root_dir()
+                current_dir = Directory("/") if current_dir is None else find_root_dir()
             case ["$", "cd", ".."]:
                 current_dir = current_dir.parent
             case ["$", "cd", dir_name]:
@@ -148,7 +145,7 @@ $ ls
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

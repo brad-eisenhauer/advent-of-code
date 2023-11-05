@@ -138,13 +138,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
 
 
-@pytest.fixture
+@pytest.fixture()
 def initial_ring(sample_input: TextIO, request) -> tuple[Node, dict[int, Node]]:
     return read_ring(sample_input, request.param)
 

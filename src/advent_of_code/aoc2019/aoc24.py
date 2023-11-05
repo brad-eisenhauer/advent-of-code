@@ -93,7 +93,7 @@ class RecursiveBoard:
 
     @classmethod
     def read(cls, f: TextIO) -> RecursiveBoard:
-        result = list(char == "#" for line in f.readlines() for char in line.strip())
+        result = [char == "#" for line in f.readlines() for char in line.strip()]
         return cls(result)
 
     @property
@@ -254,7 +254,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

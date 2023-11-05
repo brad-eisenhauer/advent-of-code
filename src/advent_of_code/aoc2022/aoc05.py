@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import re
-from copy import deepcopy
 from dataclasses import dataclass
 from io import StringIO
 from typing import TextIO
@@ -49,7 +48,7 @@ class CrateStacks:
             else:
                 labels = [line[idx] for idx in crate_label_idxs]
             line = next(f)
-        labelled_stacks = {label: stack for label, stack in zip(labels, stacks)}
+        labelled_stacks = dict(zip(labels, stacks))
         return CrateStacks(labelled_stacks)
 
     def execute(self, instruction: str, model: str = "9000"):
@@ -71,10 +70,10 @@ class CrateStacks:
 
 SAMPLE_INPUTS = [
     """\
-    [D]    
-[N] [C]    
+    [D]
+[N] [C]
 [Z] [M] [P]
- 1   2   3 
+ 1   2   3
 
 move 1 from 2 to 1
 move 3 from 1 to 3
@@ -84,7 +83,7 @@ move 1 from 1 to 2
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

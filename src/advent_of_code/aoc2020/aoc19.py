@@ -188,7 +188,7 @@ def test_count_matching_messages(input_index, with_replacement, expected):
     with StringIO(SAMPLE_INPUT[input_index]) as fp:
         rules = takewhile(lambda line: line != "", (line.strip() for line in fp))
         builder = RuleBuilder(rules)
-        messages = list(line.strip() for line in fp)
+        messages = [line.strip() for line in fp]
 
     if with_replacement:
         builder.rules[8] = "42 | 42 8"

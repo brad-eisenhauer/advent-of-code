@@ -167,7 +167,7 @@ L.LLLLL.LL
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUT[0]) as f:
         yield f

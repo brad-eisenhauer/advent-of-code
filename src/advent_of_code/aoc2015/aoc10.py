@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from functools import cache
-from io import StringIO
 
 import pytest
 

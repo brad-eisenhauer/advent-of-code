@@ -30,10 +30,7 @@ def play_game(start: list[int], steps: int) -> int:
     record = {value: turn + 1 for turn, value in enumerate(start[:-1])}
     last_number = start[-1]
     for turn in range(len(start), steps):
-        if last_number in record:
-            next_number = turn - record[last_number]
-        else:
-            next_number = 0
+        next_number = turn - record[last_number] if last_number in record else 0
         record[last_number] = turn
         last_number = next_number
     return next_number
@@ -50,7 +47,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

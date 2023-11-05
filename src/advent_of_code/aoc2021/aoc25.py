@@ -98,9 +98,9 @@ class Grid:
     def move_sea_cucumber(self, sea_cucumber: SeaCucumber):
         target = sea_cucumber.next_position()
         if self.is_occupied(target):
-            raise ValueError(f"Target position is already occupied.")
+            raise ValueError("Target position is already occupied.")
         if sea_cucumber is not self.get_position(sea_cucumber.position):
-            raise ValueError(f"Different sea cucumber at the origin position.")
+            raise ValueError("Different sea cucumber at the origin position.")
         self.set_position(sea_cucumber.position, None)
         self.set_position(target, sea_cucumber)
         sea_cucumber.position = target
@@ -153,7 +153,7 @@ v.v..>>v.v
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

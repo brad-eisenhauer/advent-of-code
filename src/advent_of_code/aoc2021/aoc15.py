@@ -7,6 +7,7 @@ import pytest
 
 from advent_of_code.base import Solution
 from advent_of_code.util.pathfinder import AStar
+import contextlib
 
 Point = tuple[int, int]
 
@@ -69,10 +70,9 @@ class Solver(AStar[Point]):
             x, y = (a + b for a, b in zip(point, delta))
             if x < 0 or y < 0:
                 continue
-            try:
+            with contextlib.suppress(IndexError):
                 yield self.costs[x][y], (x, y)
-            except IndexError:
-                ...
+
 
 
 SAMPLE_INPUT = """\
@@ -89,7 +89,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> TextIO:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

@@ -109,7 +109,7 @@ class Recipe:
     ) -> Iterator[Iterator]:
         """BFS for recipe variations passing the stated predicate."""
         frontier = deque([self])
-        visited = set([self])
+        visited = {self}
         result_count = 0
         while frontier and result_count < target_n:
             next_recipe = frontier.pop()
@@ -127,11 +127,15 @@ def find_optimal_recipe(
     ingredients: list[Ingredient], total_qty: int, calorie_count: Optional[int] = None
 ) -> Recipe:
     if calorie_count is None:
-        predicate = lambda _: True
-        generator = lambda r: r.generate_variations()
+        def predicate(_):
+            return True
+        def generator(r):
+            return r.generate_variations()
     else:
-        predicate = lambda r: r.contents()["calories"] == calorie_count
-        generator = lambda r: r.generate_constrained_variations(12, predicate)
+        def predicate(r):
+            return r.contents()["calories"] == calorie_count
+        def generator(r):
+            return r.generate_constrained_variations(12, predicate)
 
     best_recipe = Recipe.equal_parts(ingredients, total_qty)
     best_score = best_recipe.score() if predicate(best_recipe) else 0
@@ -152,13 +156,13 @@ Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> Iterator[IO]:
     with StringIO(SAMPLE_INPUTS) as f:
         yield f
 
 
-@pytest.fixture
+@pytest.fixture()
 def ingredients() -> list[Ingredient]:
     return [
         Ingredient("Butterscotch", capacity=-1, durability=-2, flavor=6, texture=3, calories=8),
@@ -166,7 +170,7 @@ def ingredients() -> list[Ingredient]:
     ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def recipe(ingredients: list[Ingredient]) -> Recipe:
     return Recipe(zip(ingredients, [44, 56]))
 

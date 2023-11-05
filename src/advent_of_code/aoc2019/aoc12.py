@@ -76,10 +76,10 @@ class MoonArray:
 
     def total_energy(self) -> int:
         potential_energies = [
-            sum(abs(p) for p in ps) for ps in zip(*map(lambda ax: ax.positions, self.axes))
+            sum(abs(p) for p in ps) for ps in zip(*(ax.positions for ax in self.axes))
         ]
         kinetic_energies = [
-            sum(abs(v) for v in vs) for vs in zip(*map(lambda ax: ax.velocities, self.axes))
+            sum(abs(v) for v in vs) for vs in zip(*(ax.velocities for ax in self.axes))
         ]
         return sum(p * k for p, k in zip(potential_energies, kinetic_energies))
 
@@ -92,7 +92,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         return MoonArray.read_array(f)

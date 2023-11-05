@@ -1,7 +1,6 @@
 """Advent of Code 2020, day 24: https://adventofcode.com/2020/day/24"""
 from __future__ import annotations
 
-import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from io import StringIO
@@ -112,7 +111,7 @@ wseweeenwnesenwwwswnew
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

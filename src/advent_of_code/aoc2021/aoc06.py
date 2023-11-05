@@ -3,7 +3,6 @@ from collections import Counter
 from enum import Enum, auto
 from functools import lru_cache
 from io import StringIO
-from pathlib import Path
 from typing import Callable, Iterable, Iterator, List, TextIO
 
 import pytest

@@ -1,7 +1,6 @@
 """Advent of Code 2021, Day 01: https://adventofcode.com/2021/day/1"""
 from io import StringIO
 from itertools import islice, tee
-from pathlib import Path
 from typing import Iterable, Iterator, TextIO, Tuple, TypeVar
 
 import pytest

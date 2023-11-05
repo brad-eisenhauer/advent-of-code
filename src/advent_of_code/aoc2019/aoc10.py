@@ -57,10 +57,7 @@ class StationPlacer:
 
     def has_line_of_sight(self, left: Vector, right: Vector) -> bool:
         diff = right - left
-        for s in diff.get_steps():
-            if left + s in self.map:
-                return False
-        return True
+        return all(left + s not in self.map for s in diff.get_steps())
 
     def vaporize(self, station: Vector) -> Iterator[Vector]:
         self.map.remove(station)

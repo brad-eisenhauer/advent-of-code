@@ -1,7 +1,7 @@
 """Advent of Code 2020, day 4: https://adventofcode.com/2020/day/4"""
 import re
 from io import StringIO
-from typing import Any, Iterator, NewType, Protocol, Sequence, TextIO
+from typing import Any, Iterator, NewType, Sequence, TextIO
 
 import pytest
 
@@ -232,7 +232,7 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

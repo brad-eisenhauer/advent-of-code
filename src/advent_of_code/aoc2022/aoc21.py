@@ -99,7 +99,7 @@ def find_match(monkeys: Monkeys) -> int:
         monkeys["humn"] = guess
         result = calc(monkeys, "root")
         calc_count += 1
-        log.debug(f"%d: humn=%d => diff=%.2f", calc_count, guess, result)
+        log.debug("%d: humn=%d => diff=%.2f", calc_count, guess, result)
         if is_zero(result):
             return guess
         results[guess] = result
@@ -116,7 +116,7 @@ def find_match(monkeys: Monkeys) -> int:
         monkeys["humn"] = guess
         result = calc(monkeys, "root")
         calc_count += 1
-        log.debug(f"%d: humn=%d => diff=%.2f", calc_count, guess, result)
+        log.debug("%d: humn=%d => diff=%.2f", calc_count, guess, result)
         if is_zero(result):
             return guess
         results[guess] = result
@@ -147,7 +147,7 @@ hmdt: 32
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

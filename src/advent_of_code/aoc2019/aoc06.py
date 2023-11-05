@@ -105,7 +105,7 @@ K)L
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input_1() -> TextIO:
     with StringIO(SAMPLE_INPUT_1) as f:
         yield f
@@ -134,7 +134,7 @@ I)SAN
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input_2() -> TextIO:
     with StringIO(SAMPLE_INPUT_2) as f:
         yield f

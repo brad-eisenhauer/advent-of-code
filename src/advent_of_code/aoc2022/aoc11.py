@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from functools import cache
 from io import StringIO
-from typing import Callable, ClassVar, Iterable, Iterator, Optional, TextIO
+from typing import Callable, ClassVar, Iterator, Optional, TextIO
 
 import pytest
 
@@ -63,11 +63,14 @@ class Monkey:
             items = literal_eval("[" + re.search(r"(\d+)(?:, (\d+))*", f.readline()).group() + "]")
             match re.search(r"= (.+)$", f.readline()).groups()[0].split():
                 case ["old", "*", n] if n.isnumeric():
-                    operation = lambda old: old * int(n)
+                    def operation(old):
+                        return old * int(n)
                 case ["old", "*", "old"]:
-                    operation = lambda old: old * old
+                    def operation(old):
+                        return old * old
                 case ["old", "+", n]:
-                    operation = lambda old: old + int(n)
+                    def operation(old):
+                        return old + int(n)
                 case other:
                     raise ValueError(f"Unrecognized expression: '{other}'")
             test = int(re.search(r"(\d+)$", f.readline()).groups()[0])
@@ -172,7 +175,7 @@ Monkey 3:
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

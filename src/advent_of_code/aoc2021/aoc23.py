@@ -7,7 +7,6 @@ from dataclasses import dataclass, replace
 from enum import Enum
 from functools import cache
 from io import StringIO
-from pathlib import Path
 from typing import Iterator, Optional, TextIO
 
 import networkx as nx
@@ -307,7 +306,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp
@@ -386,7 +385,7 @@ def test_generate_board_states():
     for prev_pos, next_pos, at_rest in SOLUTION_MOVES:
         pod = next(p for p in state.amphipods if p.position == prev_pos)
         expected_state = move_pod(state, pod, replace(pod, position=next_pos, at_rest=at_rest))
-        next_states = set(s for s, _ in generate_next_states(state, BOARD))
+        next_states = {s for s, _ in generate_next_states(state, BOARD)}
         assert expected_state in next_states
         state = expected_state
 

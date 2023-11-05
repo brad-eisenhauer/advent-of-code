@@ -18,7 +18,8 @@ class AocSolution(Solution[int, str]):
 
     def solve_part_one(self) -> int:
         cpu = CPU()
-        filter = lambda t: t[0] % 40 == 19
+        def filter(t):
+            return t[0] % 40 == 19
         with self.open_input() as f:
             return sum_signal_strengths(cpu.run_filter(f, filter), n=6)
 
@@ -239,7 +240,7 @@ noop
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

@@ -90,13 +90,13 @@ Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
 
 
-@pytest.fixture
+@pytest.fixture()
 def reindeer():
     return [Reindeer("Comet", 14, 10, 127), Reindeer("Dancer", 16, 11, 162)]
 

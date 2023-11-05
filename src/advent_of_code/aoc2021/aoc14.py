@@ -1,7 +1,6 @@
 """ Advent of Code 2021, Day 14: https://adventofcode.com/2021/day/14 """
 from __future__ import annotations
 
-import unittest
 from collections import Counter
 from functools import cache
 from io import StringIO
@@ -93,7 +92,7 @@ CN -> C
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

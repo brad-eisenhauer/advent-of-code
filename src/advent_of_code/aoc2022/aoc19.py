@@ -206,7 +206,7 @@ Blueprint 4: Each ore robot costs 1 ore. Each clay robot costs 1 ore. Each obsid
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

@@ -3,11 +3,9 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass, field, replace
-from io import StringIO
 from itertools import product
 from typing import IO
 
-import pytest
 
 from advent_of_code.base import Solution
 
@@ -45,23 +43,20 @@ class LightGrid:
                 if c == "#":
                     lights.add((x, y))
 
-        if stuck_corners:
-            corners = {(0, 0), (0, y), (x, 0), (x, y)}
-        else:
-            corners = set()
+        corners = {(0, 0), (0, y), (x, 0), (x, y)} if stuck_corners else set()
 
         return LightGrid(lights, (x + 1, y + 1), corners)
 
     def step(self):
         neighbor_count = self.count_neighbors()
-        next_lights = set(light for light in self.lights if neighbor_count[light] in (2, 3))
-        next_lights |= set(
+        next_lights = {light for light in self.lights if neighbor_count[light] in (2, 3)}
+        next_lights |= {
             light
             for light in neighbor_count
             if light not in self.lights
             and neighbor_count[light] == 3
             and self.light_is_valid(light)
-        )
+        }
         next_lights |= self.stuck_corners
         return replace(self, lights=next_lights)
 

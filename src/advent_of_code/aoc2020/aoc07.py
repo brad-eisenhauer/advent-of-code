@@ -80,7 +80,7 @@ dotted black bags contain no other bags.
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

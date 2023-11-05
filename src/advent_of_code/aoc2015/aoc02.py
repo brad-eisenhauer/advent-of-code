@@ -4,7 +4,7 @@ from __future__ import annotations
 import operator
 from functools import reduce
 from io import StringIO
-from itertools import combinations, product
+from itertools import combinations
 from typing import Callable, Collection
 
 import pytest
@@ -55,7 +55,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

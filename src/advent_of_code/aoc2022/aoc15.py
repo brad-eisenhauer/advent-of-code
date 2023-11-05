@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from io import StringIO
 from itertools import combinations
-from typing import ClassVar, Iterable, Iterator
+from typing import ClassVar, Iterator
 
 import pytest
 
@@ -116,7 +116,7 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
@@ -124,7 +124,7 @@ def sample_input():
 
 @pytest.fixture()
 def sensor_array(sample_input):
-    return list(Sensor.parse(line) for line in sample_input)
+    return [Sensor.parse(line) for line in sample_input]
 
 
 def test_sensor_covers_in_row(sensor_array):

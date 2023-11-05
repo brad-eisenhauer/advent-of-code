@@ -7,7 +7,6 @@ from enum import Enum
 from functools import cached_property, reduce
 from io import StringIO
 from itertools import islice, product
-from pathlib import Path
 from typing import Iterable, Iterator, Optional, TextIO
 
 import pytest
@@ -135,7 +134,7 @@ TEST_INPUT = """2199943210
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def height_map():
     with StringIO(TEST_INPUT) as fp:
         height_map = HeightMap.read(fp)

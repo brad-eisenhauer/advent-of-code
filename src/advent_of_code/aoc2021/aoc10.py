@@ -88,7 +88,7 @@ TEST_INPUT = """[({(<(())[]>[[{[]{<()<>>
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input() -> Iterator[TextIO]:
     with StringIO(TEST_INPUT) as fp:
         yield fp

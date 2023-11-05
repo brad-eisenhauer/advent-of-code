@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from io import StringIO
-from itertools import islice
 from typing import Iterator, TextIO
 
 import pytest
@@ -59,7 +58,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

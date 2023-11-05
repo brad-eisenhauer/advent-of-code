@@ -143,4 +143,4 @@ def test_game():
 
     scores = run_game(boards, draws)
 
-    assert (4512, 1924) == scores
+    assert scores == (4512, 1924)

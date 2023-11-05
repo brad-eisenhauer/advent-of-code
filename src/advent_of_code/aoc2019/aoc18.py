@@ -99,12 +99,12 @@ class Maze:
             # start node and neighbors are removed; neighbors of removed nodes become new
             # starting nodes
             nodes_to_remove = [*start, *(n for s in start for n in graph.neighbors(s))]
-            start = set(
+            start = {
                 neighbor
                 for node in nodes_to_remove
                 for neighbor in graph.neighbors(node)
                 if neighbor not in nodes_to_remove
-            )
+            }
             graph.remove_nodes_from(nodes_to_remove)
         log.debug("Raw maze has %d nodes and %d keys.", len(graph.nodes), len(keys))
         return Maze(graph, start, keys)
@@ -165,7 +165,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

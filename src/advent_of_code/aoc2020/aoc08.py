@@ -108,7 +108,7 @@ acc +6
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

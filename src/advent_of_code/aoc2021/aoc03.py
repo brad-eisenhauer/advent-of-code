@@ -100,8 +100,8 @@ class Day03Tests(unittest.TestCase):
 
     def test_power_consumption(self):
         result = calc_power_consumption(self.readings)
-        assert 198 == result
+        assert result == 198
 
     def test_life_support(self):
         result = calc_life_support_rating(self.readings)
-        assert 230 == result
+        assert result == 230

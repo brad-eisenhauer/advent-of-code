@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from io import StringIO
-from typing import Generic, Protocol, Type, TypeVar
+from typing import Protocol, Type, TypeVar
 
 import pytest
 
@@ -89,7 +89,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f
