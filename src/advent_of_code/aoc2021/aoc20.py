@@ -61,12 +61,17 @@ def apply_algorithm(
     """
     match algo[0], algo[-1]:
         case 1, 1:
+
             def calc_new_field_value(_):
                 return 1
+
         case 1, 0:
+
             def calc_new_field_value(fv):
                 return int(not fv)
+
         case _:
+
             def calc_new_field_value(_):
                 return 0
 

@@ -57,7 +57,7 @@ select = [
     "SIM", # Simplify
     "W", # PyCodeStyle
 ]
-ignore = ["A003", "B9"]
+ignore = ["A003", "B9", "S101"]
 
 [tool.ruff.mccabe]
 max-complexity = 8

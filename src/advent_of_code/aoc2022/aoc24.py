@@ -60,7 +60,7 @@ class Valley:
         blizzards = []
         for y, line in enumerate(f):
             if line[1] == "#":
-                exit = line.index(".") - 1
+                exit = line.index(".") - 1  # noqa: A001
                 continue
             for x, char in enumerate(line):
                 if char in "><^v":

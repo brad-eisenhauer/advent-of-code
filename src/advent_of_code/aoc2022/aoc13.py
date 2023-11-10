@@ -65,7 +65,7 @@ def compare_elements(left: PacketElement, right: PacketElement) -> int:
             return -1
         case _, []:
             return 1
-        case l, r:
+        case l, r:  # noqa: E741
             if not isinstance(l, list):
                 l = [l]
             if not isinstance(r, list):

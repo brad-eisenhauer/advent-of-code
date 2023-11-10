@@ -6,7 +6,6 @@ from dataclasses import dataclass, field, replace
 from itertools import product
 from typing import IO
 
-
 from advent_of_code.base import Solution
 
 

@@ -126,6 +126,7 @@ def submit(
         data={"level": level, "answer": result},
         cookies={"session": getenv("AOC_SESSION")},
         headers={"User-Agent": USER_AGENT},
+        timeout=3.05,
     )
     response.raise_for_status()
     content = response.content.decode()

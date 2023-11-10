@@ -1,4 +1,5 @@
 """ Advent of Code 2021, Day 15: https://adventofcode.com/2021/day/15 """
+import contextlib
 import logging
 from io import StringIO
 from typing import Iterator, Optional, Sequence, TextIO
@@ -7,7 +8,6 @@ import pytest
 
 from advent_of_code.base import Solution
 from advent_of_code.util.pathfinder import AStar
-import contextlib
 
 Point = tuple[int, int]
 
@@ -72,7 +72,6 @@ class Solver(AStar[Point]):
                 continue
             with contextlib.suppress(IndexError):
                 yield self.costs[x][y], (x, y)
-
 
 
 SAMPLE_INPUT = """\

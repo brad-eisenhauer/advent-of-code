@@ -127,13 +127,18 @@ def find_optimal_recipe(
     ingredients: list[Ingredient], total_qty: int, calorie_count: Optional[int] = None
 ) -> Recipe:
     if calorie_count is None:
+
         def predicate(_):
             return True
+
         def generator(r):
             return r.generate_variations()
+
     else:
+
         def predicate(r):
             return r.contents()["calories"] == calorie_count
+
         def generator(r):
             return r.generate_constrained_variations(12, predicate)
 

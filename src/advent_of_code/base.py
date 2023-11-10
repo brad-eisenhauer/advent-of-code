@@ -1,8 +1,9 @@
+from contextlib import AbstractContextManager
 from datetime import date
 from enum import Enum
 from os import getenv
 from pathlib import Path
-from typing import Generic, Optional, TypeVar, Union
+from typing import IO, Generic, Optional, TypeVar, Union
 
 import requests
 from dotenv import load_dotenv
@@ -25,7 +26,7 @@ class Solution(Generic[T, U]):
         self.year = year
         self.input_file = input_file
 
-    def open_input(self):
+    def open_input(self) -> AbstractContextManager[IO]:
         path = self._get_input_path()
         return open(path)
 
@@ -70,6 +71,7 @@ def download_input(download_path: Path, day: int, year: int):
         download_url,
         cookies={"session": getenv("AOC_SESSION")},
         headers={"User-Agent": USER_AGENT},
+        timeout=3.05,
     )
     response.raise_for_status()
     with open(download_path, "w") as fp:

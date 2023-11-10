@@ -18,8 +18,10 @@ class AocSolution(Solution[int, str]):
 
     def solve_part_one(self) -> int:
         cpu = CPU()
+
         def filter(t):
             return t[0] % 40 == 19
+
         with self.open_input() as f:
             return sum_signal_strengths(cpu.run_filter(f, filter), n=6)
 

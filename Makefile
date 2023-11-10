@@ -22,3 +22,11 @@ install-no-deps: ## Install the current package without dependencies into the cu
 .PHONY: clean-cache
 clean-cache:
 	find ./src -type d -name __pycache__ -prune -exec rm -rf '{}' \;
+
+.PHONY: lint
+lint:
+	ruff ./src
+
+.PHONY: autolint
+autolint:
+	ruff --fix ./src

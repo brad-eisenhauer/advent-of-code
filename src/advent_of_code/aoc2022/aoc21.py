@@ -28,7 +28,7 @@ class AocSolution(Solution[int, int]):
         return find_match(monkeys)
 
 
-Monkeys: dict[str, Union[int, str]]
+Monkeys = dict[str, Union[int, str]]
 
 
 def read(f: TextIO) -> Monkeys:

@@ -22,8 +22,10 @@ class AocSolution(Solution[int, int]):
         return result
 
 
+BAD_WORDS = ["ab", "cd", "pq", "xy"]
+
+
 def is_nice(text: str) -> bool:
-    BAD_WORDS = ["ab", "cd", "pq", "xy"]
     if not any(a == b for a, b in zip(text, text[1:])):
         return False
     if any(bw in text for bw in BAD_WORDS):

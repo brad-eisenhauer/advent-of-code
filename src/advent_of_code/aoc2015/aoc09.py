@@ -54,7 +54,7 @@ def find_longest_route(routes: nx.Graph) -> int:
         if min_miles_dropped is None or dist_dropped < min_miles_dropped:
             min_miles_dropped = dist_dropped
     max_dist = (len(routes.nodes) - 1) * max(
-        routes.get_edge_data(l, r)["weight"] for l, r in routes.edges
+        routes.get_edge_data(left, right)["weight"] for left, right in routes.edges
     )
     return max_dist - min_miles_dropped
 
@@ -67,7 +67,9 @@ class Navigator(AStar[TravelState]):
         self._graph = graph
         self._end = end
         self._invert = invert
-        self._max_edge_weight = max(graph.get_edge_data(l, r)["weight"] for l, r in graph.edges)
+        self._max_edge_weight = max(
+            graph.get_edge_data(left, right)["weight"] for left, right in graph.edges
+        )
 
     def is_goal_state(self, state: TravelState) -> bool:
         _, visited = state

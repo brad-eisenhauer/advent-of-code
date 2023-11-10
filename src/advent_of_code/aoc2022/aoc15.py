@@ -34,7 +34,7 @@ class AocSolution(Solution[int, int]):
         return calc_tuning_frequency(beacon)
 
 
-Vector: tuple[int, ...]
+Vector = tuple[int, ...]
 
 
 @dataclass

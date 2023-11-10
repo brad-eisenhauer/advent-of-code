@@ -63,14 +63,20 @@ class Monkey:
             items = literal_eval("[" + re.search(r"(\d+)(?:, (\d+))*", f.readline()).group() + "]")
             match re.search(r"= (.+)$", f.readline()).groups()[0].split():
                 case ["old", "*", n] if n.isnumeric():
+
                     def operation(old):
                         return old * int(n)
+
                 case ["old", "*", "old"]:
+
                     def operation(old):
                         return old * old
+
                 case ["old", "+", n]:
+
                     def operation(old):
                         return old + int(n)
+
                 case other:
                     raise ValueError(f"Unrecognized expression: '{other}'")
             test = int(re.search(r"(\d+)$", f.readline()).groups()[0])
