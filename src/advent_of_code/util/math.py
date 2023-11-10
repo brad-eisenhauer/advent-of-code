@@ -1,4 +1,9 @@
-from typing import Optional
+import math
+import operator
+from collections import Counter
+from functools import reduce
+from itertools import count, product
+from typing import Iterator, Optional
 
 
 def greatest_common_divisor(a: int, b: int) -> int:
@@ -61,3 +66,36 @@ def union_ranges(left: range, right: range) -> Optional[range]:
             return range(union_min, union_max + 1)
         case _:
             return None
+
+
+def pseudoprimes() -> Iterator[int]:
+    yield 2
+    yield 3
+    for n in count(5, 6):
+        yield n
+        yield n + 2
+
+
+def prime_factors(n: int) -> Iterator[int]:
+    if n < 1:
+        raise ValueError(f"Expected positive number. Got {n}.")
+    result = []
+    ps = pseudoprimes()
+    while (p := next(ps)) <= math.sqrt(n):
+        while n % p == 0:
+            yield p
+            n //= p
+    if n > 1:
+        yield n
+
+
+def all_factors(n: int) -> Iterator[int]:
+    prime_factor_counts = Counter(prime_factors(n))
+    pure_counts = prime_factor_counts.values()
+    permuted_counts = product(*(range(c + 1) for c in pure_counts))
+    for pcs in permuted_counts:
+        yield reduce(operator.mul, (b**e for b, e in zip(prime_factor_counts.keys(), pcs)), 1)
+
+
+def sum_of_factors(n: int) -> int:
+    return sum(all_factors(n))
