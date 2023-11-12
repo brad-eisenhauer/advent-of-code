@@ -98,7 +98,9 @@ def calc_optimal_gear(
     opt_cost: Optional[int] = None
     for gear in shop():
         cost, stats = calc_stats(gear)
-        if (opt_cost is None or comp(cost, opt_cost)) and decide_winner(stats, boss_stats) == winner:
+        if (opt_cost is None or comp(cost, opt_cost)) and decide_winner(
+            stats, boss_stats
+        ) == winner:
             opt_cost = cost
             log.debug("gear=%s, cost=%d", gear, cost)
     return opt_cost
