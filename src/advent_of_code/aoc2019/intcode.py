@@ -1,8 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Iterator, Optional, TextIO, TypeVar
-
-T = TypeVar("T")
+from typing import Iterator, Optional, TextIO
 
 log = logging.getLogger("aoc")
 
