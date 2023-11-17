@@ -6,6 +6,7 @@ from io import StringIO
 import pytest
 
 from advent_of_code.base import Solution
+from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):
@@ -13,7 +14,7 @@ class AocSolution(Solution[int, int]):
         super().__init__({{ day }}, {{ year }}, **kwargs)
 
     def solve_part_one(self) -> int:
-        with self.open_input() as f:
+        with self.open_input() as fp:
             ...
 
 
