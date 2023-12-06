@@ -41,6 +41,11 @@ def create_windows(items: Iterable[T], n: int) -> Iterator[tuple[T, ...]]:
     return zip(*offset_iterators)
 
 
+def create_groups(items: Iterable, n: int) -> Iterator:
+    args = [iter(items)] * n
+    return zip(*args)
+
+
 class Timer(ContextManager):
     def __init__(self):
         self.start: float = 0.0
