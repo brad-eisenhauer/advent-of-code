@@ -17,6 +17,10 @@ class AocSolution(Solution[int, int]):
         with self.open_input() as fp:
             ...
 
+    def solve_part_two(self) -> int:
+        with self.open_input() as fp:
+            ...
+
 
 SAMPLE_INPUTS = [
     """\
@@ -26,14 +30,9 @@ SAMPLE_INPUTS = [
 
 @pytest.fixture
 def sample_input(request):
-    with StringIO(SAMPLE_INPUTS[request.param]) as f:
+    with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.mark.parametrize(
-    ("sample_input", "expected"),
-    [],
-    indirect=["sample_input"]
-)
-def test_foo(sample_input, expected):
+def test_foo(sample_input):
     ...
