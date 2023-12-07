@@ -66,13 +66,11 @@ def calc_prep(time: int, dist: int) -> Optional[int]:
 
 
 def count_ways_to_win(time: int, dist: int) -> Optional[int]:
-    min_prep = calc_prep(time, dist)
+    min_prep = calc_prep(time, dist + 1)
     if min_prep is None:
         return None
     max_prep = time - min_prep
     result = max_prep - min_prep + 1
-    if calc_dist(time, min_prep) == dist:
-        result -= 2
     return result
 
 
