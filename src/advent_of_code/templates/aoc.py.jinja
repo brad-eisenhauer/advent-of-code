@@ -15,11 +15,11 @@ class AocSolution(Solution[int, int]):
         super().__init__({{ day }}, {{ year }}, **kwargs)
 
     def solve_part_one(self, input_file: Optional[IO] = None) -> int:
-        with (input_file or self.open_input()) as fp:
+        with input_file or self.open_input() as fp:
             ...
 
     def solve_part_two(self, input_file: Optional[IO] = None) -> int:
-        with (input_file or self.open_input()) as fp:
+        with input_file or self.open_input() as fp:
             ...
 
 

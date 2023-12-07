@@ -16,12 +16,12 @@ class AocSolution(Solution[int, int]):
         super().__init__(6, 2023, **kwargs)
 
     def solve_part_one(self, input_file: Optional[IO] = None) -> int:
-        with (input_file or self.open_input()) as fp:
+        with input_file or self.open_input() as fp:
             times, dists = read_input(fp)
         return product(count_ways_to_win(t, d) for t, d in zip(times, dists))
 
     def solve_part_two(self, input_file: Optional[IO] = None) -> int:
-        with (input_file or self.open_input()) as fp:
+        with input_file or self.open_input() as fp:
             time, dist = read_input_2(fp)
         return count_ways_to_win(time, dist)
 
@@ -142,7 +142,7 @@ def test_calc_prep(time, dist, expected):
         (7, 9, 4),
         (15, 40, 8),
         (30, 200, 9),
-    ]
+    ],
 )
 def test_count_ways_to_win(time, dist, expected):
     assert count_ways_to_win(time, dist) == expected
