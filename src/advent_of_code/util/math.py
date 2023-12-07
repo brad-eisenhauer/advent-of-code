@@ -3,7 +3,9 @@ import operator
 from collections import Counter
 from functools import reduce
 from itertools import count, product
-from typing import Iterator, Optional
+from typing import Iterable, Iterator, Optional, TypeVar, Union
+
+T = TypeVar("T")
 
 
 def greatest_common_divisor(a: int, b: int) -> int:
@@ -52,6 +54,10 @@ def sign(n: int) -> int:
     return n // abs(n)
 
 
+def product(xs: Iterable[T]) -> Union[T, int]:
+    return reduce(operator.mul, xs, 1)
+
+
 def intersect_ranges(left: range, right: range) -> range:
     inter_min = max(min(left), min(right))
     inter_max = min(max(left), max(right))
@@ -79,7 +85,6 @@ def pseudoprimes() -> Iterator[int]:
 def prime_factors(n: int) -> Iterator[int]:
     if n < 1:
         raise ValueError(f"Expected positive number. Got {n}.")
-    result = []
     ps = pseudoprimes()
     while (p := next(ps)) <= math.sqrt(n):
         while n % p == 0:
