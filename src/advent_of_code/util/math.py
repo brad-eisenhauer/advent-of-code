@@ -104,3 +104,14 @@ def all_factors(n: int) -> Iterator[int]:
 
 def sum_of_factors(n: int) -> int:
     return sum(all_factors(n))
+
+
+def chinese_remainder_theorem(divisors: Iterable[int], remainders: Iterable[int]) -> int:
+
+    def _iter(dr_left: tuple[int, int], dr_right: tuple[int, int]) -> tuple[int, int]:
+        for n in count(dr_left[1], dr_left[0]):
+            if n % dr_right[0] == dr_right[1]:
+                return dr_left[0] * dr_right[0], n
+
+    divisors_and_remainders = sorted(zip(divisors, remainders), reverse=True)
+    return reduce(_iter, divisors_and_remainders)[1]
