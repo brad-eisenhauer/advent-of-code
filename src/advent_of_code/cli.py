@@ -13,7 +13,7 @@ import typer
 from dotenv import load_dotenv
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-from advent_of_code.base import USER_AGENT, PuzzlePart, Solution
+from advent_of_code.base import USER_AGENT, PuzzlePart, Solution, download_input
 
 CURRENT_YEAR = date.today().year
 app = typer.Typer(name="aoc")
@@ -45,6 +45,9 @@ def init(
     template = env.get_template("aoc.py.jinja")
     with open(output_path, "w") as f:
         f.write(template.render(day=day, year=year))
+
+    input_file_path = Path() / "input" / str(year) / f"input{day:02}.txt"
+    download_input(input_file_path, day, year)
 
 
 def prep_filesystem(module_path: Path):
