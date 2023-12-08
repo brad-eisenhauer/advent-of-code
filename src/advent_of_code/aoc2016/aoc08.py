@@ -4,14 +4,11 @@ from __future__ import annotations
 import re
 import sys
 from dataclasses import dataclass, field
-from io import StringIO
 from itertools import product
 from typing import IO, ClassVar
 
-import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 from advent_of_code.util import ocr
 
 

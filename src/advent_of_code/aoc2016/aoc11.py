@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import re
-from collections import defaultdict
 from dataclasses import dataclass, replace
 from io import StringIO
 from itertools import chain, combinations
@@ -11,7 +10,6 @@ from typing import IO, Iterator, Literal
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 from advent_of_code.util.pathfinder import AStar
 
 
@@ -32,14 +30,12 @@ class AocSolution(Solution[int, int]):
         initial_state = replace(
             initial_state,
             items=initial_state.items
-            | set(
-                [
+            | {
                     (1, Item(type="microship", element="elerium")),
                     (1, Item(type="generator", element="elerium")),
                     (1, Item(type="microchip", element="dilithium")),
                     (1, Item(type="generator", element="dilithium")),
-                ]
-            ),
+                },
         )
         solver = Solver()
         result = solver.find_min_cost_to_goal(initial_state.normalize())
@@ -150,7 +146,7 @@ The fourth floor contains nothing relevant.
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

@@ -82,7 +82,7 @@ Distance:  9  40  200
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f

@@ -189,7 +189,7 @@ humidity-to-location map:
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
@@ -199,13 +199,13 @@ def test_read_recipe(sample_input):
     seeds, maps = read_recipe(sample_input)
     assert seeds == [79, 14, 55, 13]
     assert maps == [
-        RangeMap(set([Range(50, 98, 2), Range(52, 50, 48)])),
-        RangeMap(set([Range(0, 15, 37), Range(37, 52, 2), Range(39, 0, 15)])),
-        RangeMap(set([Range(49, 53, 8), Range(0, 11, 42), Range(42, 0, 7), Range(57, 7, 4)])),
-        RangeMap(set([Range(88, 18, 7), Range(18, 25, 70)])),
-        RangeMap(set([Range(45, 77, 23), Range(81, 45, 19), Range(68, 64, 13)])),
-        RangeMap(set([Range(0, 69, 1), Range(1, 0, 69)])),
-        RangeMap(set([Range(60, 56, 37), Range(56, 93, 4)])),
+        RangeMap({Range(50, 98, 2), Range(52, 50, 48)}),
+        RangeMap({Range(0, 15, 37), Range(37, 52, 2), Range(39, 0, 15)}),
+        RangeMap({Range(49, 53, 8), Range(0, 11, 42), Range(42, 0, 7), Range(57, 7, 4)}),
+        RangeMap({Range(88, 18, 7), Range(18, 25, 70)}),
+        RangeMap({Range(45, 77, 23), Range(81, 45, 19), Range(68, 64, 13)}),
+        RangeMap({Range(0, 69, 1), Range(1, 0, 69)}),
+        RangeMap({Range(60, 56, 37), Range(56, 93, 4)}),
     ]
 
 
@@ -222,18 +222,16 @@ def test_find_location_for_seed_all(sample_input):
 
 
 def test_compose_range_maps():
-    rm1 = RangeMap(set([Range(50, 98, 2), Range(52, 50, 48)]))
-    rm2 = RangeMap(set([Range(0, 15, 37), Range(37, 52, 2), Range(39, 0, 15)]))
+    rm1 = RangeMap({Range(50, 98, 2), Range(52, 50, 48)})
+    rm2 = RangeMap({Range(0, 15, 37), Range(37, 52, 2), Range(39, 0, 15)})
     expected = RangeMap(
-        set(
-            [
+        {
                 Range(39, 0, 15),
                 Range(0, 15, 35),
                 Range(37, 50, 2),
                 Range(54, 52, 46),
                 Range(35, 98, 2),
-            ]
-        )
+            }
     )
     for n in range(100):
         assert rm2(rm1(n)) == expected(n)

@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import logging
 import math
-from copy import copy
 from dataclasses import dataclass, field, replace
 from enum import Enum, auto
 from typing import Iterator

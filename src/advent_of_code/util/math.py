@@ -2,7 +2,7 @@ import math
 import operator
 from collections import Counter
 from functools import reduce
-from itertools import count, product
+from itertools import count, product as cross_product
 from typing import Iterable, Iterator, Optional, TypeVar, Union
 
 T = TypeVar("T")
@@ -97,7 +97,7 @@ def prime_factors(n: int) -> Iterator[int]:
 def all_factors(n: int) -> Iterator[int]:
     prime_factor_counts = Counter(prime_factors(n))
     pure_counts = prime_factor_counts.values()
-    permuted_counts = product(*(range(c + 1) for c in pure_counts))
+    permuted_counts = cross_product(*(range(c + 1) for c in pure_counts))
     for pcs in permuted_counts:
         yield reduce(operator.mul, (b**e for b, e in zip(prime_factor_counts.keys(), pcs)), 1)
 

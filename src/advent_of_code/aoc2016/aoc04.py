@@ -4,12 +4,10 @@ from __future__ import annotations
 import re
 from collections import Counter
 from dataclasses import dataclass
-from io import StringIO
 
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):

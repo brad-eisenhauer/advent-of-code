@@ -34,8 +34,8 @@ class ScratchCard:
     def read(cls, text: str) -> ScratchCard:
         _, numbers = text.split(": ")
         winning_number_str, card_number_str = numbers.split(" | ")
-        winning_numbers = set(int(n) for n in winning_number_str.split())
-        card_numbers = set(int(n) for n in card_number_str.split())
+        winning_numbers = {int(n) for n in winning_number_str.split()}
+        card_numbers = {int(n) for n in card_number_str.split()}
         return ScratchCard(winning_numbers, card_numbers)
 
     def calc_point_value(self) -> int:
@@ -69,7 +69,7 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request: pytest.FixtureRequest) -> Iterator[IO]:
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f

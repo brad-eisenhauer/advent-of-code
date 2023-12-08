@@ -1,7 +1,6 @@
 """Advent of Code 2015, day 20: https://adventofcode.com/2015/day/20"""
 from __future__ import annotations
 
-from io import StringIO
 from itertools import count
 
 import pytest

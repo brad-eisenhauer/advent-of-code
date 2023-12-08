@@ -73,7 +73,7 @@ class Schematic:
             )
         )
         adjacent_locs = symbol_adjacent_locs & number_map.keys()
-        return set(number_map[loc] for loc in adjacent_locs)
+        return {number_map[loc] for loc in adjacent_locs}
 
     def find_adjacent_parts(
         self, loc: Vector, number_map: Optional[dict[Vector, SchematicNumber]] = None
@@ -83,7 +83,7 @@ class Schematic:
         row, col = loc
         symbol_adjacent_locs = product((row - 1, row, row + 1), (col - 1, col, col + 1))
         adjacent_locs = symbol_adjacent_locs & number_map.keys()
-        return set(number_map[loc] for loc in adjacent_locs)
+        return {number_map[loc] for loc in adjacent_locs}
 
     def build_number_map(self) -> dict[Vector, SchematicNumber]:
         return {loc: num for num in self.numbers for loc in num.covers}
@@ -120,7 +120,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as fp:
         yield fp

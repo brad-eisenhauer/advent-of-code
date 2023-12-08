@@ -67,7 +67,7 @@ class BFS:
         self.navigator = Navigator(favorite_value)
 
     def visit_to_depth(self, initial_loc: Vector, depth: int) -> Iterator[Vector]:
-        visited: set[Vector] = set([initial_loc])
+        visited: set[Vector] = {initial_loc}
         frontier: deque[tuple[int, Vector]] = deque()
         frontier.append((0, initial_loc))
 

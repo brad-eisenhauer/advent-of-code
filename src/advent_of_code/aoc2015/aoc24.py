@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import logging
 import operator
-from copy import copy
 from functools import reduce
 from io import StringIO
 from typing import IO, Iterator, Optional
@@ -105,7 +104,7 @@ SAMPLE_INPUTS = """\
 """
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS) as f:
         yield f

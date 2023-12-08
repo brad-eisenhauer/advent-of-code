@@ -46,10 +46,7 @@ class AssembunnyInterpreter:
         match match.groupdict()["inst"]:
             case "cpy":
                 value = match.groupdict()["arg1"]
-                if value.isnumeric():
-                    value = int(value)
-                else:
-                    value = self.registers[value]
+                value = int(value) if value.isnumeric() else self.registers[value]
                 dest = match.groupdict()["arg2"]
                 self.registers[dest] = value
                 self.pointer += 1
@@ -63,10 +60,7 @@ class AssembunnyInterpreter:
                 self.pointer += 1
             case "jnz":
                 value = match.groupdict()["arg1"]
-                if value.isnumeric():
-                    value = int(value)
-                else:
-                    value = self.registers[value]
+                value = int(value) if value.isnumeric() else self.registers[value]
                 jump = int(match.groupdict()["arg2"])
                 if value == 0:
                     self.pointer += 1
@@ -86,7 +80,7 @@ dec a
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

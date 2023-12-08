@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from typing import IO, Callable, ClassVar, Iterator, NewType, Optional
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):

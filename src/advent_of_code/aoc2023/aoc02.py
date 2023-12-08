@@ -81,7 +81,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
 ]
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_input(request) -> Iterator[IO]:
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
