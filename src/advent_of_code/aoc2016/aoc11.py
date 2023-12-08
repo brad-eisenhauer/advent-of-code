@@ -31,11 +31,11 @@ class AocSolution(Solution[int, int]):
             initial_state,
             items=initial_state.items
             | {
-                    (1, Item(type="microship", element="elerium")),
-                    (1, Item(type="generator", element="elerium")),
-                    (1, Item(type="microchip", element="dilithium")),
-                    (1, Item(type="generator", element="dilithium")),
-                },
+                (1, Item(type="microship", element="elerium")),
+                (1, Item(type="generator", element="elerium")),
+                (1, Item(type="microchip", element="dilithium")),
+                (1, Item(type="generator", element="dilithium")),
+            },
         )
         solver = Solver()
         result = solver.find_min_cost_to_goal(initial_state.normalize())

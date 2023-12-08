@@ -226,12 +226,12 @@ def test_compose_range_maps():
     rm2 = RangeMap({Range(0, 15, 37), Range(37, 52, 2), Range(39, 0, 15)})
     expected = RangeMap(
         {
-                Range(39, 0, 15),
-                Range(0, 15, 35),
-                Range(37, 50, 2),
-                Range(54, 52, 46),
-                Range(35, 98, 2),
-            }
+            Range(39, 0, 15),
+            Range(0, 15, 35),
+            Range(37, 50, 2),
+            Range(54, 52, 46),
+            Range(35, 98, 2),
+        }
     )
     for n in range(100):
         assert rm2(rm1(n)) == expected(n)

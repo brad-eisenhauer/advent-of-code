@@ -1,5 +1,6 @@
 import time
-from itertools import islice, tee
+from functools import partial
+from itertools import islice, tee, zip_longest
 from typing import Callable, ContextManager, Iterable, Iterator, Optional, Sequence, TypeVar
 
 T = TypeVar("T")
@@ -41,9 +42,10 @@ def create_windows(items: Iterable[T], n: int) -> Iterator[tuple[T, ...]]:
     return zip(*offset_iterators)
 
 
-def create_groups(items: Iterable, n: int) -> Iterator:
+def create_groups(items: Iterable, n: int, zip_all: bool = False, fill_value=None) -> Iterator:
+    zipper = partial(zip_longest, fill_value=fill_value) if zip_all else zip
     args = [iter(items)] * n
-    return zip(*args)
+    return zipper(*args)
 
 
 class Timer(ContextManager):

@@ -1,8 +1,8 @@
 """Advent of Code 2023, day 8: https://adventofcode.com/2023/day/8"""
 from __future__ import annotations
-from functools import reduce
 
 import re
+from functools import reduce
 from io import StringIO
 from itertools import chain, repeat
 from typing import IO, Callable, Iterator, Optional

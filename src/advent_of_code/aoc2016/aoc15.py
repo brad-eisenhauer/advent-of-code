@@ -1,10 +1,10 @@
 """Advent of Code 2016, day 15: https://adventofcode.com/2016/day/15"""
 from __future__ import annotations
-from dataclasses import dataclass
 
+import re
+from dataclasses import dataclass
 from io import StringIO
 from itertools import count
-import re
 from typing import IO, Iterable, Optional
 
 import pytest
@@ -74,6 +74,7 @@ def test_part_one(solution: AocSolution, sample_input: IO):
 def test_part_two(solution: AocSolution, sample_input: IO):
     assert solution.solve_part_two(sample_input) == 85
 
+
 def test_disc_read(sample_input):
     result = [Disc.read(line) for line in sample_input]
     assert result == [Disc(1, 5, 4), Disc(2, 2, 1)]
@@ -85,7 +86,7 @@ def test_disc_read(sample_input):
         ([3, 5, 7], [2, 3, 2], 23),
         ([3, 4, 5], [0, 3, 4], 39),
         ([5, 2], [0, 1], 5),
-    ]
+    ],
 )
 def test_chinese_remainder_theorem(divisors, remainders, expected):
     assert chinese_remainder_theorem(divisors, remainders) == expected

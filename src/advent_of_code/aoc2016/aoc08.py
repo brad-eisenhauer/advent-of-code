@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from itertools import product
 from typing import IO, ClassVar
 
-
 from advent_of_code.base import Solution
 from advent_of_code.util import ocr
 
