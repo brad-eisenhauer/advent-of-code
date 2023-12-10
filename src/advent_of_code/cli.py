@@ -47,7 +47,10 @@ def init(
         f.write(template.render(day=day, year=year))
 
     input_file_path = Path() / "input" / str(year) / f"input{day:02}.txt"
-    download_input(input_file_path, day, year)
+    try:
+        download_input(input_file_path, day, year)
+    except requests.exceptions.HTTPError as e:
+        log.error(f"Error fetching input for {day}/{year}: {e}")
 
 
 def prep_filesystem(module_path: Path):
