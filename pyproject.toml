@@ -21,6 +21,7 @@ dependencies = [
     "pytest-cov",
     "pyyaml>=6.0",
     "requests",
+    "rich",
     "typer>=0.6",
 ]
 
