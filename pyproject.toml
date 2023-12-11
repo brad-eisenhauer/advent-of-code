@@ -40,8 +40,7 @@ combine_as_imports = true
 
 [tool.pytest.ini_options]
 addopts = "--cov-report=term-missing"
-python_files = "aoc*.py"
-testpaths = ["src/advent_of_code"]
+testpaths = ["test"]
 
 [tool.ruff]
 line-length = 100

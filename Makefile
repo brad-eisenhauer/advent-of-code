@@ -1,6 +1,6 @@
 .PHONY: help
 help: ## Display this help message.
-	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -h '\s##\s' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | sort -k1
 
 .PHONY: format
 format: ## Format source files with isort and black.
@@ -9,7 +9,7 @@ format: ## Format source files with isort and black.
 
 .PHONY: test
 test: ## Run all tests.
-	pytest --cov=advent_of_code
+	pytest --cov=advent_of_code.util
 
 .PHONY: install
 install: ## Install the current package plus dependencies into the current environment.
