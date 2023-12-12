@@ -3,12 +3,14 @@ from __future__ import annotations
 
 import re
 from io import StringIO
+from itertools import product
 from typing import IO, Collection, Iterable, Iterator, Optional
 
 import pytest
 
 from advent_of_code.base import Solution
 from advent_of_code.cli import log
+from advent_of_code.util import grammar as G
 
 
 class AocSolution(Solution[int, int]):
@@ -22,7 +24,23 @@ class AocSolution(Solution[int, int]):
 
     def solve_part_two(self, input_file: Optional[IO] = None) -> int:
         with input_file or self.open_input() as fp:
-            ...
+            rules, final = read_input(fp)
+        grammar = G.ContextFreeGrammar(
+            rules=list(G.Rule(r[0], tuple(tokenize(r[1]))) for r in rules),
+            start_symbol="e",
+        )
+        log.debug("Created grammar with %d rules.", len(grammar.rules))
+        text = tokenize(final)
+        log.debug("Text has %d symbols.", len(text))
+        log.debug("Converting grammar to CNF...")
+        cnf_grammar = grammar.to_cnf(
+            set(text), product("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        )
+        log.debug("CNF grammar has %d rules.", len(cnf_grammar.rules))
+        log.debug("Parsing...")
+        cyk_result = G.cyk(text, cnf_grammar)
+        log.debug("Parsing complete; calculating minimum weight...")
+        return G.min_parse_weight(cyk_result, "e")
 
 
 def read_input(file: IO) -> tuple[Collection[tuple[str, str]], str]:

@@ -1,17 +1,17 @@
 import pytest
 
-from advent_of_code.util import cfg
+import advent_of_code.util.grammar as G
 
 
 @pytest.fixture()
-def context_free_grammar() -> cfg.ContextFreeGrammar:
-    return cfg.ContextFreeGrammar(
+def context_free_grammar() -> G.ContextFreeGrammar:
+    return G.ContextFreeGrammar(
         rules = [
-            cfg.Rule("e", ["H"]),
-            cfg.Rule("e", ["O"]),
-            cfg.Rule("H", ["H", "O"]),
-            cfg.Rule("H", ["O", "H"]),
-            cfg.Rule("O", ["H", "H"]),
+            G.Rule("e", ["H"]),
+            G.Rule("e", ["O"]),
+            G.Rule("H", ["H", "O"]),
+            G.Rule("H", ["O", "H"]),
+            G.Rule("O", ["H", "H"]),
         ],
         start_symbol="e",
     )
@@ -21,42 +21,57 @@ class TestContextFreeGrammar:
     def test_grammar_is_cnf(self, context_free_grammar):
         assert not context_free_grammar.is_cnf()
 
-    def test_grammar_to_cnf(self, context_free_grammar: cfg.ContextFreeGrammar):
-
-        expected = cfg.ContextFreeGrammar(
+    def test_grammar_to_cnf(self, context_free_grammar: G.ContextFreeGrammar):
+        expected = G.ContextFreeGrammar(
             rules=[
-                cfg.Rule("e", ["H", "O"]),
-                cfg.Rule("e", ["O", "H"]),
-                cfg.Rule("e", ["H", "H"]),
-                cfg.Rule("H", ["H", "O"]),
-                cfg.Rule("H", ["O", "H"]),
-                cfg.Rule("O", ["H", "H"]),
+                G.Rule("A", ("H",), 0),
+                G.Rule("B", ("O",), 0),
+                G.Rule("e", ("H",)),
+                G.Rule("e", ("O",)),
+                G.Rule("e", ("A", "B"), 2),
+                G.Rule("e", ("B", "A"), 2),
+                G.Rule("e", ("A", "A"), 2),
+                G.Rule("A", ("A", "B")),
+                G.Rule("A", ("B", "A")),
+                G.Rule("B", ("A", "A")),
             ],
             start_symbol="e",
         )
         result = context_free_grammar.to_cnf({"H", "O"}, iter("ABCDEFGIJKLMNPQRSTUVWXYZ"))
         assert result.is_cnf()
+        assert result == expected
 
 
 class TestCYK:
-    def test_cyk(self):
-        grammar = cfg.ContextFreeGrammar(
-            rules=[
-                cfg.Rule("S", ["VP", "NP"]),
-                cfg.Rule("VP", ["VP", "PP"]),
-                cfg.Rule("VP", ["V", "NP"]),
-                cfg.Rule("VP", ["eats"]),
-                cfg.Rule("PP", ["P", "NP"]),
-                cfg.Rule("NP", ["Det", "N"]),
-                cfg.Rule("NP", ["she"]),
-                cfg.Rule("V", ["eats"]),
-                cfg.Rule("P", ["with"]),
-                cfg.Rule("N", ["fish"]),
-                cfg.Rule("N", ["fork"]),
-                cfg.Rule("Det", ["a"]),
-            ],
-            start_symbol="S",
-        )
-        text = ["she", "eats", "fish", "with", "a", "fork"]
-        result = cfg.cyk(text, grammar)
-        assert result is True
+    grammar = G.ContextFreeGrammar(
+        rules=[
+            G.Rule("S", ("NP", "VP")),
+            G.Rule("VP", ("VP", "PP")),
+            G.Rule("VP", ("V", "NP")),
+            G.Rule("VP", ("eats",)),
+            G.Rule("PP", ("P", "NP")),
+            G.Rule("NP", ("Det", "N")),
+            G.Rule("NP", ("she",)),
+            G.Rule("V", ("eats",)),
+            G.Rule("P", ("with",)),
+            G.Rule("N", ("fish",)),
+            G.Rule("N", ("fork",)),
+            G.Rule("Det", ("a",)),
+        ],
+        start_symbol="S",
+    )
+
+    @pytest.mark.parametrize(
+        ("text", "expected"),
+        [
+            (["she", "eats", "a", "fish", "with", "a", "fork"], True),
+            (["she", "eats"], True),
+            (["she", "eats", "a", "fish"], True),
+            (["she", "eats", "with", "a", "fork"], True),
+            (["she", "with", "eats", "a", "fork", "fish"], False),
+            (["a", "eats", "fish", "fork", "she", "with"], False),
+        ]
+    )
+    def test_cyk(self, text, expected):
+        result = G.cyk(text, self.grammar)
+        assert bool(result) is expected

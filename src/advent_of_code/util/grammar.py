@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 from collections import defaultdict
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cache, cached_property
+from itertools import product
 from typing import Callable, Collection, Generic, Hashable, Iterator, Optional, Sequence, TypeVar
 
 T = TypeVar("T", bound=Hashable)
@@ -21,6 +22,11 @@ class Rule(Generic[T]):
 class ContextFreeGrammar(Generic[T]):
     rules: Collection[Rule[T]]
     start_symbol: T
+
+    def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value, ContextFreeGrammar):
+            return False
+        return self.start_symbol == __value.start_symbol and set(self.rules) == set(__value.rules)
 
     @cached_property
     def non_terminals(self) -> Sequence[T]:
@@ -65,7 +71,7 @@ class ContextFreeGrammar(Generic[T]):
                     new_rule = Rule(
                         new_syms.get(sym, sym),
                         tuple(new_syms.get(r, r) for r in repl),
-                        0 if sym in new_syms else weight,
+                        weight,
                     )
                     new_rules.append(new_rule)
         cnf_rules = new_rules
@@ -128,7 +134,9 @@ class ContextFreeGrammar(Generic[T]):
         for rule in cnf_rules:
             match rule:
                 case Rule(sym, (repl,), weight) if repl in non_terminals:
-                    new_rules.extend(Rule(sym, r, weight + w) for r, w in _find_non_unit_repls(repl))
+                    new_rules.extend(
+                        Rule(sym, r, weight + w) for r, w in _find_non_unit_repls(repl)
+                    )
                 case _:
                     new_rules.append(rule)
         cnf_rules = new_rules
@@ -136,9 +144,10 @@ class ContextFreeGrammar(Generic[T]):
         return ContextFreeGrammar(cnf_rules, cnf_start_sym)
 
 
-def cyk(
-    text: list[T], grammar: ContextFreeGrammar
-) -> Optional[list[list[set[Rule[T]]]]]:
+CykResult = list[list[set[tuple[Rule[T], int]]]]
+
+
+def cyk(text: list[T], grammar: ContextFreeGrammar[T]) -> Optional[CykResult[T]]:
     if not grammar.is_cnf():
         raise ValueError("Grammar must be in CNF.")
 
@@ -149,20 +158,65 @@ def cyk(
         for rule in grammar.rules:
             match rule:
                 case Rule(_, (r,), _) if r == char:
-                    result[0][i].add(rule)
+                    result[0][i].add((rule, None))
     if not all(result[0][i] for i in range(text_len)):
         return None
 
     for span_length in range(2, text_len + 1):
         for span_start in range(0, text_len - span_length + 1):
             for partition_length in range(1, span_length):
-                target_rbs = {r.symbol for r in result[span_length - 2 - span_start][span_start]}
-                target_rcs = {r.symbol for r in result[span_length - partition_length - 1][span_start + partition_length]}
+                target_rbs = {r.symbol for r, _ in result[partition_length - 1][span_start]}
+                target_rcs = {
+                    r.symbol
+                    for r, _ in result[span_length - partition_length - 1][
+                        span_start + partition_length
+                    ]
+                }
                 if not target_rbs or not target_rcs:
                     continue
                 for rule in grammar.rules:
                     match rule:
                         case Rule(_, [rb, rc], _) if rb in target_rbs and rc in target_rcs:
-                            result[span_length - 1][span_start].append(rule)
+                            result[span_length - 1][span_start].add((rule, partition_length))
 
-    return bool(result[text_len - 1][0])
+    if result[-1][0]:
+        return result
+    return None
+
+
+@dataclass(frozen=True)
+class ParseNode(Generic[T]):
+    rule: Rule[T]
+    left: Optional[ParseNode[T]] = None
+    right: Optional[ParseNode[T]] = None
+
+    def total_weight(self) -> int:
+        result = self.rule.weight
+        if self.left:
+            result += self.left.total_weight()
+        if self.right:
+            result += self.right.total_weight()
+        return result
+
+
+def min_parse_weight(cyk_result: CykResult[T], start_symbol: T) -> int:
+    @cache
+    def _min_weight(span_length, span_start, symbol) -> int:
+        result = None
+        for rule, partition_length in cyk_result[span_length - 1][span_start]:
+            if rule.symbol != symbol:
+                continue
+            if partition_length is None:
+                result = rule.weight if result is None else min(result, rule.weight)
+            else:
+                left_weight = _min_weight(partition_length, span_start, rule.replacement[0])
+                right_weight = _min_weight(
+                    span_length - partition_length,
+                    span_start + partition_length,
+                    rule.replacement[1],
+                )
+                total_weight = rule.weight + left_weight + right_weight
+                result = total_weight if result is None else min(result, total_weight)
+        return result
+
+    return _min_weight(len(cyk_result), 0, start_symbol)
