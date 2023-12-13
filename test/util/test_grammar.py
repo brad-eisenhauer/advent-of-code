@@ -70,6 +70,7 @@ class TestCYK:
             (["she", "eats", "with", "a", "fork"], True),
             (["she", "with", "eats", "a", "fork", "fish"], False),
             (["a", "eats", "fish", "fork", "she", "with"], False),
+            (["eats", "a", "fish"], False),
         ]
     )
     def test_cyk(self, text, expected):
