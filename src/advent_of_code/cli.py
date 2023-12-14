@@ -27,7 +27,10 @@ def main(
     debug: bool = typer.Option(False, help="Enable debug logging"),
     input_file: Optional[str] = typer.Option(None, help="Alternate input file name"),
 ):
-    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO)
+    logging.basicConfig(
+        level=logging.DEBUG if debug else logging.INFO,
+        format="%(asctime)s [%(name)s:%(levelname)s] %(message)s",
+    )
     app_state["input_file"] = input_file
 
 
