@@ -1,7 +1,16 @@
 import time
 from functools import partial
 from itertools import islice, tee, zip_longest
-from typing import Callable, ContextManager, Iterable, Iterator, Optional, Sequence, TypeVar
+from typing import (
+    Callable,
+    ContextManager,
+    Generic,
+    Iterable,
+    Iterator,
+    Optional,
+    Sequence,
+    TypeVar,
+)
 
 T = TypeVar("T")
 
@@ -80,3 +89,25 @@ class Timer(ContextManager):
         if self.last_check is None:
             return ""
         return f" ({self.get_formatted_time(check_time, self.last_check)} since last check)"
+
+
+class CycleDetector(Generic[T]):
+    def __init__(self, items: Iterator[T]):
+        self.items = items
+        self.result: Optional[tuple[int, int, list[T]]] = None
+
+    def find_cycle(self) -> tuple[int, int, list[T]]:
+        if self.result is not None:
+            return self.result
+        acc: list[T] = [next(self.items)]
+        for item in self.items:
+            if item == acc[len(acc) // 2]:
+                cycle_start = len(acc) // 2
+                cycle_length = len(acc) - cycle_start
+                self.result = cycle_start, cycle_length, acc
+                return self.result
+            acc.append(item)
+
+    def project_item_at(self, index: int) -> T:
+        start, length, acc = self.find_cycle()
+        return acc[start + (index - start) % length]
