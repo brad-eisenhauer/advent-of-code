@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Callable, Generic, Optional, TypeVar
 
@@ -28,8 +30,8 @@ def kdtree(point_list: list[T], accessor: Callable[[T], Vector], depth: int = 0)
 @dataclass
 class Node(Generic[T]):
     location: T
-    left_child: Optional["Node[T]"]
-    right_child: Optional["Node[T]"]
+    left_child: Optional[Node[T]]
+    right_child: Optional[Node[T]]
 
 
 def find_nearest_neighbor(

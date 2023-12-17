@@ -10,7 +10,6 @@ from typing import IO, Optional
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 Galaxy = tuple[int, int]
 
@@ -56,12 +55,12 @@ class Image:
     @cached_property
     def empty_rows(self) -> tuple[int]:
         all_rows = set(range(self.dims[0]))
-        return all_rows - set(r for r, _ in self.galaxies)
+        return all_rows - {r for r, _ in self.galaxies}
 
     @cached_property
     def empty_cols(self) -> tuple[int]:
         all_cols = set(range(self.dims[1]))
-        return all_cols - set(c for _, c in self.galaxies)
+        return all_cols - {c for _, c in self.galaxies}
 
     def expand(self, expansion_factor: int = 2) -> Image:
         new_galaxies: list[Galaxy] = []

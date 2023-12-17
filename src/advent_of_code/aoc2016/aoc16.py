@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from functools import cache
 from io import StringIO
-from itertools import chain, count, islice, repeat
-from typing import IO, Iterable, Iterator, Optional, Union
+from itertools import count, islice
+from typing import IO, Iterator, Optional, Union
 
 import pytest
 
