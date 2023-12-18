@@ -26,7 +26,7 @@ class AocSolution(Solution[int, int]):
         with input_file or self.open_input() as fp:
             rules, final = read_input(fp)
         grammar = G.ContextFreeGrammar(
-            rules=list(G.Rule(r[0], tuple(tokenize(r[1]))) for r in rules),
+            rules=[G.Rule(r[0], tuple(tokenize(r[1]))) for r in rules],
             start_symbol="e",
         )
         log.debug("Created grammar with %d rules.", len(grammar.rules))

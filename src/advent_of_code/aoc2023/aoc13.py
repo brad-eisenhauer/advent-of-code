@@ -1,10 +1,10 @@
 """Advent of Code 2023, day 13: https://adventofcode.com/2023/day/13"""
 from __future__ import annotations
 
-from collections import deque
+from concurrent.futures import Executor, ThreadPoolExecutor
+from functools import partial
 from io import StringIO
-from itertools import islice
-from typing import IO, Callable, Iterable, Iterator, Optional
+from typing import IO, Callable, Iterator, Optional, Type
 
 import pytest
 
@@ -22,29 +22,43 @@ class AocSolution(Solution[int, int]):
         return self._solve_with(has_reflection_at, input_file)
 
     def solve_part_two(self, input_file: Optional[IO] = None) -> int:
-        return self._solve_with(has_reflection_off_by_one, input_file)
+        return self._solve_parallel(has_reflection_off_by_one, input_file)
 
     def _solve_with(
         self, reflector: Callable[[Field, int], bool], input_file: Optional[IO] = None
     ) -> int:
-        result = 0
         with input_file or self.open_input() as fp:
-            for field in read_fields(fp):
-                for loc in range(1, len(field)):
-                    if reflector(field, loc):
-                        result += 100 * loc
-                        break
-                field = flip_field(field)
-                for loc in range(1, len(field)):
-                    if reflector(field, loc):
-                        result += loc
-                        break
+            return sum(self._score_field(field, reflector) for field in read_fields(fp))
+
+    def _solve_parallel(
+        self,
+        reflector: Callable[[Field, int], bool],
+        input_file: Optional[IO] = None,
+        executor_class: Type[Executor] = ThreadPoolExecutor,
+    ) -> int:
+        pool = executor_class()
+        with input_file or self.open_input() as fp:
+            scores = pool.map(partial(self._score_field, reflector=reflector), read_fields(fp))
+        return sum(scores)
+
+    @staticmethod
+    def _score_field(field: Field, reflector: Callable[[Field, int], bool]) -> int:
+        result = 0
+        for loc in range(1, len(field)):
+            if reflector(field, loc):
+                result += 100 * loc
+                break
+        field = flip_field(field)
+        for loc in range(1, len(field)):
+            if reflector(field, loc):
+                result += loc
+                break
         return result
 
 
 def read_fields(file: IO) -> Iterator[Field]:
     next_field = []
-    for row, line in enumerate(file):
+    for _row, line in enumerate(file):
         line = line.strip()
         if not line:
             yield next_field

@@ -4,8 +4,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from io import StringIO
-from itertools import count
-from typing import IO, Iterable, Optional
+from typing import IO, Optional
 
 import pytest
 

@@ -7,7 +7,6 @@ from typing import IO, Optional, Sequence
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):
