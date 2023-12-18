@@ -59,19 +59,18 @@ def product(xs: Iterable[T]) -> Union[T, int]:
 
 
 def intersect_ranges(left: range, right: range) -> range:
-    inter_min = max(min(left), min(right))
-    inter_max = min(max(left), max(right))
-    return range(inter_min, inter_max + 1)
+    inter_start = max(left.start, right.start)
+    inter_stop = min(left.stop, right.stop)
+    return range(inter_start, inter_stop)
 
 
 def union_ranges(left: range, right: range) -> Optional[range]:
-    match intersect_ranges(left, right):
-        case range(a, b) if b >= a - 1:
-            union_min = min(min(left), min(right))
-            union_max = max(max(left), max(right))
-            return range(union_min, union_max + 1)
-        case _:
-            return None
+    x_range = intersect_ranges(left, right)
+    if not (x_range):
+        return None
+    union_start = min(left.start, right.start)
+    union_stop = max(left.stop, right.stop)
+    return range(union_start, union_stop)
 
 
 def pseudoprimes() -> Iterator[int]:
