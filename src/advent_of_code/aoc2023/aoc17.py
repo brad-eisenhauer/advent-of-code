@@ -1,7 +1,6 @@
 """Advent of Code 2023, day 17: https://adventofcode.com/2023/day/17"""
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass
 from functools import cached_property
 from io import StringIO
