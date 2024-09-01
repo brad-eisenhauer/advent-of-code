@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Generic, Optional, TypeVar
 
-T = TypeVar["T"]
+T = TypeVar("T")
 Vector = tuple[int, ...]
 
 

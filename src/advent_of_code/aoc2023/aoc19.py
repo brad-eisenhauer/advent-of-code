@@ -11,7 +11,6 @@ from typing import IO, Callable, ClassVar, Iterator, Optional, Sequence
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):
@@ -170,7 +169,7 @@ def read_workflows(file: IO) -> Iterator[Workflow]:
         yield Workflow.from_str(line)
 
 
-def read_parts(file: IO) -> Iterator(Part):
+def read_parts(file: IO) -> Iterator[Part]:
     for line in file:
         yield Part.from_str(line.strip())
 
