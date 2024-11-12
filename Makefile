@@ -21,7 +21,7 @@ install-no-deps: ## Install the current package without dependencies into the cu
 
 .PHONY: clean-cache
 clean-cache:
-	find ./src -type d -name __pycache__ -prune -exec rm -rf '{}' \;
+	find ./src -type d -name __pycache__ -prune -exec rm -rf {} +
 
 .PHONY: lint
 lint:
@@ -30,3 +30,10 @@ lint:
 .PHONY: autolint
 autolint:
 	ruff --fix ./src
+
+.PHONY: venv
+venv: ## Build a development environment.
+	[ -d .venv ] || python -m venv .venv
+	. .venv/bin/activate && \
+	python -m pip install -r dev-requirements.txt && \
+	python -m pip install --editable .
