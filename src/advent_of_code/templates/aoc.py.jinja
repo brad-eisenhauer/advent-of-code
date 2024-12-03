@@ -32,8 +32,7 @@ SAMPLE_INPUTS = [
 
 @pytest.fixture()
 def sample_input(request):
-    with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
-        yield f
+    StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)])
 
 
 @pytest.fixture()
