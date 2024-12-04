@@ -32,8 +32,9 @@ autolint:
 	ruff --fix ./src
 
 .PHONY: venv
+VENV_PYTHON ?= python3
 venv: ## Build a development environment.
-	[ -d .venv ] || python -m venv .venv
+	[ -f .venv/bin/activate ] || $(VENV_PYTHON) -m venv .venv
 	. .venv/bin/activate && \
 	python -m pip install -r dev-requirements.txt && \
 	python -m pip install --editable .
