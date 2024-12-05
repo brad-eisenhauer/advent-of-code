@@ -1,3 +1,5 @@
+PYTHON ?= python3
+
 .PHONY: help
 help: ## Display this help message.
 	@grep -h '\s##\s' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | sort -k1
@@ -13,11 +15,11 @@ test: ## Run all tests.
 
 .PHONY: install
 install: ## Install the current package plus dependencies into the current environment.
-	python -m pip install --editable .
+	$(PYTHON) -m pip install --editable .
 
 .PHONY: install-no-deps
 install-no-deps: ## Install the current package without dependencies into the current environment.
-	python -m pip install --no-deps --editable .
+	$(PYTHON) -m pip install --no-deps --editable .
 
 .PHONY: clean-cache
 clean-cache:
@@ -33,7 +35,7 @@ autolint:
 
 .PHONY: venv
 venv: ## Build a development environment.
-	[ -d .venv ] || python -m venv .venv
+	[ -f .venv/bin/activate ] || $(PYTHON) -m venv .venv
 	. .venv/bin/activate && \
-	python -m pip install -r dev-requirements.txt && \
-	python -m pip install --editable .
+	$(PYTHON) -m pip install -r dev-requirements.txt && \
+	$(PYTHON) -m pip install --editable .
