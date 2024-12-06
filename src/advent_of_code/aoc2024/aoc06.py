@@ -1,7 +1,9 @@
 """Advent of Code 2024, day 6: https://adventofcode.com/2024/day/6"""
 from __future__ import annotations
 
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass, replace
+from itertools import repeat
 from io import StringIO
 from typing import IO, Iterator, Optional, TypeAlias
 
@@ -27,9 +29,9 @@ class AocSolution(Solution[int, int]):
         with input_file or self.open_input() as reader:
             guard_map, state = GuardMap.read(reader)
 
-        solutions: set[Vector] = set()
         start_pos = state.position
-        states: list[State] = []
+        states: set[State] = set()
+        potential_obstacles: list[tuple[Vector, State]] = []
         for state in guard_map.run(state):
             # Would adding an obstacle in front of the guard result in a loop?
             new_obstacle = vector_add(state.position, state.orientation)
@@ -47,12 +49,19 @@ class AocSolution(Solution[int, int]):
             elif any(s.position == new_obstacle for s in states):
                 pass
             else:
-                guard_map.obstacles.add(new_obstacle)
-                if not guard_map.will_exit_from(state):
-                    solutions.add(new_obstacle)
-                guard_map.obstacles.remove(new_obstacle)
-            states.append(state)
+                potential_obstacles.append((new_obstacle, state))
+            states.add(state)
+
+        executor = ProcessPoolExecutor()
+
+        outcomes = executor.map(_is_valid_obstacle, potential_obstacles, repeat(guard_map))
+        solutions = set(o for (o, _), outcome in zip(potential_obstacles, outcomes) if outcome)
         return len(solutions)
+
+def _is_valid_obstacle(ob_and_state: tuple[Vector, State], guard_map: GuardMap) -> bool:
+    obstacle, state = ob_and_state
+    new_map = replace(guard_map, obstacles=guard_map.obstacles | {obstacle})
+    return not new_map.will_exit_from(state)
 
 
 def vector_add(left: Vector, right: Vector) -> Vector:
