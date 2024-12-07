@@ -38,7 +38,9 @@ def count_xmas(grid: list[str]) -> int:
             if padded_grid[i][j] != "X":
                 continue
             for direction in DIRECTIONS:
-                word = "".join(padded_grid[i + direction[0] * x][j + direction[1] * x] for x in range(4))
+                word = "".join(
+                    padded_grid[i + direction[0] * x][j + direction[1] * x] for x in range(4)
+                )
                 if word == "XMAS":
                     result += 1
     return result
@@ -56,7 +58,9 @@ def count_x_mas(grid: list[str]) -> int:
             for direction in DIRECTIONS:
                 if 0 in direction:  # diagonals only
                     continue
-                word = "".join(padded_grid[i + direction[0] * x][j + direction[1] * x] for x in range(-1, 2))
+                word = "".join(
+                    padded_grid[i + direction[0] * x][j + direction[1] * x] for x in range(-1, 2)
+                )
                 if word == "MAS":
                     log.debug("Found 'MAS' at (%d, %d) offset %s.", i, j, direction)
                     matching_directions.add(direction)

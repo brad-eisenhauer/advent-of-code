@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass, replace
-from itertools import repeat
 from io import StringIO
+from itertools import repeat
 from typing import IO, Iterator, Optional, TypeAlias
 
 import pytest
@@ -57,6 +57,7 @@ class AocSolution(Solution[int, int]):
         outcomes = executor.map(_is_valid_obstacle, potential_obstacles, repeat(guard_map))
         solutions = set(o for (o, _), outcome in zip(potential_obstacles, outcomes) if outcome)
         return len(solutions)
+
 
 def _is_valid_obstacle(ob_and_state: tuple[Vector, State], guard_map: GuardMap) -> bool:
     obstacle, state = ob_and_state
