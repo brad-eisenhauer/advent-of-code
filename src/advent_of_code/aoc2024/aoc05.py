@@ -78,7 +78,7 @@ def fix_ordering(page_ordering: list[int], rules: list[OrderingRule]) -> None:
         for i, rule in enumerate(_rules):
             if not rule.validate(page_ordering):
                 rule.reorder(page_ordering)
-                _rules = _rules[i + 1:] + _rules[:i + 1]
+                _rules = _rules[i + 1 :] + _rules[: i + 1]
                 break
         else:
             return

@@ -34,7 +34,6 @@ class Report:
         return cls(levels=levels)
 
     def is_safe(self, dampened: bool = False) -> bool:
-
         def _sign(n: int) -> int:
             if n > 0:
                 return 1
@@ -53,7 +52,7 @@ class Report:
             return False
 
         for drop_index in range(len(self.levels)):
-            new_levels = self.levels[:drop_index] + self.levels[drop_index + 1:]
+            new_levels = self.levels[:drop_index] + self.levels[drop_index + 1 :]
             new_steps = [b - a for a, b in zip(new_levels, new_levels[1:])]
             if _safe_steps(new_steps):
                 return True
