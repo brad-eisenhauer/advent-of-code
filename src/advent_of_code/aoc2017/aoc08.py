@@ -41,13 +41,15 @@ class Instruction:
     amount: int
     condition: str
 
+    # fmt: off
     REGEX: ClassVar[str] = (
         r"(?P<register>[a-z]+) "  # register name, followed by a space
         r"(?P<op>inc|dec) "       # operation, followed by a space
-        r"(?P<amount>-*[0-9]+) " # amount, followed by a space
-        r"if "                   # literal 'if'
+        r"(?P<amount>-*[0-9]+) "  # amount, followed by a space
+        r"if "                    # literal 'if'
         r"(?P<condition>[a-z]+ [<>=!]{1,2} -*[0-9]+)"  # condition
     )
+    # fmt: on
 
     @classmethod
     def from_str(cls, text: str) -> Instruction:

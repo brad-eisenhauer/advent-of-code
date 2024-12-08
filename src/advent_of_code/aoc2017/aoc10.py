@@ -46,7 +46,7 @@ class Hasher:
         log.debug("Stepping %d.", length)
         seq_len = len(self.seq)
         if length > 1:
-            self.seq = self.seq[length - 1::-1] + self.seq[length:]
+            self.seq = self.seq[length - 1 :: -1] + self.seq[length:]
         movement = (length + self.skip_size) % len(self.seq)
         self.seq = self.seq[movement:] + self.seq[:movement]
         assert len(self.seq) == seq_len
@@ -59,9 +59,9 @@ class Hasher:
         return self.seq[self.origin % len(self.seq)] * self.seq[(self.origin + 1) % len(self.seq)]
 
     def calc_dense_hash(self) -> int:
-        self.seq = self.seq[self.origin:] + self.seq[:self.origin]
+        self.seq = self.seq[self.origin :] + self.seq[: self.origin]
         self.origin = 0
-        values = [reduce(operator.xor, self.seq[i:i + 16]) for i in range(0, 256, 16)]
+        values = [reduce(operator.xor, self.seq[i : i + 16]) for i in range(0, 256, 16)]
         return "".join(f"{n:02x}" for n in values)
 
 
