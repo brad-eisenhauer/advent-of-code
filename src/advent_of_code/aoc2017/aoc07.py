@@ -35,17 +35,19 @@ class AocSolution(Solution[str, int]):
         return wrong_weight_node.weight - weight_error
 
 
+# fmt: off
 PROGRAM_REGEX = (
-    r"(?P<name>[a-z]+) "               # name followed by a space
-    r"\((?P<weight>\d+)\)"             # weight surrounded by parens
-    r"(?:"                             # start of non-capturing, optional group
-        r" -> "                        # literal arrow
-        r"(?P<subprogs>"               # start of subprograms
-        r"[a-z]+"                      # first subprogram name
-        r"(?:, [a-z]+)*"               # additional subprograms
-        r")"                           # end of subprograms
-    r")?"                              # end of optional group
+    r"(?P<name>[a-z]+) "    # name followed by a space
+    r"\((?P<weight>\d+)\)"  # weight surrounded by parens
+    r"(?:"                  # start of non-capturing, optional group
+        r" -> "             # literal arrow
+        r"(?P<subprogs>"    # start of subprograms
+        r"[a-z]+"           # first subprogram name
+        r"(?:, [a-z]+)*"    # additional subprograms
+        r")"                # end of subprograms
+    r")?"                   # end of optional group
 )
+# fmt: on
 
 
 @dataclass

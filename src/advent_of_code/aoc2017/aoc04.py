@@ -50,7 +50,7 @@ def is_passphrase_valid_2(text: str) -> bool:
         ("a ab abc abd abf abj", True),
         ("iiii oiii ooii oooi oooo", True),
         ("oiii ioii iioi iiio", False),
-    ]
+    ],
 )
 def test_is_passphrase_valid_2(phrase: str, expected: bool) -> None:
     assert is_passphrase_valid_2(phrase) == expected

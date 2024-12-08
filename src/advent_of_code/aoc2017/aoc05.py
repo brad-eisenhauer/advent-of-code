@@ -4,9 +4,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from io import StringIO
 from typing import IO, Iterator, Literal, Optional
-from typing_extensions import Self
 
 import pytest
+from typing_extensions import Self
 
 from advent_of_code.base import PuzzlePart, Solution
 from advent_of_code.cli import log

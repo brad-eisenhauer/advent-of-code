@@ -75,6 +75,7 @@ NEIGHBOR_OFFSETS = [
     Vector2((1, -1)),
 ]
 
+
 def neighbors(v: Vector2) -> Iterator[Vector2]:
     for offset in NEIGHBOR_OFFSETS:
         yield v + offset
