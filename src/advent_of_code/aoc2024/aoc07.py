@@ -55,8 +55,7 @@ class EmptyEquation:
     def is_solvable(
         self, operators: Collection[Callable[[int, int], int]] = (operator.add, operator.mul)
     ) -> bool:
-
-        def _is_solvable_iter(operands = self.operands) -> bool:
+        def _is_solvable_iter(operands=self.operands) -> bool:
             if len(operands) == 1:
                 return operands[0] == self.result
             if operands[0] > self.result:
