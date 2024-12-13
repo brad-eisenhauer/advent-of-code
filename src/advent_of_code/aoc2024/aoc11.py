@@ -1,8 +1,8 @@
 """Advent of Code 2024, day 11: https://adventofcode.com/2024/day/11"""
 from __future__ import annotations
 
-from functools import cache
 import math
+from functools import cache
 from io import StringIO
 from typing import IO, Optional
 
@@ -39,7 +39,7 @@ def blink(value: int) -> list[int]:
     if value == 0:
         return [1]
     if (digit_count := count_digits(value)) % 2 == 0:
-        return [value // 10**(digit_count // 2), value % 10**(digit_count // 2)]
+        return [value // 10 ** (digit_count // 2), value % 10 ** (digit_count // 2)]
     return [value * 2024]
 
 
