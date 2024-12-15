@@ -1,4 +1,5 @@
 """Advent of Code 2017, day 1: https://adventofcode.com/2017/day/1"""
+
 from __future__ import annotations
 
 from io import StringIO

@@ -1,4 +1,5 @@
 """Advent of Code 2017, day 3: https://adventofcode.com/2017/day/3"""
+
 from __future__ import annotations
 
 from collections import defaultdict
