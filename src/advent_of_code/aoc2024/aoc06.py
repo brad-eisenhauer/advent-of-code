@@ -11,7 +11,6 @@ from typing import IO, Iterator, Optional, TypeAlias
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 Vector: TypeAlias = tuple[int, int]
 
@@ -23,7 +22,7 @@ class AocSolution(Solution[int, int]):
     def solve_part_one(self, input_file: Optional[IO] = None) -> int:
         with input_file or self.open_input() as reader:
             guard_map, state = GuardMap.read(reader)
-        spaces = set(s.position for s in guard_map.run(state))
+        spaces = {s.position for s in guard_map.run(state)}
         return len(spaces)
 
     def solve_part_two(self, input_file: Optional[IO] = None) -> int:
@@ -41,22 +40,19 @@ class AocSolution(Solution[int, int]):
             # - be out of bounds
             # - already exist
             # - have already been passed through
-            if new_obstacle == start_pos:
-                pass
-            elif not guard_map.in_bounds(new_obstacle):
-                pass
-            elif new_obstacle in guard_map.obstacles:
-                pass
-            elif any(s.position == new_obstacle for s in states):
-                pass
-            else:
+            if (
+                new_obstacle != start_pos
+                and guard_map.in_bounds(new_obstacle)
+                and new_obstacle not in guard_map.obstacles
+                and not any(s.position == new_obstacle for s in states)
+            ):
                 potential_obstacles.append((new_obstacle, state))
             states.add(state)
 
         executor = ProcessPoolExecutor()
 
         outcomes = executor.map(_is_valid_obstacle, potential_obstacles, repeat(guard_map))
-        solutions = set(o for (o, _), outcome in zip(potential_obstacles, outcomes) if outcome)
+        solutions = {o for (o, _), outcome in zip(potential_obstacles, outcomes) if outcome}
         return len(solutions)
 
 
@@ -137,12 +133,12 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     return StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)])
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

@@ -9,7 +9,6 @@ from typing import IO, Optional
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):
@@ -43,7 +42,7 @@ class Report:
             return 0
 
         def _safe_steps(steps: list[int]) -> bool:
-            result = all(1 <= abs(s) <= 3 for s in steps) and len(set(_sign(s) for s in steps)) == 1
+            result = all(1 <= abs(s) <= 3 for s in steps) and len({_sign(s) for s in steps}) == 1
             return result
 
         steps = [b - a for a, b in zip(self.levels, self.levels[1:])]
@@ -76,13 +75,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

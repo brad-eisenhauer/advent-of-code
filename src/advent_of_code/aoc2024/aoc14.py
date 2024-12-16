@@ -5,7 +5,6 @@ from __future__ import annotations
 import operator
 import re
 import sys
-from copy import copy
 from dataclasses import dataclass
 from functools import reduce
 from io import StringIO
@@ -137,12 +136,12 @@ p=9,5 v=-3,-3
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     return StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)])
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

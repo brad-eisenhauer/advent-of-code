@@ -9,7 +9,6 @@ from typing import IO, Iterator, Optional
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):
@@ -54,12 +53,12 @@ xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     return StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)])
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

@@ -208,12 +208,12 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     return StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)])
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

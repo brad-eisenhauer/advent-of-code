@@ -10,7 +10,6 @@ from typing import IO, Optional, TypeAlias
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 Vector: TypeAlias = tuple[int, int]
 
@@ -113,7 +112,7 @@ class Box:
         adj_pos = self.get_adjacent_pos(direction)
         if any(p in self.warehouse.walls for p in adj_pos):
             return False
-        adj_boxes = set(b for p in adj_pos if (b := self.warehouse.get_box_at(p)) is not None)
+        adj_boxes = {b for p in adj_pos if (b := self.warehouse.get_box_at(p)) is not None}
         return all(b.can_move(direction) for b in adj_boxes)
 
     def get_adjacent_pos(self, direction: Vector) -> list[Vector]:
@@ -248,12 +247,12 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     return StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)])
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 
