@@ -1,4 +1,5 @@
 """Advent of Code 2024, day 5: https://adventofcode.com/2024/day/5"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

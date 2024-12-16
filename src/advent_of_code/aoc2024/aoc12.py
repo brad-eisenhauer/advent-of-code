@@ -1,4 +1,5 @@
 """Advent of Code 2024, day 12: https://adventofcode.com/2024/day/12"""
+
 from __future__ import annotations
 
 from collections import defaultdict, deque
@@ -202,18 +203,27 @@ def test_find_regions(sample_input: IO) -> None:
         # interior hole at (1, 2)
         (
             {
-                complex(0, 1), complex(0, 2), complex(0, 3),
-                complex(1, 1),                complex(1, 3),
-                complex(2, 1), complex(2, 2), complex(2, 3),
+                complex(0, 1),
+                complex(0, 2),
+                complex(0, 3),
+                complex(1, 1),
+                complex(1, 3),
+                complex(2, 1),
+                complex(2, 2),
+                complex(2, 3),
             },
             8,
         ),
         # "C" shape with hole at (1, 2) and opening at (0, 3)
         (
             {
-                complex(0, 1), complex(0, 2),
-                complex(1, 1),                complex(1, 3),
-                complex(2, 1), complex(2, 2), complex(2, 3),
+                complex(0, 1),
+                complex(0, 2),
+                complex(1, 1),
+                complex(1, 3),
+                complex(2, 1),
+                complex(2, 2),
+                complex(2, 3),
             },
             10,
         ),

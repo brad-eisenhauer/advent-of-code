@@ -1,4 +1,5 @@
 """Advent of Code 2024, day 15: https://adventofcode.com/2024/day/15"""
+
 from __future__ import annotations
 
 import uuid
