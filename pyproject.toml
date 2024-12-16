@@ -28,8 +28,11 @@ dependencies = [
 [project.scripts]
 aoc = "advent_of_code.cli:app"
 
-[tool.black]
-line-length = 100
+[dependency-groups]
+dev = [
+    "mypy",
+    "ruff",
+]
 
 [tool.isort]
 profile = "black"
@@ -44,6 +47,8 @@ testpaths = ["test"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
 select = [
     "A", # Builtins
     "B", # Bugbear
@@ -51,6 +56,7 @@ select = [
     # "D", # PyDocStyle
     "E", # PyCodeStyle, Eradicate (E800)
     "F", # Pyflakes
+    "I", # isort
     "N", # PEP8 Naming
     "PT", # Pytest Style
     "S", # Bandit
@@ -58,13 +64,9 @@ select = [
     "W", # PyCodeStyle
 ]
 ignore = ["A003", "B9", "S101"]
+mccabe = { max-complexity = 8 }
+pydocstyle = { convention = "numpy" }
 
-[tool.ruff.mccabe]
-max-complexity = 8
-
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Ignore function call for default args in CLI.
-# "src/advent_of_code/cli.py" = ["B800"]
-
-[tool.ruff.pydocstyle]
-convention = "numpy"
+"src/advent_of_code/cli.py" = ["B008"]

@@ -1,39 +1,45 @@
+PYTHON := python3
+
+
 .PHONY: help
 help: ## Display this help message.
 	@grep -h '\s##\s' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | sort -k1
 
 .PHONY: format
-format: ## Format source files with isort and black.
-	isort src
-	black src
+FMT_PATH ?= test src
+format: ## Format source files with ruff.
+	ruff format $(FMT_PATH)
 
 .PHONY: test
 test: ## Run all tests.
-	pytest --cov=advent_of_code.util
+	$(PYTHON) -m pytest --cov=advent_of_code.util test
 
 .PHONY: install
 install: ## Install the current package plus dependencies into the current environment.
-	python -m pip install --editable .
+	$(PYTHON) -m pip install --editable .
 
-.PHONY: install-no-deps
-install-no-deps: ## Install the current package without dependencies into the current environment.
-	python -m pip install --no-deps --editable .
-
-.PHONY: clean-cache
-clean-cache:
+.PHONY: clean
+clean:
 	find ./src -type d -name __pycache__ -prune -exec rm -rf {} +
+	rm -f .coverage
+	rm -rf .mypy_cache
+	rm -rf .pytest_cache
+	rm -rf .ruff_cache
 
 .PHONY: lint
-lint:
-	ruff ./src
+LINT_PATH ?= src test
+lint:  ## Run linting checks with ruff.
+	ruff check $(LINT_PATH)
 
 .PHONY: autolint
-autolint:
-	ruff --fix ./src
+autolint:  ## Try to fix linting issues with ruff.
+	ruff check --fix $(LINT_PATH)
 
 .PHONY: venv
-venv: ## Build a development environment.
-	[ -d .venv ] || python -m venv .venv
-	. .venv/bin/activate && \
-	python -m pip install -r dev-requirements.txt && \
-	python -m pip install --editable .
+venv: install-uv  ## Build a development environment.
+	[ -f .venv/bin/activate ] || uv venv .venv
+	. .venv/bin/activate && uv lock && uv sync
+
+.PHONY: install-uv
+install-uv:
+	@command -v uv > /dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
