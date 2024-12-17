@@ -8,6 +8,7 @@ help: ## Display this help message.
 .PHONY: format
 FMT_PATH ?= test src
 format: ## Format source files with ruff.
+	ruff check --fix --select I $(FMT_PATH)
 	ruff format $(FMT_PATH)
 
 .PHONY: test

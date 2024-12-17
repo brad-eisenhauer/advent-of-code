@@ -34,13 +34,6 @@ dev = [
     "ruff",
 ]
 
-[tool.isort]
-profile = "black"
-known_first_party = "advent_of_code"
-line_length = 100
-force_single_line = false
-combine_as_imports = true
-
 [tool.pytest.ini_options]
 addopts = "--cov-report=term-missing"
 testpaths = ["test"]
@@ -52,20 +45,28 @@ line-length = 100
 select = [
     "A", # Builtins
     "B", # Bugbear
-    "C", # Comprehensions (C4*), Mccabe (C901)
+    "C4", # Comprehensions
+    "C901", # McCabe
     # "D", # PyDocStyle
-    "E", # PyCodeStyle, Eradicate (E800)
+    "E", # PyCodeStyle (errors)
+    "ERA", # Eradicate
     "F", # Pyflakes
-    "I", # isort
     "N", # PEP8 Naming
     "PT", # Pytest Style
-    "S", # Bandit
-    "SIM", # Simplify
-    "W", # PyCodeStyle
+    "RET", # Flake8-Return
+    "RUF", # Ruff-specific rules
+    "S", # Flake8-Bandit
+    "SIM", # Flake8-Simplify
+    "SLOT", # Flake8-Slots
+    "W", # PyCodeStyle (warnings)
 ]
 ignore = ["A003", "B9", "S101"]
 mccabe = { max-complexity = 8 }
 pydocstyle = { convention = "numpy" }
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+known-first-party = ["advent_of_code"]
 
 [tool.ruff.lint.per-file-ignores]
 # Ignore function call for default args in CLI.
