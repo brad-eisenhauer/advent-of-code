@@ -55,7 +55,7 @@ class AStar(Generic[S], ABC):
 
     def _find_min_cost_path(
         self, initial_state: S
-    ) -> tuple[Optional[S], dict[S, int], dict[S, Optional[S]]]:
+    ) -> tuple[S, dict[S, int], dict[S, Optional[S]]]:
         accumulated_cost: dict[S, int] = {initial_state: 0}
         came_from: dict[S, Optional[S]] = {initial_state: None}
         frontier = self.Queue()
