@@ -30,6 +30,7 @@ aoc = "advent_of_code.cli:app"
 
 [dependency-groups]
 dev = [
+    "ipython",
     "mypy",
     "ruff",
 ]
