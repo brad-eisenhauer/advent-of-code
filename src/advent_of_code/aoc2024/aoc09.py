@@ -83,7 +83,7 @@ class Defragger:
                 )
                 self.layout[free_index] = replace(file_block, loc=free_block.loc)
                 break
-            elif free_block.size > file_block.size:
+            if free_block.size > file_block.size:
                 log.debug(
                     "Swapping file_id=%d from %d to free space at %d.",
                     file_block.file_id,

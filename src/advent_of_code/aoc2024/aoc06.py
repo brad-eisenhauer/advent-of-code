@@ -96,9 +96,8 @@ class GuardMap:
             # rotate
             x, y = state.orientation
             return replace(state, orientation=(y, -x))
-        else:
-            # move
-            return replace(state, position=next_pos)
+        # move
+        return replace(state, position=next_pos)
 
     def run(self, state: State) -> Iterator[State]:
         while self.in_bounds(state.position):

@@ -43,7 +43,7 @@ class AocSolution(Solution[int, str]):
         lo = byte_count
         while lo + 1 < hi:
             next_index = (lo + hi) // 2
-            nav.obstacles = set(bytes_[:next_index + 1])
+            nav.obstacles = set(bytes_[: next_index + 1])
             try:
                 nav.find_min_cost_path(State(0j))
                 # Path found
@@ -118,12 +118,12 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     return StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)])
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 
