@@ -7,11 +7,23 @@ from dataclasses import dataclass
 from functools import cache
 from io import StringIO
 from itertools import pairwise, product
-from typing import IO, Iterator, Optional
+from typing import IO, Optional, TypeAlias
 
 import pytest
 
 from advent_of_code.base import Solution
+
+Key: TypeAlias = str
+"""A key on a keypad; must be a single-character."""
+KeyLocation: TypeAlias = complex
+"""The location of a key on a keypad."""
+Command: TypeAlias = str
+"""A series of key presses to navigate to and activate a button.
+
+A command will always contain exactly one "A" which will be at its end.
+"""
+CommandSequence: TypeAlias = list[Command]
+"""A sequence of commands to be entered on a keypad."""
 
 
 class AocSolution(Solution[int, int]):
@@ -25,8 +37,8 @@ class AocSolution(Solution[int, int]):
             for line in reader:
                 line = line.strip()
                 value = int(line[:-1])
-                commands = enter_sequence(keypads, line)
-                result += value * sum(len(r) * c for r, c in commands.items())
+                commands = count_command_occurrences(keypads, line)
+                result += value * sum(len(command) * count for command, count in commands.items())
         return result
 
     def solve_part_two(self, input_file: Optional[IO] = None) -> int:
@@ -36,51 +48,77 @@ class AocSolution(Solution[int, int]):
             for line in reader:
                 line = line.strip()
                 value = int(line[:-1])
-                commands = enter_sequence(keypads, line)
-                result += value * sum(len(r) * c for r, c in commands.items())
+                commands = count_command_occurrences(keypads, line)
+                result += value * sum(len(command) * count for command, count in commands.items())
         return result
 
 
 @cache
-def enter_sequence(keypads: tuple[Keypad], sequence: str) -> dict[str, int]:
+def count_command_occurrences(
+    keypads: tuple[Keypad], target_command: Command
+) -> dict[Command, int]:
+    """Count the occurrence of commands in successor sequences to produce the target command.
+
+    The initial position is always presumed to be "A".
+
+    Parameters
+    ----------
+    keypads: tuple[Keypad]
+        Series of keypads. target_command is to be entered on the first keypad. Function counts the
+        occurrence of commands entered into the last keypad.
+    target_command: Command
+        Command to be entered into the first keypad.
+
+    Returns
+    -------
+    dict[Command, int]
+        The count of each command entered into the last keypad to produce the target command on the
+        first keypad.
+    """
     keypad = keypads[0]
-    route_counts: dict[str, int] = defaultdict(int)
-    for left, right in pairwise("A" + sequence):
-        routes = keypad.navigate(left, right)
-        if len(routes) > 1:
-            route = min(routes, key=calc_min_successor_sequence_length)
+    command_counts: dict[Command, int] = defaultdict(int)
+    for origin, target in pairwise("A" + target_command):
+        candidate_commands = keypad.navigate(origin, target)
+        if len(candidate_commands) > 1:
+            command = min(candidate_commands, key=calc_min_successor_command_sequence_length)
         else:
-            route = routes[0]
-        route_counts[route] += 1
+            command = candidate_commands[0]
+        command_counts[command] += 1
 
     if len(keypads) == 1:
-        return route_counts
+        return command_counts
 
-    result: dict[str, int] = defaultdict(int)
-    for route, count in route_counts.items():
-        next_routes = enter_sequence(keypads[1:], route)
-        for nr, c in next_routes.items():
-            result[nr] += count * c
+    result: dict[Command, int] = defaultdict(int)
+    for command, count in command_counts.items():
+        next_command_counts = count_command_occurrences(keypads[1:], command)
+        for next_command, next_command_count in next_command_counts.items():
+            result[next_command] += count * next_command_count
 
     return result
 
 
-def calc_min_successor_sequence_length(sequence: str, depth: int = 4) -> int:
-    candidate_parts: list[list[str]] = [
-        DIRECTIONAL_KEYPAD.navigate(left, right) for left, right in pairwise("A" + sequence)
+def calc_min_successor_command_sequence_length(command: Command, depth: int = 4) -> int:
+    """Calculate the minimum expansion of the given command through `depth` directional keypads."""
+    candidate_commands: list[list[Command]] = [
+        DIRECTIONAL_KEYPAD.navigate(origin, target) for origin, target in pairwise("A" + command)
     ]
-    candidates: list[list[str]] = list(product(*candidate_parts))
-    if depth == 0:
-        return min(sum(len(part) for part in candidate) for candidate in candidates)
+    candidate_command_sequences: list[CommandSequence] = list(product(*candidate_commands))
+    if depth <= 1:
+        return min(
+            sum(len(part) for part in candidate) for candidate in candidate_command_sequences
+        )
     return min(
-        sum(calc_min_successor_sequence_length(part, depth - 1) for part in candidate)
-        for candidate in candidates
+        sum(
+            calc_min_successor_command_sequence_length(command, depth - 1)
+            for command in command_seq
+        )
+        for command_seq in candidate_command_sequences
     )
 
 
 @dataclass
 class Keypad:
-    keys: dict[str, complex]
+    keys: dict[Key, KeyLocation]
 
     def __hash__(self) -> int:
         return id(self)
@@ -88,41 +126,38 @@ class Keypad:
     def __post_init__(self) -> None:
         self.values = set(self.keys.values())
 
-    def _navigate(self, origin: complex, target: complex) -> Iterator[str]:
-        diff = target - origin
-        corners = [origin + diff.real, origin + diff.imag * 1j]
-        if diff.real > 0:
-            horiz_part = ">" * int(diff.real)
-        else:
-            horiz_part = "<" * int(abs(diff.real))
-        if diff.imag > 0:
-            vert_part = "^" * int(diff.imag)
-        else:
-            vert_part = "v" * int(abs(diff.imag))
-        seqs = [horiz_part + vert_part, vert_part + horiz_part]
-        yield from set(seq for seq, corner in zip(seqs, corners) if corner in self.values)
-
     @cache
-    def navigate(self, origin: str, target: str) -> list[str]:
-        return list(seq + "A" for seq in self._navigate(self.keys[origin], self.keys[target]))
+    def navigate(self, origin: Key, target: Key) -> list[Command]:
+        """Returns a list of 1-2 possible commands to navigate to and activate the target key."""
+        origin_loc = self.keys[origin]
+        target_loc = self.keys[target]
+        diff = target_loc - origin_loc
+        corner_locs = [origin_loc + diff.real, origin_loc + diff.imag * 1j]
+        horiz_part = (">" if diff.real > 0 else "<") * int(abs(diff.real))
+        vert_part = ("^" if diff.imag > 0 else "v") * int(abs(diff.imag))
+        key_sequences = [horiz_part + vert_part, vert_part + horiz_part]
+        valid_sequences = set(
+            seq for seq, corner in zip(key_sequences, corner_locs) if corner in self.values
+        )
+        return list(seq + "A" for seq in valid_sequences)
 
 
 NUMERIC_KEYPAD = Keypad(
     keys={
-        "0": 0,
-        "A": 1,
-        "1": -1 + 1j,
-        "2": 1j,
-        "3": 1 + 1j,
-        "4": -1 + 2j,
-        "5": 2j,
-        "6": 1 + 2j,
-        "7": -1 + 3j,
-        "8": 3j,
-        "9": 1 + 3j,
+        "0": 1,
+        "A": 2,
+        "1": 1j,
+        "2": 1 + 1j,
+        "3": 2 + 1j,
+        "4": 2j,
+        "5": 1 + 2j,
+        "6": 2 + 2j,
+        "7": 3j,
+        "8": 1 + 3j,
+        "9": 2 + 3j,
     }
 )
-DIRECTIONAL_KEYPAD = Keypad(keys={"<": -1, "v": 0, ">": 1, "^": 1j, "A": 1 + 1j})
+DIRECTIONAL_KEYPAD = Keypad(keys={"<": 0, "v": 1, ">": 2, "^": 1 + 1j, "A": 2 + 1j})
 
 
 SAMPLE_INPUTS = [
