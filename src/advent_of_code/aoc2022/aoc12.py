@@ -35,7 +35,11 @@ Position = tuple[int, int]
 
 class Navigator(BFS[Position]):
     def __init__(
-        self, map: list[str], start: str, goal: str, condition: Callable[[int, int], bool]  # noqa: A002
+        self,
+        map: list[str],
+        start: str,
+        goal: str,
+        condition: Callable[[int, int], bool],  # noqa: A002
     ):
         self._map = map
         self._start = start

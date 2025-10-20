@@ -8,7 +8,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from io import StringIO
 from itertools import permutations
-from typing import IO, Callable, Optional, Self, ClassVar
+from typing import IO, Callable, ClassVar, Optional, Self
 
 import pytest
 

@@ -205,7 +205,10 @@ FaceMap = dict[FaceID, Face]
 
 
 def traverse_cube(
-    grid: Grid, initial_state: State, directions: str, map: FaceMap  # noqa: A002
+    grid: Grid,
+    initial_state: State,
+    directions: str,
+    map: FaceMap,  # noqa: A002
 ) -> Iterator[State]:
     pattern = re.compile(r"(\d+)([LR])?")
     state = initial_state
