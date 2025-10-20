@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 19: https://adventofcode.com/2022/day/19"""
+
 from __future__ import annotations
 
 import logging
@@ -206,13 +207,13 @@ Blueprint 4: Each ore robot costs 1 ore. Each clay robot costs 1 ore. Each obsid
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def blueprint(sample_input, request):
     line = sample_input.readlines()[request.param]
     return Blueprint.parse(line)

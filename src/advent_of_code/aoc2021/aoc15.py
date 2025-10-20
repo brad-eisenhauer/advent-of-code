@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 15: https://adventofcode.com/2021/day/15 """
+"""Advent of Code 2021, Day 15: https://adventofcode.com/2021/day/15"""
+
 import contextlib
 import logging
 from io import StringIO
@@ -88,7 +89,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> TextIO:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

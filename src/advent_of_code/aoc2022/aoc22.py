@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 22: https://adventofcode.com/2022/day/22"""
+
 from __future__ import annotations
 
 import logging
@@ -404,7 +405,7 @@ SAMPLE_FACE_MAP: FaceMap = {
 }
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

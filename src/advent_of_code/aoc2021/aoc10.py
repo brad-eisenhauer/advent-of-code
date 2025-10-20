@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 10: https://adventofcode.com/2021/day/10 """
+"""Advent of Code 2021, Day 10: https://adventofcode.com/2021/day/10"""
+
 from io import StringIO
 from typing import Iterator, TextIO
 
@@ -88,7 +89,7 @@ TEST_INPUT = """[({(<(())[]>[[{[]{<()<>>
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(TEST_INPUT) as fp:
         yield fp

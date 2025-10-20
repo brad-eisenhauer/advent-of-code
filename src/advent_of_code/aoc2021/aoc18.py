@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 18: https://adventofcode.com/2021/day/18 """
+"""Advent of Code 2021, Day 18: https://adventofcode.com/2021/day/18"""
+
 from __future__ import annotations
 
 import json
@@ -53,8 +54,7 @@ class Tree(ABC):
 
     @property
     @abstractmethod
-    def magnitude(self) -> int:
-        ...
+    def magnitude(self) -> int: ...
 
     def __add__(self, other: Tree) -> Tree:
         return Node(self, other).reduce()
@@ -76,20 +76,16 @@ class Tree(ABC):
             return result
 
     @abstractmethod
-    def explode(self, depth: int = 1) -> ExplodeResult:
-        ...
+    def explode(self, depth: int = 1) -> ExplodeResult: ...
 
     @abstractmethod
-    def add_left(self, num: Optional[int]) -> Tree:
-        ...
+    def add_left(self, num: Optional[int]) -> Tree: ...
 
     @abstractmethod
-    def add_right(self, num: Optional[int]) -> Tree:
-        ...
+    def add_right(self, num: Optional[int]) -> Tree: ...
 
     @abstractmethod
-    def split(self) -> Tree:
-        ...
+    def split(self) -> Tree: ...
 
 
 @dataclass(frozen=True)
@@ -209,7 +205,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

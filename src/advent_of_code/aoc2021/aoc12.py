@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 12: https://adventofcode.com/2021/day/12 """
+"""Advent of Code 2021, Day 12: https://adventofcode.com/2021/day/12"""
+
 from dataclasses import dataclass
 from io import StringIO
 from typing import TextIO

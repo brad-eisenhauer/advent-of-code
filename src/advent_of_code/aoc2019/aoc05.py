@@ -1,4 +1,5 @@
-""" Advent of Code 2019, Day 5: https://adventofcode.com/2019/day/5 """
+"""Advent of Code 2019, Day 5: https://adventofcode.com/2019/day/5"""
+
 import pytest
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine

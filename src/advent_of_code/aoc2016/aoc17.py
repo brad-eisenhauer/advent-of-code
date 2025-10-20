@@ -1,4 +1,5 @@
 """Advent of Code 2016, day 17: https://adventofcode.com/2016/day/17"""
+
 from __future__ import annotations
 
 from collections import deque
@@ -83,8 +84,11 @@ class Pathfinder(AStar[State]):
             next_loc = (a + b for a, b in zip(state.loc, offset))
             if any(n < 0 or n > 3 for n in next_loc):
                 continue
-            yield 1, State(
-                loc=tuple(a + b for a, b in zip(state.loc, offset)), path=state.path + direction
+            yield (
+                1,
+                State(
+                    loc=tuple(a + b for a, b in zip(state.loc, offset)), path=state.path + direction
+                ),
             )
 
     def is_goal_state(self, state: State) -> bool:
@@ -104,13 +108,13 @@ ulqzkmiv
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

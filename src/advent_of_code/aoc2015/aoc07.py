@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 7: https://adventofcode.com/2015/day/7"""
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -87,13 +88,13 @@ NOT y -> i
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_circuit(sample_input) -> Circuit:
     return parse_circuit(sample_input)
 

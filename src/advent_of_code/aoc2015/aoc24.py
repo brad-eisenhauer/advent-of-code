@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 24: https://adventofcode.com/2015/day/24"""
+
 from __future__ import annotations
 
 import logging
@@ -57,7 +58,7 @@ def find_optimal_groups(weights: list[int], group_count: int = 3) -> tuple[list[
 
 def find_groups(weights: list[int], group_count: int) -> Iterator[tuple[list[int], ...]]:
     if group_count == 1:
-        yield weights,
+        yield (weights,)
         return
     if group_count < 1:
         return
@@ -104,7 +105,7 @@ SAMPLE_INPUTS = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS) as f:
         yield f

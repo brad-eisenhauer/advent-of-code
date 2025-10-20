@@ -1,4 +1,4 @@
-""" Advent of Code 2021, Day 11: https://adventofcode.com/2021/day/11 """
+"""Advent of Code 2021, Day 11: https://adventofcode.com/2021/day/11"""
 
 from __future__ import annotations
 
@@ -164,7 +164,7 @@ SAMPLE_INPUT = """5483143223
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

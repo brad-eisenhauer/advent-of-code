@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 11: https://adventofcode.com/2015/day/11"""
+
 from __future__ import annotations
 
 import re
@@ -77,7 +78,7 @@ ghijklmn
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

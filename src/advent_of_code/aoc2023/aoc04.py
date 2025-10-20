@@ -1,4 +1,5 @@
 """Advent of Code 2023, day 4: https://adventofcode.com/2023/day/4"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -69,7 +70,7 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request: pytest.FixtureRequest) -> Iterator[IO]:
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f

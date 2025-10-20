@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 2: https://adventofcode.com/2015/day/2"""
+
 from __future__ import annotations
 
 import operator
@@ -55,7 +56,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

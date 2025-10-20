@@ -75,18 +75,18 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def state(sample_input: IO) -> State:
     return State.read(sample_input)
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

@@ -1,14 +1,13 @@
 """Advent of Code 2017, day 4: https://adventofcode.com/2017/day/4"""
+
 from __future__ import annotations
 
 from collections import Counter
-from io import StringIO
 from typing import IO, Hashable, Optional
 
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):
@@ -50,7 +49,7 @@ def is_passphrase_valid_2(text: str) -> bool:
         ("a ab abc abd abf abj", True),
         ("iiii oiii ooii oooi oooo", True),
         ("oiii ioii iioi iiio", False),
-    ]
+    ],
 )
 def test_is_passphrase_valid_2(phrase: str, expected: bool) -> None:
     assert is_passphrase_valid_2(phrase) == expected

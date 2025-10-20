@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 24: https://adventofcode.com/2021/day/24 """
+"""Advent of Code 2021, Day 24: https://adventofcode.com/2021/day/24"""
+
 import operator
 from enum import Enum
 from io import StringIO
@@ -247,14 +248,14 @@ add z y
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_program() -> Program:
     with StringIO(SAMPLE_INPUT[0]) as fp:
         program = list(fp)
     return program
 
 
-@pytest.fixture()
+@pytest.fixture
 def short_validator() -> Program:
     with StringIO(SAMPLE_INPUT[1]) as fp:
         program = list(fp)

@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 2: https://adventofcode.com/2020/day/2"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -29,11 +30,9 @@ class AocSolution(Solution[int, int]):
 
 class Policy(Protocol):
     @classmethod
-    def parse(cls: Type[PolicyT], text: str) -> PolicyT:
-        ...
+    def parse(cls: Type[PolicyT], text: str) -> PolicyT: ...
 
-    def validate(self, password: str) -> bool:
-        ...
+    def validate(self, password: str) -> bool: ...
 
 
 @dataclass
@@ -89,7 +88,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

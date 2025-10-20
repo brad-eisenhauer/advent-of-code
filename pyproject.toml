@@ -32,6 +32,7 @@ aoc = "advent_of_code.cli:app"
 dev = [
     "mypy",
     "ruff",
+    "ty",
 ]
 
 [tool.pytest.ini_options]

@@ -1,4 +1,5 @@
 """Advent of Code 2023, day 14: https://adventofcode.com/2023/day/14"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -103,13 +104,13 @@ O.#..O.#.#
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 
@@ -138,10 +139,28 @@ class TestPlatform:
                 "#....#....",
             ),
             # fmt: off
-            rocks=frozenset([
-                (0, 0), (1, 0), (1, 2), (1, 3), (3, 0), (3, 1), (3, 4), (3, 9), (4, 1), (4, 7),
-                (5, 0), (5, 5), (6, 2), (6, 6), (6, 9), (7, 7), (9, 1), (9, 2),
-            ]),
+            rocks=frozenset(
+                [
+                    (0, 0),
+                    (1, 0),
+                    (1, 2),
+                    (1, 3),
+                    (3, 0),
+                    (3, 1),
+                    (3, 4),
+                    (3, 9),
+                    (4, 1),
+                    (4, 7),
+                    (5, 0),
+                    (5, 5),
+                    (6, 2),
+                    (6, 6),
+                    (6, 9),
+                    (7, 7),
+                    (9, 1),
+                    (9, 2),
+                ]
+            ),
             # fmt: on
             dims=(10, 10),
         )
@@ -185,10 +204,28 @@ class TestPlatform:
                 "....#...#.",
             ),
             # fmt: off
-            rocks=frozenset([
-                (0, 4), (0, 6), (0, 8), (0, 9), (1, 0), (1, 5), (1, 6), (2, 0), (2, 3), (2, 8),
-                (3, 8), (4, 6), (5, 4), (6, 3), (7, 2), (7, 5), (9, 3), (9, 6)
-            ]),
+            rocks=frozenset(
+                [
+                    (0, 4),
+                    (0, 6),
+                    (0, 8),
+                    (0, 9),
+                    (1, 0),
+                    (1, 5),
+                    (1, 6),
+                    (2, 0),
+                    (2, 3),
+                    (2, 8),
+                    (3, 8),
+                    (4, 6),
+                    (5, 4),
+                    (6, 3),
+                    (7, 2),
+                    (7, 5),
+                    (9, 3),
+                    (9, 6),
+                ]
+            ),
             # fmt: on
             dims=(10, 10),
         )

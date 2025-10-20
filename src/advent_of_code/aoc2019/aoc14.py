@@ -1,4 +1,5 @@
 """Advent of Code 2019, day 14: https://adventofcode.com/2019/day/14"""
+
 from __future__ import annotations
 
 import math
@@ -37,8 +38,7 @@ class AocSolution(Solution[int, int]):
             if requirements["ORE"] > ore_limit:
                 min_known_not_producible = n
                 break
-            else:
-                max_known_producible = n
+            max_known_producible = n
         while min_known_not_producible > max_known_producible + 1:
             n = (max_known_producible + min_known_not_producible) // 2
             requirements, _ = reactor.requirements("FUEL", n)

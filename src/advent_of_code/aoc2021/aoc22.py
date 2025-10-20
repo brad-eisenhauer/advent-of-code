@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 22: https://adventofcode.com/2021/day/22 """
+"""Advent of Code 2021, Day 22: https://adventofcode.com/2021/day/22"""
+
 from __future__ import annotations
 
 import re
@@ -31,12 +32,10 @@ class AocSolution(Solution[int, int]):
 
 class Cuboid(ABC):
     @abstractmethod
-    def count_cells(self) -> int:
-        ...
+    def count_cells(self) -> int: ...
 
     @abstractmethod
-    def intersection(self, other: Cuboid) -> Cuboid:
-        ...
+    def intersection(self, other: Cuboid) -> Cuboid: ...
 
     def __or__(self, other: Cuboid) -> Cuboid:
         return UnionCuboid(self, other)

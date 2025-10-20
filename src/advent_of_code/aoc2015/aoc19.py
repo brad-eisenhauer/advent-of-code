@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 19: https://adventofcode.com/2015/day/19"""
+
 from __future__ import annotations
 
 import re
@@ -82,13 +83,13 @@ HOH
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

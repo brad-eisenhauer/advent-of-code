@@ -1,4 +1,5 @@
-""" Advent of Code 2020, Day 19: https://adventofcode.com/2020/day/19 """
+"""Advent of Code 2020, Day 19: https://adventofcode.com/2020/day/19"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -37,8 +38,7 @@ class AocSolution(Solution[int, int]):
 
 class Rule(ABC):
     @abstractmethod
-    def find_matches(self, message: str) -> Iterator[tuple[str, str]]:
-        ...
+    def find_matches(self, message: str) -> Iterator[tuple[str, str]]: ...
 
     def is_match(self, message: str) -> bool:
         return any(remainder == "" for _, remainder in self.find_matches(message))

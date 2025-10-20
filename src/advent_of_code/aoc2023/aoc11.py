@@ -1,4 +1,5 @@
 """Advent of Code 2023, day 11: https://adventofcode.com/2023/day/11"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -97,13 +98,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

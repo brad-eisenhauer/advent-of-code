@@ -1,4 +1,5 @@
 """Advent of Code 2019, day 21: https://adventofcode.com/2019/day/21"""
+
 import logging
 
 from advent_of_code.aoc2019.intcode import IntcodeMachine
@@ -52,5 +53,4 @@ class AocSolution(Solution[int, int]):
         return self.run_springscript(script)
 
 
-class SpringScriptError(Exception):
-    ...
+class SpringScriptError(Exception): ...

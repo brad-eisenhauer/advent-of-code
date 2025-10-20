@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 8: https://adventofcode.com/2015/day/8"""
+
 from __future__ import annotations
 
 from ast import literal_eval

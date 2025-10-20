@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 08: https://adventofcode.com/2021/day/8"""
+"""Advent of Code 2021, Day 08: https://adventofcode.com/2021/day/8"""
+
 from collections import Counter
 from io import StringIO
 from typing import Callable, Iterable, Iterator, TextIO, Tuple

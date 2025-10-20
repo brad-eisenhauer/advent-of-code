@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 12: https://adventofcode.com/2020/day/12"""
+
 from dataclasses import dataclass
 from io import StringIO
 from typing import TextIO
@@ -101,7 +102,7 @@ F11
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

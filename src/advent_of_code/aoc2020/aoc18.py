@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 18: https://adventofcode.com/2020/day/18"""
+
 from abc import abstractmethod
 from dataclasses import dataclass
 from io import StringIO
@@ -159,7 +160,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

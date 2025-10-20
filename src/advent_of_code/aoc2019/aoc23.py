@@ -1,4 +1,5 @@
 """Advent of Code 2019, day 23: https://adventofcode.com/2019/day/23"""
+
 from __future__ import annotations
 
 import logging

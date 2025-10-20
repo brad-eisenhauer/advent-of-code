@@ -5,8 +5,7 @@ from typing import Iterator, Optional, TextIO
 log = logging.getLogger("aoc")
 
 
-class IllegalOperationError(RuntimeError):
-    ...
+class IllegalOperationError(RuntimeError): ...
 
 
 @dataclass

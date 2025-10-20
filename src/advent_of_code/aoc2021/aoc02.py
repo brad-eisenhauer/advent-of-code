@@ -1,4 +1,5 @@
 """AoC 2021, Day 02: https://adventofcode.com/2021/day/2"""
+
 from functools import reduce
 from io import StringIO
 from pathlib import Path
@@ -31,8 +32,7 @@ class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(2, 2021, **kwargs)
 
-    def solve_part_one(self) -> int:
-        ...  # TODO: implement 2021, day 2, part 1
+    def solve_part_one(self) -> int: ...  # TODO: implement 2021, day 2, part 1
 
     def solve_part_two(self) -> int:
         with self.open_input() as f:

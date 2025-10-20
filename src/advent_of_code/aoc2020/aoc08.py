@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 8: https://adventofcode.com/2020/day/8"""
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -27,8 +28,7 @@ class AocSolution(Solution[int, int]):
         return result
 
 
-class LoopError(RuntimeError):
-    ...
+class LoopError(RuntimeError): ...
 
 
 @dataclass
@@ -108,7 +108,7 @@ acc +6
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 4: https://adventofcode.com/2015/day/4"""
+
 from __future__ import annotations
 
 from hashlib import md5
@@ -42,7 +43,7 @@ pqrstuv
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

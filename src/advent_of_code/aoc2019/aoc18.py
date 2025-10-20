@@ -1,4 +1,5 @@
 """Advent of Code 2019, day 18: https://adventofcode.com/2019/day/18"""
+
 from __future__ import annotations
 
 import dataclasses
@@ -149,10 +150,13 @@ class Solver(AStar[State]):
                     if neighbor.key and neighbor.key not in keys:
                         next_to_move = None
                         keys = keys | {neighbor.key}
-                    yield cost, State(
-                        frozenset(neighbor if d is drone else d for d in state.drones),
-                        keys,
-                        next_to_move,
+                    yield (
+                        cost,
+                        State(
+                            frozenset(neighbor if d is drone else d for d in state.drones),
+                            keys,
+                            next_to_move,
+                        ),
                     )
                 else:
                     yield 0, dataclasses.replace(state, next_to_move=None)
@@ -165,7 +169,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

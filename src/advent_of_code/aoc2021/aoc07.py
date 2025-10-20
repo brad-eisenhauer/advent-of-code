@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 07: https://adventofcode.com/2021/day/7 """
+"""Advent of Code 2021, Day 07: https://adventofcode.com/2021/day/7"""
+
 import logging
 from enum import Enum, auto
 from io import StringIO

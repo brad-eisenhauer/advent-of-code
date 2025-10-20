@@ -1,4 +1,5 @@
 """Advent of Code 2021, Day 06: https://adventofcode.com/2021/day/6"""
+
 from collections import Counter
 from enum import Enum, auto
 from functools import lru_cache

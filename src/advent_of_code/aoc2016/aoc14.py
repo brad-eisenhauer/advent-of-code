@@ -1,4 +1,5 @@
 """Advent of Code 2016, day 14: https://adventofcode.com/2016/day/14"""
+
 from __future__ import annotations
 
 import re
@@ -90,13 +91,13 @@ abc""",
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def otp(sample_input, request):
     salt = sample_input.read().strip()
     stretch_factor = 1 if hasattr(request, "param") else request.param["stretch_factor"]

@@ -41,8 +41,7 @@ class AStar(Generic[S], ABC):
             heappush(self._contents, (priority, item))
 
     @abstractmethod
-    def is_goal_state(self, state: S) -> bool:
-        ...
+    def is_goal_state(self, state: S) -> bool: ...
 
     @abstractmethod
     def generate_next_states(self, state: S) -> Iterator[tuple[int, S]]:
@@ -53,9 +52,7 @@ class AStar(Generic[S], ABC):
         """With no heuristic, A* is equivalent to Djikstra."""
         return 0
 
-    def _find_min_cost_path(
-        self, initial_state: S
-    ) -> tuple[S, dict[S, int], dict[S, Optional[S]]]:
+    def _find_min_cost_path(self, initial_state: S) -> tuple[S, dict[S, int], dict[S, Optional[S]]]:
         accumulated_cost: dict[S, int] = {initial_state: 0}
         came_from: dict[S, Optional[S]] = {initial_state: None}
         frontier = self.Queue()
@@ -121,8 +118,7 @@ class GraphSimplifier(Generic[N]):
         self.graph = graph
 
     @abstractmethod
-    def is_protected(self, node: N, mode: int) -> bool:
-        ...
+    def is_protected(self, node: N, mode: int) -> bool: ...
 
     def simplify(self, depth: int = 1):
         g = self.graph

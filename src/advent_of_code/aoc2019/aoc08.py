@@ -1,4 +1,5 @@
 """Advent of Code 2019, Day 08: https://adventofcode.com/2019/day/8"""
+
 import sys
 from collections import Counter
 from io import StringIO
@@ -69,7 +70,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> TextIO:
     with StringIO(SAMPLE_INPUT) as f:
         yield f

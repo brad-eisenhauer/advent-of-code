@@ -1,4 +1,5 @@
 """Advent of Code 2019, day 19: https://adventofcode.com/2019/day/19"""
+
 import logging
 import math
 from collections import deque
@@ -106,9 +107,8 @@ class DroneSystem:
                 min_known_outside_upper = upper
                 min_known_inside_lower = max_known_inside_upper = middle
                 break
-            else:
-                windows.append((find_middle(middle, upper), middle, upper))
-                windows.append((find_middle(middle, lower), lower, middle))
+            windows.append((find_middle(middle, upper), middle, upper))
+            windows.append((find_middle(middle, lower), lower, middle))
 
         while max(abs(a - b) for a, b in zip(max_known_inside_upper, min_known_outside_upper)) > 1:
             middle = find_middle(max_known_inside_upper, min_known_outside_upper)

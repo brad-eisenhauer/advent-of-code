@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 16: https://adventofcode.com/2021/day/16 """
+"""Advent of Code 2021, Day 16: https://adventofcode.com/2021/day/16"""
+
 import operator
 from abc import ABC, abstractmethod
 from functools import reduce
@@ -49,12 +50,10 @@ class Packet(ABC):
         self.version = version
 
     @abstractmethod
-    def sum_of_versions(self):
-        ...
+    def sum_of_versions(self): ...
 
     @abstractmethod
-    def evaluate(self) -> int:
-        ...
+    def evaluate(self) -> int: ...
 
 
 class Literal(Packet):

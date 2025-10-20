@@ -16,6 +16,7 @@ from advent_of_code.base import Solution
 
 log = logging.getLogger(__name__)
 
+
 class AocSolution(Solution[int, int]):
     def __init__(self, **kwargs):
         super().__init__(21, 2016, **kwargs)
@@ -26,7 +27,9 @@ class AocSolution(Solution[int, int]):
         scrambler = Scrambler.from_instructions(instructions)
         return scrambler.scramble(initial)
 
-    def solve_part_two(self, input_file: Optional[IO] = None, target: str = "fbgdceah", brute_force: bool = False) -> str:
+    def solve_part_two(
+        self, input_file: Optional[IO] = None, target: str = "fbgdceah", brute_force: bool = False
+    ) -> str:
         with input_file or self.open_input() as fp:
             instructions = fp.readlines()
         scrambler = Scrambler.from_instructions(instructions)
@@ -157,7 +160,7 @@ class SubstringReverser(Mutator):
             left_index, right_index = right_index, left_index
         start_bound = _to_slice_bound(right_index, len(text))
         end_bound = _to_slice_bound(left_index - 1, len(text))
-        text[left_index : right_index + 1] = text[start_bound : end_bound : -1]
+        text[left_index : right_index + 1] = text[start_bound:end_bound:-1]
 
 
 @dataclass
@@ -183,9 +186,9 @@ class CharMover(Mutator):
     def _impl(text: list[str], src_index: int, dest_index: int) -> None:
         value = text[src_index]
         if src_index < dest_index:
-            text[src_index : dest_index] = text[src_index + 1 : dest_index + 1]
+            text[src_index:dest_index] = text[src_index + 1 : dest_index + 1]
         else:
-            text[dest_index + 1 : src_index + 1] = text[dest_index : src_index]
+            text[dest_index + 1 : src_index + 1] = text[dest_index:src_index]
         text[dest_index] = value
 
 
@@ -224,7 +227,6 @@ class Scrambler:
                     break
         return cls(mutators=mutators)
 
-
     def scramble(self, text: str | list[str]) -> str:
         if not isinstance(text, list):
             text = list(text)
@@ -238,7 +240,6 @@ class Scrambler:
         for mutator in self.mutators[::-1]:
             mutator.reverse(text)
         return "".join(text)
-
 
 
 SAMPLE_INPUTS = [
@@ -255,13 +256,13 @@ rotate based on position of letter d
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 13: https://adventofcode.com/2022/day/13"""
+
 from __future__ import annotations
 
 import logging
@@ -59,13 +60,13 @@ def compare_elements(left: PacketElement, right: PacketElement) -> int:
     match left, right:
         case l, r if isinstance(l, int) and isinstance(r, int):
             return l - r
-        case [], []:
+        case [[], []]:
             return 0
-        case [], _:
+        case [[], _]:
             return -1
         case _, []:
             return 1
-        case l, r:  # noqa: E741
+        case l, r:
             if not isinstance(l, list):
                 l = [l]
             if not isinstance(r, list):
@@ -117,7 +118,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

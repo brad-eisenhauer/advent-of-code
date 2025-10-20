@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 7: https://adventofcode.com/2022/day/7"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -36,11 +37,9 @@ class AocSolution(Solution[int, int]):
 
 class FileSystemObject(Protocol):
     @property
-    def size(self) -> int:
-        ...
+    def size(self) -> int: ...
 
-    def fold(self, f: Callable[[FileSystemObject], T], r: Callable[[T, ...], T]) -> T:
-        ...
+    def fold(self, f: Callable[[FileSystemObject], T], r: Callable[[T, ...], T]) -> T: ...
 
 
 @dataclass
@@ -145,13 +144,13 @@ $ ls
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def file_system(sample_input) -> Directory:
     return explore(sample_input)
 

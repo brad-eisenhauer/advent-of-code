@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 10: https://adventofcode.com/2022/day/10"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -242,7 +243,7 @@ noop
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

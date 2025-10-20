@@ -1,4 +1,5 @@
 """Advent of Code 2016, day 15: https://adventofcode.com/2016/day/15"""
+
 from __future__ import annotations
 
 import re
@@ -55,13 +56,13 @@ Disc #2 has 2 positions; at time=0, it is at position 1.
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

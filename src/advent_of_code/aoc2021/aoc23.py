@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 23: https://adventofcode.com/2021/day/23 """
+"""Advent of Code 2021, Day 23: https://adventofcode.com/2021/day/23"""
+
 from __future__ import annotations
 
 import heapq
@@ -184,9 +185,10 @@ def generate_next_states(state: BoardState, board: nx.Graph) -> Iterator[tuple[B
                 dest_y += 1
             dest_y -= 1
             if dest_y > pod.position.y:
-                yield replace(
-                    pod, position=replace(pod.position, y=dest_y), at_rest=True
-                ), dest_y - pod.position.y
+                yield (
+                    replace(pod, position=replace(pod.position, y=dest_y), at_rest=True),
+                    dest_y - pod.position.y,
+                )
             return
 
         # If a pod is stopped in the hallway, it can only move if it can reach its
@@ -198,9 +200,10 @@ def generate_next_states(state: BoardState, board: nx.Graph) -> Iterator[tuple[B
             ):
                 dest_y += 1
             dest_y -= 1
-            yield replace(
-                pod, position=Position(pod.type.destination_x, dest_y), at_rest=True
-            ), abs(pod.position.x - pod.type.destination_x) + dest_y
+            yield (
+                replace(pod, position=Position(pod.type.destination_x, dest_y), at_rest=True),
+                abs(pod.position.x - pod.type.destination_x) + dest_y,
+            )
             return
         if pod.position.in_hallway() and pod is not state.last_moved:
             return
@@ -306,7 +309,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

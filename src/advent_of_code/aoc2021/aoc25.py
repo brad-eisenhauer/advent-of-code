@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 25: https://adventofcode.com/2021/day/25 """
+"""Advent of Code 2021, Day 25: https://adventofcode.com/2021/day/25"""
+
 from __future__ import annotations
 
 import sys
@@ -25,8 +26,7 @@ class AocSolution(Solution[int, int]):
         result = grid.step_until_frozen()
         return result
 
-    def solve_part_two(self) -> int:
-        ...
+    def solve_part_two(self) -> int: ...
 
 
 class Orientation(Enum):
@@ -153,7 +153,7 @@ v.v..>>v.v
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

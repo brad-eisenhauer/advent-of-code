@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 21: https://adventofcode.com/2020/day/21"""
+
 from __future__ import annotations
 
 import operator
@@ -92,7 +93,7 @@ sqjhc mxmxvkd sbzzf (contains fish)
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

@@ -1,4 +1,5 @@
 """Advent of Code 2023, day 10: https://adventofcode.com/2023/day/10"""
+
 from __future__ import annotations
 
 from collections import deque
@@ -62,7 +63,7 @@ def read_network(file: IO) -> tuple[dict[Node, str], Node]:
 def can_connect(node_map: dict[Node, str], left: Node, right: Node) -> bool:
     def connects_to(node: Node) -> Iterable[Node]:
         row, col = node
-        match (c := node_map.get(node, ".")):
+        match c := node_map.get(node, "."):
             case "S":
                 return [(row, col + 1), (row, col - 1), (row + 1, col), (row - 1, col)]
             case ".":
@@ -231,13 +232,13 @@ L--J.L7...LJS7F-7L7.
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

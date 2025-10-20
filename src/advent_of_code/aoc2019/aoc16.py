@@ -1,4 +1,5 @@
 """Advent of Code 2019, day 16: https://adventofcode.com/2019/day/16"""
+
 from functools import cache
 from itertools import chain, islice, repeat
 from typing import Iterable

@@ -1,4 +1,5 @@
 """Advent of Code 2016, day 11: https://adventofcode.com/2016/day/11"""
+
 from __future__ import annotations
 
 import re
@@ -146,7 +147,7 @@ The fourth floor contains nothing relevant.
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

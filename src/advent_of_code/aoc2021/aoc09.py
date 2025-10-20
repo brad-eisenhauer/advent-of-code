@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 09: https://adventofcode.com/2021/day/9 """
+"""Advent of Code 2021, Day 09: https://adventofcode.com/2021/day/9"""
+
 from __future__ import annotations
 
 import operator
@@ -134,7 +135,7 @@ TEST_INPUT = """2199943210
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def height_map():
     with StringIO(TEST_INPUT) as fp:
         height_map = HeightMap.read(fp)

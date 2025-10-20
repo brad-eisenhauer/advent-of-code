@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 13: https://adventofcode.com/2021/day/13 """
+"""Advent of Code 2021, Day 13: https://adventofcode.com/2021/day/13"""
+
 from __future__ import annotations
 
 import sys
@@ -123,7 +124,7 @@ fold along x=5
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

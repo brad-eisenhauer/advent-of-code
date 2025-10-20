@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 15: https://adventofcode.com/2015/day/15"""
+
 from __future__ import annotations
 
 import logging
@@ -161,13 +162,13 @@ Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[IO]:
     with StringIO(SAMPLE_INPUTS) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def ingredients() -> list[Ingredient]:
     return [
         Ingredient("Butterscotch", capacity=-1, durability=-2, flavor=6, texture=3, calories=8),
@@ -175,7 +176,7 @@ def ingredients() -> list[Ingredient]:
     ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def recipe(ingredients: list[Ingredient]) -> Recipe:
     return Recipe(zip(ingredients, [44, 56]))
 

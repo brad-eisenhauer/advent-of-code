@@ -1,4 +1,5 @@
 """Advent of Code 2016, day 6: https://adventofcode.com/2016/day/6"""
+
 from __future__ import annotations
 
 from collections import Counter
@@ -54,7 +55,7 @@ enarar
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

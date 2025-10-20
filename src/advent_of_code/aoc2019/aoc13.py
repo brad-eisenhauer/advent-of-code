@@ -1,4 +1,5 @@
 """Advent of Code 2019, Day 13: https://adventofcode.com/2019/day/13"""
+
 import logging
 from dataclasses import dataclass, field
 from itertools import islice

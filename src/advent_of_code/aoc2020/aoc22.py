@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 22: https://adventofcode.com/2020/day/22"""
+
 from __future__ import annotations
 
 from collections import deque
@@ -127,7 +128,7 @@ Player 2:
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

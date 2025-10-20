@@ -3,15 +3,15 @@ import pytest
 import advent_of_code.util.grammar as G
 
 
-@pytest.fixture()
+@pytest.fixture
 def context_free_grammar() -> G.ContextFreeGrammar:
     return G.ContextFreeGrammar(
-        rules = [
-            G.Rule("e", ["H"]),
-            G.Rule("e", ["O"]),
-            G.Rule("H", ["H", "O"]),
-            G.Rule("H", ["O", "H"]),
-            G.Rule("O", ["H", "H"]),
+        rules=[
+            G.Rule("e", ("H",)),
+            G.Rule("e", ("O",)),
+            G.Rule("H", ("H", "O")),
+            G.Rule("H", ("O", "H")),
+            G.Rule("O", ("H", "H")),
         ],
         start_symbol="e",
     )
@@ -71,7 +71,7 @@ class TestCYK:
             (["she", "with", "eats", "a", "fork", "fish"], False),
             (["a", "eats", "fish", "fork", "she", "with"], False),
             (["eats", "a", "fish"], False),
-        ]
+        ],
     )
     def test_cyk(self, text, expected):
         result = G.cyk(text, self.grammar)

@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 20: https://adventofcode.com/2015/day/20"""
+
 from __future__ import annotations
 
 from itertools import count

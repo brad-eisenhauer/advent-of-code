@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 11: https://adventofcode.com/2020/day/11"""
+
 from __future__ import annotations
 
 from abc import abstractmethod
@@ -35,8 +36,7 @@ class AocSolution(Solution[int, int]):
 
 class Seat:
     @abstractmethod
-    def occupied(self) -> bool:
-        ...
+    def occupied(self) -> bool: ...
 
     @classmethod
     def from_char(cls, c: str) -> Optional[Seat]:
@@ -167,7 +167,7 @@ L.LLLLL.LL
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT[0]) as f:
         yield f

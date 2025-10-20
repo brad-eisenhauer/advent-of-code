@@ -13,7 +13,7 @@ log = logging.getLogger("aoc")
 @dataclass(frozen=True)
 class Rule(Generic[T]):
     symbol: T
-    replacement: tuple[T]
+    replacement: tuple[T, ...]
     weight: int = 1
 
 

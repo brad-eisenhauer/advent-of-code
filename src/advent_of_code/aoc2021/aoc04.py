@@ -1,4 +1,5 @@
 """AoC 2021, Day 04: https://adventofcode.com/2021/day/4"""
+
 from io import StringIO
 from itertools import islice
 from pathlib import Path

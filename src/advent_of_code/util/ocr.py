@@ -41,8 +41,7 @@ class PrintToString(ContextManager[TextIO]):
     def __enter__(self) -> TextIO:
         return self._buffer
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        ...
+    def __exit__(self, exc_type, exc_val, exc_tb): ...
 
     def to_string(self) -> str:
         self._buffer.seek(0)

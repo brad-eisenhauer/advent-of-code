@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 6: https://adventofcode.com/2020/day/6"""
+
 import operator
 from functools import reduce
 from io import StringIO
@@ -52,7 +53,7 @@ b
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

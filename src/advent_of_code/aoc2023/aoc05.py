@@ -1,4 +1,5 @@
 """Advent of Code 2023, day 5: https://adventofcode.com/2023/day/5"""
+
 from __future__ import annotations
 
 from collections import deque
@@ -189,7 +190,7 @@ humidity-to-location map:
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f

@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 10: https://adventofcode.com/2020/day/10"""
+
 from collections import Counter
 from functools import cache
 from io import StringIO
@@ -99,7 +100,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

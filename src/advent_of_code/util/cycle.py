@@ -15,12 +15,9 @@ def detect_cycle(items: Iterator[T]) -> tuple[int, int] | None:
             for n in count(2):
                 if n * n > detected_cycle_len:
                     break
-                if (
-                    detected_cycle_len % n == 0
-                    and (
-                        record[detected_cycle_start]
-                        == record[detected_cycle_start + detected_cycle_len // n]
-                    )
+                if detected_cycle_len % n == 0 and (
+                    record[detected_cycle_start]
+                    == record[detected_cycle_start + detected_cycle_len // n]
                 ):
                     min_cycle_len = detected_cycle_len // n
             break

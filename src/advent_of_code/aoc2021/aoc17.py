@@ -1,4 +1,4 @@
-""" Advent of Code 2021, Day 17: https://adventofcode.com/2021/day/17 """
+"""Advent of Code 2021, Day 17: https://adventofcode.com/2021/day/17"""
 
 import re
 from io import StringIO
@@ -164,7 +164,7 @@ SAMPLE_VECTORS = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

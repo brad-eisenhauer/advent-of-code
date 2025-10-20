@@ -1,4 +1,5 @@
-""" Advent of Code 2019, Day 04: https://adventofcode.com/2019/day/4 """
+"""Advent of Code 2019, Day 04: https://adventofcode.com/2019/day/4"""
+
 from functools import cache
 from io import StringIO
 
@@ -73,7 +74,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

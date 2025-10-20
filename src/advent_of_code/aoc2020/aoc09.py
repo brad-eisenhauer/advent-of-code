@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 9: https://adventofcode.com/2020/day/9"""
+
 from collections import deque
 from io import StringIO
 from itertools import islice
@@ -86,7 +87,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

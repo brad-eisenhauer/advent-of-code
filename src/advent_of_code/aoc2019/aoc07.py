@@ -1,4 +1,5 @@
 """Advent of Code 2019, Day 7: https://adventofcode.com/2019/day/7"""
+
 from io import StringIO
 from itertools import chain, permutations, tee
 

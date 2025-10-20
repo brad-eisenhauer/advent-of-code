@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 2: https://adventofcode.com/2022/day/2"""
+
 from __future__ import annotations
 
 from enum import IntEnum
@@ -98,7 +99,7 @@ C Z
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

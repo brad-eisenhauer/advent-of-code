@@ -1,4 +1,5 @@
-""" Advent of Code 2019, Day 03: https://adventofcode.com/2019/day/3 """
+"""Advent of Code 2019, Day 03: https://adventofcode.com/2019/day/3"""
+
 import operator
 from functools import reduce
 from io import StringIO

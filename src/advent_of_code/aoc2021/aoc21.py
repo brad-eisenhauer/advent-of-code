@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 21: https://adventofcode.com/2021/day/21 """
+"""Advent of Code 2021, Day 21: https://adventofcode.com/2021/day/21"""
+
 from collections import Counter
 from dataclasses import dataclass
 from functools import cache
@@ -272,7 +273,7 @@ Player 2 starting position: 8
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp

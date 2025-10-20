@@ -1,4 +1,5 @@
-""" Advent of Code 2021, Day 14: https://adventofcode.com/2021/day/14 """
+"""Advent of Code 2021, Day 14: https://adventofcode.com/2021/day/14"""
+
 from __future__ import annotations
 
 from collections import Counter
@@ -92,7 +93,7 @@ CN -> C
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

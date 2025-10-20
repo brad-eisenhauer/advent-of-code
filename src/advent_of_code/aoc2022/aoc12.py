@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 12: https://adventofcode.com/2022/day/12"""
+
 from __future__ import annotations
 
 from io import StringIO
@@ -84,7 +85,7 @@ abdefghi
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

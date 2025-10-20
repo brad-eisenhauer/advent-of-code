@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 7: https://adventofcode.com/2020/day/7"""
+
 import re
 from collections import deque
 from functools import cache
@@ -80,7 +81,7 @@ dotted black bags contain no other bags.
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUT) as f:
         yield f

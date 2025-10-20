@@ -1,4 +1,5 @@
 """Advent of Code 2021, Day 05: https://adventofcode.com/2021/day/5"""
+
 from __future__ import annotations
 
 from collections import Counter

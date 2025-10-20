@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 14: https://adventofcode.com/2020/day/14"""
+
 import re
 from io import StringIO
 from typing import Iterator, TextIO
@@ -94,7 +95,7 @@ mem[26] = 1
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

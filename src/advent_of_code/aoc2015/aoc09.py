@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 9: https://adventofcode.com/2015/day/9"""
+
 from __future__ import annotations
 
 from io import StringIO
@@ -95,7 +96,7 @@ Dublin to Belfast = 141
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

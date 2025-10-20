@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 15: https://adventofcode.com/2022/day/15"""
+
 from __future__ import annotations
 
 import re
@@ -116,13 +117,13 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def sensor_array(sample_input):
     return [Sensor.parse(line) for line in sample_input]
 

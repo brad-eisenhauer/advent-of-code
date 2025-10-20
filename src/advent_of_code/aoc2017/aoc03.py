@@ -1,4 +1,5 @@
 """Advent of Code 2017, day 3: https://adventofcode.com/2017/day/3"""
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -75,6 +76,7 @@ NEIGHBOR_OFFSETS = [
     Vector2((1, -1)),
 ]
 
+
 def neighbors(v: Vector2) -> Iterator[Vector2]:
     for offset in NEIGHBOR_OFFSETS:
         yield v + offset
@@ -98,13 +100,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

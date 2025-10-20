@@ -1,4 +1,5 @@
 """Advent of Code 2019, day 22: https://adventofcode.com/2019/day/22"""
+
 import logging
 from dataclasses import dataclass, field
 from io import StringIO
@@ -151,7 +152,7 @@ cut -4
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

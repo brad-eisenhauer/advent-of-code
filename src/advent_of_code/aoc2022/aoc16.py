@@ -1,4 +1,5 @@
 """Advent of Code 2022, day 16: https://adventofcode.com/2022/day/16"""
+
 from __future__ import annotations
 
 import re
@@ -91,15 +92,20 @@ class Navigator(AStar[State]):
             v.flow_rate for v in self._graph.nodes if v not in state.opened_valves
         )
         for neighbor in self._graph.neighbors(state.current_valve):
-            yield potential_release, replace(
-                state, current_valve=neighbor, time_remaining=time_remaining
+            yield (
+                potential_release,
+                replace(state, current_valve=neighbor, time_remaining=time_remaining),
             )
         if state.current_valve.flow_rate > 0 and state.current_valve not in state.opened_valves:
-            yield potential_release - state.current_valve.flow_rate, State(
-                state.current_valve,
-                time_remaining,
-                state.opened_valves | {state.current_valve},
-                state.accumulated_pressure_release + time_remaining * state.current_valve.flow_rate,
+            yield (
+                potential_release - state.current_valve.flow_rate,
+                State(
+                    state.current_valve,
+                    time_remaining,
+                    state.opened_valves | {state.current_valve},
+                    state.accumulated_pressure_release
+                    + time_remaining * state.current_valve.flow_rate,
+                ),
             )
 
 
@@ -135,28 +141,35 @@ class Navigator2(AStar[State2]):
         )
         # both move
         for n1, n2 in product(self._graph.neighbors(v1), self._graph.neighbors(v2)):
-            yield potential_release * time_remaining, replace(
-                state, current_valves=(n1, n2), time_remaining=time_remaining
+            yield (
+                potential_release * time_remaining,
+                replace(state, current_valves=(n1, n2), time_remaining=time_remaining),
             )
         # first node opens, if possible; second moves
         if v1.flow_rate > 0 and v1 not in state.opened_valves:
             for n2 in self._graph.neighbors(v2):
-                yield time_remaining * (potential_release - v1.flow_rate), State2(
-                    current_valves=(v1, n2),
-                    opened_valves=state.opened_valves | {v1},
-                    time_remaining=time_remaining,
-                    accumulated_pressure_release=state.accumulated_pressure_release
-                    + time_remaining * v1.flow_rate,
+                yield (
+                    time_remaining * (potential_release - v1.flow_rate),
+                    State2(
+                        current_valves=(v1, n2),
+                        opened_valves=state.opened_valves | {v1},
+                        time_remaining=time_remaining,
+                        accumulated_pressure_release=state.accumulated_pressure_release
+                        + time_remaining * v1.flow_rate,
+                    ),
                 )
         # second node opens, if possible; first moves
         if v1 != v2 and v2.flow_rate > 0 and v2 not in state.opened_valves:
             for n1 in self._graph.neighbors(v1):
-                yield time_remaining * (potential_release - v2.flow_rate), State2(
-                    current_valves=(n1, v2),
-                    opened_valves=state.opened_valves | {v2},
-                    time_remaining=time_remaining,
-                    accumulated_pressure_release=state.accumulated_pressure_release
-                    + time_remaining * v2.flow_rate,
+                yield (
+                    time_remaining * (potential_release - v2.flow_rate),
+                    State2(
+                        current_valves=(n1, v2),
+                        opened_valves=state.opened_valves | {v2},
+                        time_remaining=time_remaining,
+                        accumulated_pressure_release=state.accumulated_pressure_release
+                        + time_remaining * v2.flow_rate,
+                    ),
                 )
         # both open
         if (
@@ -166,12 +179,15 @@ class Navigator2(AStar[State2]):
             and v1 not in state.opened_valves
             and v2 not in state.opened_valves
         ):
-            yield time_remaining * (potential_release - v1.flow_rate - v2.flow_rate), State2(
-                current_valves=state.current_valves,
-                opened_valves=state.opened_valves | {v1, v2},
-                time_remaining=time_remaining,
-                accumulated_pressure_release=state.accumulated_pressure_release
-                + time_remaining * (v1.flow_rate + v2.flow_rate),
+            yield (
+                time_remaining * (potential_release - v1.flow_rate - v2.flow_rate),
+                State2(
+                    current_valves=state.current_valves,
+                    opened_valves=state.opened_valves | {v1, v2},
+                    time_remaining=time_remaining,
+                    accumulated_pressure_release=state.accumulated_pressure_release
+                    + time_remaining * (v1.flow_rate + v2.flow_rate),
+                ),
             )
 
 
@@ -200,7 +216,7 @@ Valve JJ has flow rate=21; tunnel leads to valve II
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS[0]) as f:
         yield f

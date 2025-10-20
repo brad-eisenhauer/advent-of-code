@@ -1,4 +1,5 @@
 """Advent of Code 2023, day 19: https://adventofcode.com/2023/day/19"""
+
 from __future__ import annotations
 
 import operator
@@ -197,13 +198,13 @@ hdj{m>838:A,pv}
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

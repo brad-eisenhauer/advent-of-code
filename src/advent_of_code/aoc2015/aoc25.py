@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 25: https://adventofcode.com/2015/day/25"""
+
 from __future__ import annotations
 
 import logging
@@ -53,15 +54,14 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f
 
 
 @pytest.mark.parametrize(("sample_input", "expected"), [], indirect=["sample_input"])
-def test_foo(sample_input, expected):
-    ...
+def test_foo(sample_input, expected): ...
 
 
 @pytest.mark.parametrize(

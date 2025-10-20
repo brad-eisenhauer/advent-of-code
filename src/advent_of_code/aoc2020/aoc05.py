@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 5: https://adventofcode.com/2020/day/5"""
+
 import operator
 from functools import reduce
 from itertools import chain

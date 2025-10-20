@@ -1,4 +1,5 @@
 """Advent of Code 2015, day 17: https://adventofcode.com/2015/day/17"""
+
 from __future__ import annotations
 
 from collections import Counter
@@ -57,13 +58,13 @@ SAMPLE_INPUTS = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input():
     with StringIO(SAMPLE_INPUTS) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def containers(sample_input):
     return tuple(int(c) for c in sample_input)
 

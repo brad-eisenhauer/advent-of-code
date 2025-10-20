@@ -1,4 +1,5 @@
 """Advent of Code 2020, day 15: https://adventofcode.com/2020/day/15"""
+
 from io import StringIO
 from typing import TextIO
 
@@ -47,7 +48,7 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[request.param]) as f:
         yield f

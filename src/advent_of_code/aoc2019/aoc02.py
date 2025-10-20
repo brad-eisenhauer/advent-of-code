@@ -1,4 +1,5 @@
-""" Advent of Code 2019, Day 02: https://adventofcode.com/2019/day/2 """
+"""Advent of Code 2019, Day 02: https://adventofcode.com/2019/day/2"""
+
 from copy import deepcopy
 from io import StringIO
 from itertools import product
@@ -40,7 +41,7 @@ SAMPLE_INPUT = """\
 """
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input() -> Iterator[TextIO]:
     with StringIO(SAMPLE_INPUT) as fp:
         yield fp
