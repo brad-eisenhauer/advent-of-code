@@ -54,13 +54,13 @@ class Monkey:
     monkeys: ClassVar[dict[int, Monkey]] = {}
 
     @classmethod
-    def get_monkey(cls, id: int) -> Monkey:
+    def get_monkey(cls, id: int) -> Monkey:  # noqa: A002
         return cls.monkeys[id]
 
     @classmethod
     def read(cls, f: TextIO) -> Optional[Monkey]:
         try:
-            id = int(re.search(r"(\d+)", f.readline()).groups()[0])
+            id = int(re.search(r"(\d+)", f.readline()).groups()[0])  # noqa: A001
             items = literal_eval("[" + re.search(r"(\d+)(?:, (\d+))*", f.readline()).group() + "]")
             match re.search(r"= (.+)$", f.readline()).groups()[0].split():
                 case ["old", "*", n] if n.isnumeric():

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from io import StringIO
+from itertools import pairwise
 from typing import IO, Optional, Sequence
 
 import pytest
@@ -34,7 +35,7 @@ class AocSolution(Solution[int, int]):
 def extrapolate_sequence(ns: Sequence[int]) -> int:
     if not any(ns):
         return 0
-    diffs = [b - a for a, b in zip(ns, ns[1:])]
+    diffs = [b - a for a, b in pairwise(ns)]
     extrapolated_diff = extrapolate_sequence(diffs)
     return ns[-1] + extrapolated_diff
 

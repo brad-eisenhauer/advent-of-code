@@ -74,6 +74,7 @@ class State:
             return self.time_remaining < other.time_remaining
         if self.current_valve != other.current_valve:
             return self.current_valve < other.current_valve
+        return False
 
 
 class Navigator(AStar[State]):
@@ -121,6 +122,7 @@ class State2:
             return self.time_remaining < other.time_remaining
         if self.current_valves != other.current_valves:
             return self.current_valves < other.current_valves
+        return False
 
 
 class Navigator2(AStar[State2]):
@@ -195,7 +197,7 @@ T = TypeVar("T", State, State2)
 
 
 def find_max_release(nav: AStar[T], initial_state: T) -> int:
-    for state, _ in nav.find_min_cost_path(initial_state):
+    for state, _ in nav.find_min_cost_path(initial_state):  # noqa: B007
         ...
     return state.accumulated_pressure_release
 

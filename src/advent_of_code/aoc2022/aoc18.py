@@ -66,7 +66,7 @@ def find_exterior_locs(locs: set[Vector]) -> Iterable[Vector]:
             adj_loc = tuple(a + b for a, b in zip(loc, d))
             if adj_loc in locs:
                 continue
-            if all(mn <= l <= mx for mn, l, mx in zip(min_bounds, adj_loc, max_bounds)):
+            if all(mn <= my_loc <= mx for mn, my_loc, mx in zip(min_bounds, adj_loc, max_bounds)):
                 frontier.append(adj_loc)
 
     return exterior_locs

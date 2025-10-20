@@ -71,8 +71,7 @@ def count_ways_to_win(time: int, dist: int) -> Optional[int]:
     if min_prep is None:
         return None
     max_prep = time - min_prep
-    result = max_prep - min_prep + 1
-    return result
+    return max_prep - min_prep + 1
 
 
 SAMPLE_INPUTS = [

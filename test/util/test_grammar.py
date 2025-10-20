@@ -1,6 +1,6 @@
 import pytest
 
-import advent_of_code.util.grammar as G
+import advent_of_code.util.grammar as G  # noqa: N812
 
 
 @pytest.fixture

@@ -28,3 +28,4 @@ def detect_cycle(items: Iterator[T]) -> tuple[int, int] | None:
     for index, item in enumerate(record):
         if index + min_cycle_len < len(record) and item == record[index + min_cycle_len]:
             return min_cycle_len, index + min_cycle_len
+    raise ValueError()

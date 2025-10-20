@@ -17,14 +17,14 @@ class AocSolution(Solution[int, int]):
 
     def solve_part_one(self) -> int:
         with self.open_input() as f:
-            map = [line.strip() for line in f]
+            map = [line.strip() for line in f]  # noqa: A001
         navigator = Navigator(map, start="S", goal="E", condition=lambda c, n: n - c <= 1)
         start = navigator.find_start()
         return navigator.find_min_cost_to_goal(start)
 
     def solve_part_two(self) -> int:
         with self.open_input() as f:
-            map = [line.strip() for line in f]
+            map = [line.strip() for line in f]  # noqa: A001
         navigator = Navigator(map, start="E", goal="a", condition=lambda c, n: n - c >= -1)
         start = navigator.find_start()
         return navigator.find_min_cost_to_goal(start)
@@ -35,7 +35,7 @@ Position = tuple[int, int]
 
 class Navigator(BFS[Position]):
     def __init__(
-        self, map: list[str], start: str, goal: str, condition: Callable[[int, int], bool]
+        self, map: list[str], start: str, goal: str, condition: Callable[[int, int], bool]  # noqa: A002
     ):
         self._map = map
         self._start = start
@@ -47,6 +47,7 @@ class Navigator(BFS[Position]):
             for x, char in enumerate(row):
                 if char == self._start:
                     return x, y
+        raise ValueError()
 
     def is_goal_state(self, state: Position) -> bool:
         x, y = state
@@ -96,7 +97,7 @@ def sample_input():
     [("S", "E", (lambda c, n: n - c <= 1), 31), ("E", "a", (lambda c, n: n - c >= -1), 29)],
 )
 def test_find_min_cost_to_goal(sample_input, start, end, condition, expected):
-    map = [line.strip() for line in sample_input]
+    map = [line.strip() for line in sample_input]  # noqa: A001
     navigator = Navigator(map, start, end, condition)
     start = navigator.find_start()
     result = navigator.find_min_cost_to_goal(start)

@@ -146,7 +146,7 @@ def read_recipe(fp: IO) -> tuple[set[int], Sequence[RangeMap]]:
 
 def find_location_for_seed(seed_id: int, maps: Sequence[RangeMap]) -> int:
     result = seed_id
-    for map in maps:
+    for map in maps:  # noqa: A001
         result = map(result)
     return result
 

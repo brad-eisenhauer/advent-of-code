@@ -5,7 +5,7 @@ from __future__ import annotations
 import operator
 import re
 from collections import deque
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from io import StringIO
 from typing import IO, Callable, ClassVar, Iterator, Optional, Sequence
 
@@ -46,8 +46,7 @@ class AocSolution(Solution[int, int]):
                 pass
             else:
                 parts_bin.extend(workflows[disposition].apply_hypothetical(part))
-        result = sum(p.count_possibilities() for p in accepted_parts)
-        return result
+        return sum(p.count_possibilities() for p in accepted_parts)
 
 
 @dataclass(frozen=True)
@@ -60,7 +59,7 @@ class Part:
     @classmethod
     def from_str(cls, text: str) -> Part:
         text = text.lstrip("{").rstrip("}")
-        return eval(f"Part({text})")
+        return eval(f"Part({text})")  # noqa: S307
 
     def calc_rating_sum(self):
         return self.x + self.m + self.a + self.s
@@ -68,10 +67,10 @@ class Part:
 
 @dataclass(frozen=True)
 class HypotheticalPart:
-    x: range = range(1, 4001)
-    m: range = range(1, 4001)
-    a: range = range(1, 4001)
-    s: range = range(1, 4001)
+    x: range = field(default=range(1, 4001))
+    m: range = field(default=range(1, 4001))
+    a: range = field(default=range(1, 4001))
+    s: range = field(default=range(1, 4001))
 
     def count_possibilities(self) -> int:
         return len(self.x) * len(self.m) * len(self.a) * len(self.s)
@@ -115,8 +114,8 @@ class Criterion:
 
     @classmethod
     def from_str(cls, text: str):
-        property, op_str, limit_str = re.match(r"([xmas])([<>])(\d+)", text).groups()
-        return cls(property, op_str, int(limit_str))
+        prop, op_str, limit_str = re.match(r"([xmas])([<>])(\d+)", text).groups()
+        return cls(prop, op_str, int(limit_str))
 
     def __call__(self, part: Part) -> bool:
         return self.OPERATORS[self.operation](getattr(part, self.property), self.limit)

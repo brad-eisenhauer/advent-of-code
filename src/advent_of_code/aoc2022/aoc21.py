@@ -125,6 +125,7 @@ def find_match(monkeys: Monkeys) -> int:
             lo = guess
         else:
             hi = guess
+    raise ValueError()
 
 
 SAMPLE_INPUTS = [

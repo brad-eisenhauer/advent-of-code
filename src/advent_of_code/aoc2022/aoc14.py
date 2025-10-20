@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from functools import cache
 from io import StringIO
+from itertools import pairwise
 from typing import Iterable, Optional, TextIO
 
 import pytest
@@ -52,7 +53,7 @@ class Cave:
         walls: set[Vector] = set()
 
         def add_walls_between(left: Vector, right: Vector):
-            unit_delta: Vector = tuple(clamp(r - l, -1, 1) for l, r in zip(left, right))
+            unit_delta: Vector = tuple(clamp(ri - lf, -1, 1) for lf, ri in zip(left, right))
             v = left
             while v != right:
                 walls.add(v)
@@ -61,7 +62,7 @@ class Cave:
 
         for line in f:
             vertices = line.rstrip().split(" -> ")
-            for left, right in zip(vertices, vertices[1:]):
+            for left, right in pairwise(vertices):
                 left = tuple(int(n) for n in left.split(","))
                 right = tuple(int(n) for n in right.split(","))
                 add_walls_between(left, right)

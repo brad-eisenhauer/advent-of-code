@@ -20,7 +20,7 @@ class AocSolution(Solution[int, str]):
     def solve_part_one(self) -> int:
         cpu = CPU()
 
-        def filter(t):
+        def filter(t):  # noqa: A001
             return t[0] % 40 == 19
 
         with self.open_input() as f:

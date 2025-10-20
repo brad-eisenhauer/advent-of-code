@@ -107,6 +107,7 @@ class CycleDetector(Generic[T]):
                 self.result = cycle_start, cycle_length, acc
                 return self.result
             acc.append(item)
+        raise ValueError()
 
     def project_item_at(self, index: int) -> T:
         start, length, acc = self.find_cycle()

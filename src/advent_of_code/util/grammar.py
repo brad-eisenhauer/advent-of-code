@@ -30,7 +30,7 @@ class ContextFreeGrammar(Generic[T]):
     @cached_property
     def non_terminals(self) -> Sequence[T]:
         result = {r.symbol for r in self.rules if r.symbol != self.start_symbol}
-        return [self.start_symbol] + list(result)
+        return [self.start_symbol, *result]
 
     def is_cnf(self) -> bool:
         for rule in self.rules:

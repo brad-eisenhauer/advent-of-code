@@ -53,14 +53,14 @@ def find_first_and_last_digits(text: str, digits_only: bool = False) -> str:
 
 
 def _coerce_digit(t: str) -> str:
-    return DIGIT_STRINGS[t] if t in DIGIT_STRINGS else t
+    return DIGIT_STRINGS.get(t, t)
 
 
 @cache
-def _build_pattern(digits_only: bool, reversed: bool = False) -> str:
+def _build_pattern(digits_only: bool, build_reversed: bool = False) -> str:
     if digits_only:
         digits_pattern = r"(\d)"
-    elif reversed:
+    elif build_reversed:
         digits_pattern = rf"(\d|{'|'.join(s[::-1] for s in DIGIT_STRINGS)})"
     else:
         digits_pattern = rf"(\d|{'|'.join(DIGIT_STRINGS.keys())})"

@@ -58,22 +58,22 @@ def read_all_packets(f: TextIO) -> Iterator[Packet]:
 
 def compare_elements(left: PacketElement, right: PacketElement) -> int:
     match left, right:
-        case l, r if isinstance(l, int) and isinstance(r, int):
-            return l - r
+        case lf, rt if isinstance(lf, int) and isinstance(rt, int):
+            return lf - rt
         case [[], []]:
             return 0
         case [[], _]:
             return -1
         case _, []:
             return 1
-        case l, r:
-            if not isinstance(l, list):
-                l = [l]
-            if not isinstance(r, list):
-                r = [r]
-            result = compare_elements(l[0], r[0])
+        case lf, rt:
+            if not isinstance(lf, list):
+                lf = [lf]
+            if not isinstance(rt, list):
+                rt = [rt]
+            result = compare_elements(lf[0], rt[0])
             if result == 0:
-                result = compare_elements(l[1:], r[1:])
+                result = compare_elements(lf[1:], rt[1:])
             return result
 
 

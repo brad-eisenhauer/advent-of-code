@@ -32,7 +32,7 @@ class AocSolution(Solution[int, int]):
         with self.open_input() as f:
             grid, directions = read(f)
         initial_state = find_initial_state(grid)
-        map = {
+        map = {  # noqa: A001
             1: Face(
                 {
                     Facing.Up: (6, Facing.Right),
@@ -205,7 +205,7 @@ FaceMap = dict[FaceID, Face]
 
 
 def traverse_cube(
-    grid: Grid, initial_state: State, directions: str, map: FaceMap
+    grid: Grid, initial_state: State, directions: str, map: FaceMap  # noqa: A002
 ) -> Iterator[State]:
     pattern = re.compile(r"(\d+)([LR])?")
     state = initial_state
@@ -214,6 +214,7 @@ def traverse_cube(
         for tile in map.values():
             if tile.contains(state.loc):
                 return tile
+        raise ValueError()
 
     current_tile = get_current_tile()
 
@@ -453,7 +454,7 @@ def test_traverse_grid(sample_input):
 def test_calc_password(sample_input):
     grid, dirs = read(sample_input)
     initial_state = find_initial_state(grid)
-    for state in traverse_grid(grid, initial_state, dirs):
+    for state in traverse_grid(grid, initial_state, dirs):  # noqa: B007
         ...
     assert calc_password(state) == 6032
 

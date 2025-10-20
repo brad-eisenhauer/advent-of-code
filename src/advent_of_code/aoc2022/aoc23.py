@@ -89,13 +89,12 @@ def calc_open_space(elves: list[Vector]) -> int:
 
 
 def run_to_stasis(elves: list[Vector]) -> tuple[int, list[Vector]]:
-    result = 0
     for i in count(0):
         new_elves = run(elves, 1, i)
-        result += 1
         if new_elves == elves:
-            return result, new_elves
+            return i + 1, new_elves
         elves = new_elves
+    raise ValueError()
 
 
 SAMPLE_INPUTS = [

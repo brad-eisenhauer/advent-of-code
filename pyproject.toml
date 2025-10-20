@@ -47,7 +47,7 @@ select = [
     "A", # Builtins
     "B", # Bugbear
     "C4", # Comprehensions
-    "C901", # McCabe
+    # "C901", # McCabe
     # "D", # PyDocStyle
     "E", # PyCodeStyle (errors)
     "ERA", # Eradicate

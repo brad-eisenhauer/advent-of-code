@@ -101,6 +101,7 @@ def find_goal_loop(
             loop_length = count - goals[goal]
             return loop_start, loop_length, goals
         goals[goal] = count
+    raise ValueError()
 
 
 SAMPLE_INPUTS = [
