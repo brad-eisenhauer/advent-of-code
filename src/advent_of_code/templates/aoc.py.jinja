@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 from io import StringIO
 from typing import IO, Optional
 
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
+
+log = logging.getLogger(__name__)
 
 
 class AocSolution(Solution[int, int]):
