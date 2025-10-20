@@ -8,7 +8,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from io import StringIO
 from itertools import permutations
-from typing import IO, Callable, Optional, Protocol, Self, TypeAlias, ClassVar
+from typing import IO, Callable, Optional, Self, ClassVar
 
 import pytest
 
@@ -26,13 +26,15 @@ class AocSolution(Solution[int, int]):
         scrambler = Scrambler.from_instructions(instructions)
         return scrambler.scramble(initial)
 
-    def solve_part_two(self, input_file: Optional[IO] = None) -> int:
+    def solve_part_two(self, input_file: Optional[IO] = None, target: str = "fbgdceah", brute_force: bool = False) -> str:
         with input_file or self.open_input() as fp:
             instructions = fp.readlines()
         scrambler = Scrambler.from_instructions(instructions)
-        for candidate in permutations("abcdefgh", 8):
-            if scrambler.scramble(candidate) == "fbgdceah":
-                return "".join(candidate)
+        if brute_force:
+            for candidate in permutations("abcdefgh", 8):
+                if scrambler.scramble(candidate) == "target":
+                    return "".join(candidate)
+        return scrambler.unscramble(target)
 
 
 @dataclass
@@ -50,6 +52,9 @@ class Mutator:
     @abstractmethod
     def __call__(self, text: list[str]) -> None:
         pass
+
+    def reverse(self, text: list[str]) -> None:
+        self(text)
 
 
 def log_mutation(mut_fn: Callable[[list[str]], None]) -> Callable[[list[str]], None]:
@@ -105,7 +110,11 @@ class Rotator(Mutator):
 
     @log_mutation
     def __call__(self, text: list[str]) -> None:
-        return _rotate(text, self.magnitude if self.direction == "left" else -self.magnitude)
+        _rotate(text, self.magnitude if self.direction == "left" else -self.magnitude)
+
+    @log_mutation
+    def reverse(self, text: list[str]) -> None:
+        _rotate(text, self.magnitude if self.direction == "right" else -self.magnitude)
 
 
 @dataclass
@@ -115,12 +124,19 @@ class CharRotator(Mutator):
     PATTERN: ClassVar[str] = r"rotate based on position of letter (?P<char>[a-z])"
 
     @log_mutation
-    def __call__(self, text: str) -> str:
+    def __call__(self, text: list[str]) -> str:
         index = text.index(self.char)
         magnitude = 1 + index
         if index >= 4:
             magnitude += 1
-        return _rotate(text, -magnitude)
+        _rotate(text, -magnitude)
+
+    @log_mutation
+    def reverse(self, text: list[str]) -> str:
+        magnitudes = [-7, 1, -2, 2, -1, 3, 0, 4]  # based on string length == 8
+        index = text.index(self.char)
+        if magnitudes[index]:
+            _rotate(text, magnitudes[index])
 
 
 @dataclass
@@ -139,12 +155,8 @@ class SubstringReverser(Mutator):
         left_index, right_index = self.index_a, self.index_b
         if left_index > right_index:
             left_index, right_index = right_index, left_index
-        start_bound = right_index
-        if start_bound > len(text):
-            start_bound = None
-        end_bound = left_index - 1
-        if end_bound < 0:
-            end_bound = None
+        start_bound = _to_slice_bound(right_index, len(text))
+        end_bound = _to_slice_bound(left_index - 1, len(text))
         text[left_index : right_index + 1] = text[start_bound : end_bound : -1]
 
 
@@ -161,13 +173,20 @@ class CharMover(Mutator):
 
     @log_mutation
     def __call__(self, text: list[str]) -> None:
-        text_len = len(text)
-        value = text[self.src_index]
-        if self.src_index < self.dest_index:
-            text[self.src_index : self.dest_index] = text[_to_slice_bound(self.src_index + 1, text_len): _to_slice_bound(self.dest_index + 1, text_len)]
+        self._impl(text, self.src_index, self.dest_index)
+
+    @log_mutation
+    def reverse(self, text: list[str]) -> None:
+        self._impl(text, self.dest_index, self.src_index)
+
+    @staticmethod
+    def _impl(text: list[str], src_index: int, dest_index: int) -> None:
+        value = text[src_index]
+        if src_index < dest_index:
+            text[src_index : dest_index] = text[src_index + 1 : dest_index + 1]
         else:
-            text[self.dest_index + 1 : self.src_index + 1] = text[self.dest_index : self.src_index]
-        text[self.dest_index] = value
+            text[dest_index + 1 : src_index + 1] = text[dest_index : src_index]
+        text[dest_index] = value
 
 
 def _rotate(text: list[str], magnitude: int) -> None:
@@ -213,6 +232,13 @@ class Scrambler:
             mutator(text)
         return "".join(text)
 
+    def unscramble(self, text: str | list[str]) -> str:
+        if not isinstance(text, list):
+            text = list(text)
+        for mutator in self.mutators[::-1]:
+            mutator.reverse(text)
+        return "".join(text)
+
 
 
 SAMPLE_INPUTS = [
@@ -245,4 +271,4 @@ def test_part_one(solution: AocSolution, sample_input: IO):
 
 
 def test_part_two(solution: AocSolution, sample_input: IO):
-    assert solution.solve_part_two(sample_input) == ...
+    assert solution.solve_part_two(sample_input) == "efghdabc"
