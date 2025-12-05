@@ -38,10 +38,9 @@ class Inventory:
         while line := reader.readline().strip():
             lo, hi = line.split("-")
             fresh_ranges.append(range(int(lo), int(hi) + 1))
+        fresh_ranges = merge_ranges(fresh_ranges)
         ingredient_ids = [int(line) for line in reader]
-        result = cls(fresh_ranges=fresh_ranges, ingredient_ids=ingredient_ids)
-        result.merge_fresh_ranges()
-        return result
+        return cls(fresh_ranges=fresh_ranges, ingredient_ids=ingredient_ids)
 
     def count_fresh_ingredients(self) -> int:
         result = 0
@@ -61,18 +60,18 @@ class Inventory:
     def count_all_fresh_ingredients(self) -> int:
         return sum(len(rng) for rng in self.fresh_ranges)
 
-    def merge_fresh_ranges(self) -> None:
-        ordered_ranges = sorted(self.fresh_ranges, key=lambda r: r.start)
-        new_ranges = [ordered_ranges.pop(0)]
-        last_range = new_ranges[0]
-        while ordered_ranges:
-            next_range = ordered_ranges.pop(0)
-            if next_range.start <= last_range.stop:
-                new_ranges[-1] = range(last_range.start, max(last_range.stop, next_range.stop))
-            else:
-                new_ranges.append(next_range)
-            last_range = new_ranges[-1]
-        self.fresh_ranges = new_ranges
+def merge_ranges(ranges: list[range]) -> list[range]:
+    ordered_ranges = sorted(ranges, key=lambda r: r.start, reverse=True)
+    new_ranges = [ordered_ranges.pop()]
+    last_range = new_ranges[0]
+    while ordered_ranges:
+        next_range = ordered_ranges.pop()
+        if next_range.start <= last_range.stop:
+            new_ranges[-1] = range(last_range.start, max(last_range.stop, next_range.stop))
+        else:
+            new_ranges.append(next_range)
+        last_range = new_ranges[-1]
+    return new_ranges
 
 
 
