@@ -27,7 +27,7 @@ class AocSolution(Solution[int, int]):
 def calc_max_joltage(text: str, n: int = 2) -> int:
     digits = []
     while n > 1:
-        if n == len(text):
+        if n == len(text):  # must use all remaining digits
             digits.append(text)
             break
         max_char = max(text[:1-n])
@@ -39,6 +39,15 @@ def calc_max_joltage(text: str, n: int = 2) -> int:
         digits.append(max(text))
     return int("".join(digits))
 
+
+def calc_max_joltage_rc(text: str, n: int = 2, acc: int = 0) -> int:
+    if not n:
+        return acc
+    if n == len(text):  # must use all remaining digits
+        return acc * 10 ** n + int(text)
+    max_char = max(text[:1-n]) if n > 1 else max(text)
+    max_index = text.index(max_char)
+    return calc_max_joltage_rc(text[max_index + 1:], n - 1, acc * 10 + int(max_char))
 
 
 SAMPLE_INPUTS = [
