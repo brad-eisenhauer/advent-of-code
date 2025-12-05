@@ -30,10 +30,10 @@ def calc_max_joltage(text: str, n: int = 2) -> int:
         if n == len(text):  # must use all remaining digits
             digits.append(text)
             break
-        max_char = max(text[:1-n])
+        max_char = max(text[: 1 - n])
         max_index = text.index(max_char)
         digits.append(max_char)
-        text = text[max_index + 1:]
+        text = text[max_index + 1 :]
         n -= 1
     else:
         digits.append(max(text))
@@ -44,10 +44,10 @@ def calc_max_joltage_rc(text: str, n: int = 2, acc: int = 0) -> int:
     if not n:
         return acc
     if n == len(text):  # must use all remaining digits
-        return acc * 10 ** n + int(text)
-    max_char = max(text[:1-n]) if n > 1 else max(text)
+        return acc * 10**n + int(text)
+    max_char = max(text[: 1 - n]) if n > 1 else max(text)
     max_index = text.index(max_char)
-    return calc_max_joltage_rc(text[max_index + 1:], n - 1, acc * 10 + int(max_char))
+    return calc_max_joltage_rc(text[max_index + 1 :], n - 1, acc * 10 + int(max_char))
 
 
 SAMPLE_INPUTS = [

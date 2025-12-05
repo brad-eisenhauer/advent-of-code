@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from io import StringIO
-from typing import IO, Iterator, Iterable, Optional
+from typing import IO, Iterable, Iterator, Optional
 
 import pytest
 
@@ -55,8 +55,6 @@ def generate_stops(moves: Iterable[int], start: int = 50) -> Iterator[int]:
     for move in moves:
         start = (start + move) % 100
         yield start
-
-
 
 
 SAMPLE_INPUTS = [

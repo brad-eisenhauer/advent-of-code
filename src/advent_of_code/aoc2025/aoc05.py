@@ -50,7 +50,7 @@ class Inventory:
             for rng in self.fresh_ranges:
                 while True:
                     if ing in rng:
-                        result +=1
+                        result += 1
                     if (ing := next(ingredient_iter)) > rng.stop:
                         break
         except StopIteration:
@@ -59,6 +59,7 @@ class Inventory:
 
     def count_all_fresh_ingredients(self) -> int:
         return sum(len(rng) for rng in self.fresh_ranges)
+
 
 def merge_ranges(ranges: list[range]) -> list[range]:
     ordered_ranges = sorted(ranges, key=lambda r: r.start, reverse=True)
@@ -72,7 +73,6 @@ def merge_ranges(ranges: list[range]) -> list[range]:
             new_ranges.append(next_range)
         last_range = new_ranges[-1]
     return new_ranges
-
 
 
 SAMPLE_INPUTS = [

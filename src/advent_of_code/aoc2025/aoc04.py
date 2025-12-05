@@ -41,8 +41,10 @@ class PaperRollDiagram:
     locations: dict[Location, NeighborCount]
 
     NEIGHBORS: ClassVar[set[Location]] = {
-        (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)
-    }
+        (-1, 1),  (0, 1),  (1, 1),
+        (-1, 0),           (1, 0),
+        (-1, -1), (0, -1), (1, -1),
+    }  # fmt: skip
 
     @classmethod
     def read(cls, reader: IO) -> Self:
