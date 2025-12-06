@@ -74,8 +74,7 @@ class Timer(ContextManager):
         check_time = time.time()
         self.check_index += 1
         message = (
-            f"[{self.check_index}] {label or 'Time check'}: "
-            f"{self.get_formatted_time(check_time)}"
+            f"[{self.check_index}] {label or 'Time check'}: {self.get_formatted_time(check_time)}"
         )
         message += self.get_last_check_msg(check_time)
         print(message)
