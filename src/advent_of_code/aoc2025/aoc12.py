@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass
 from functools import cache, cached_property
 from io import StringIO
 from itertools import product, repeat
-import re
 from typing import IO, Iterator, Optional, Self, TypeAlias
 
 import pytest
@@ -38,7 +38,6 @@ class AocSolution(Solution[int, int]):
                 if region.can_place(present_list):
                     result += 1
         return result
-
 
     def solve_part_two(self, input_file: Optional[IO] = None) -> int:
         with input_file or self.open_input() as fp:
@@ -76,7 +75,9 @@ class Present:
 
     @cache
     def translate(self, row_offset: int, col_offset: int) -> Self:
-        return Present(self.id, tuple((row + row_offset, col + col_offset) for row, col in self.shape))
+        return Present(
+            self.id, tuple((row + row_offset, col + col_offset) for row, col in self.shape)
+        )
 
     def generate_rotations(self) -> Iterator[Present]:
         yield self
@@ -142,11 +143,16 @@ class Region:
         if log.isEnabledFor(logging.DEBUG):
             log.debug("Testing/Region:")
             for row in range(min_row, max_row + 1):
-                line = "".join("#" if (row, col) in self.coords else "." for col in range(min_col, max_col + 1))
+                line = "".join(
+                    "#" if (row, col) in self.coords else "." for col in range(min_col, max_col + 1)
+                )
                 log.debug(f"\t{line}")
             log.debug("Testing/Shape:")
             for row in range(next_present.dims[0]):
-                line = "".join("#" if (row, col) in next_present.shape else "." for col in range(next_present.dims[1]))
+                line = "".join(
+                    "#" if (row, col) in next_present.shape else "."
+                    for col in range(next_present.dims[1])
+                )
                 log.debug(f"\t{line}")
 
         # Try every rotation and translation of the next present that fits into the bounding box.
@@ -155,7 +161,11 @@ class Region:
                 range(min_row, max_row - rotated_present.dims[0] + 1),
                 range(min_col, max_col - rotated_present.dims[1] + 1),
             ):
-                if (reduced_region := self.place_present(rotated_present.translate(row_offset, col_offset))) is None:
+                if (
+                    reduced_region := self.place_present(
+                        rotated_present.translate(row_offset, col_offset)
+                    )
+                ) is None:
                     continue
                 log.debug("Placement found.")
                 if reduced_region.can_place(remaining_presents):

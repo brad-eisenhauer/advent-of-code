@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from functools import reduce
-from itertools import combinations
 import logging
-from io import StringIO
 import operator
+from functools import reduce
+from io import StringIO
+from itertools import combinations
 from typing import IO, Optional, TypeAlias
 
 import pytest
@@ -59,13 +59,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

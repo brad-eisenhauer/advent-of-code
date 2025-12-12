@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import functools
 import logging
+from dataclasses import dataclass
 from io import StringIO
 from typing import IO, Optional, Self, TypeAlias
 
@@ -62,7 +62,11 @@ class TachyonSplitter:
             if (row, col) in self.splitters:
                 left = row, col - 1
                 right = row, col + 1
-                return {(row, col)} | self.find_activated_splitters(left) | self.find_activated_splitters(right)
+                return (
+                    {(row, col)}
+                    | self.find_activated_splitters(left)
+                    | self.find_activated_splitters(right)
+                )
         return set()
 
     @functools.cache
@@ -100,13 +104,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

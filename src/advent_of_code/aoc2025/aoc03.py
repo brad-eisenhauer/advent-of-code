@@ -8,7 +8,6 @@ from typing import IO, Optional
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.cli import log
 
 
 class AocSolution(Solution[int, int]):
@@ -60,13 +59,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

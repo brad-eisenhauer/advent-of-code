@@ -6,12 +6,12 @@ import logging
 import re
 from dataclasses import dataclass
 from io import StringIO
-from typing import IO, ClassVar, Iterator, Optional, Self, Sequence
+from typing import IO, ClassVar, Iterator, Optional, Self
 
 import pytest
 
 from advent_of_code.base import Solution
-from advent_of_code.util.pathfinder import AStar, BFS
+from advent_of_code.util.pathfinder import BFS, AStar
 
 log = logging.getLogger(__name__)
 
@@ -73,12 +73,11 @@ class Activator(BFS[tuple[bool, ...]]):
         self.goal_state = indicators
         self.buttons = buttons
 
-    def generate_next_states(self, state: tuple[bool, ...]) -> Iterator[tuple[int, tuple[bool, ...]]]:
+    def generate_next_states(
+        self, state: tuple[bool, ...]
+    ) -> Iterator[tuple[int, tuple[bool, ...]]]:
         for button in self.buttons:
-            next_state = tuple(
-                not lit if i in button else lit
-                for i, lit in enumerate(state)
-            )
+            next_state = tuple(not lit if i in button else lit for i, lit in enumerate(state))
             yield 1, next_state
 
     def is_goal_state(self, state: tuple[bool, ...]) -> bool:
@@ -98,8 +97,7 @@ class Joltinator(AStar[tuple[int, ...]]):
             min_deficit = min(d for i, d in enumerate(deficits) if i in button)
             for n in range(min_deficit):
                 next_state = tuple(
-                    joltage + n + 1 if i in button else joltage
-                    for i, joltage in enumerate(state)
+                    joltage + n + 1 if i in button else joltage for i, joltage in enumerate(state)
                 )
                 yield n + 1, next_state
 
@@ -124,13 +122,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

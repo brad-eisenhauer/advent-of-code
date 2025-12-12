@@ -38,7 +38,7 @@ class AocSolution(Solution[int, int]):
             if move == 0:
                 continue
             new_pos = pos + move
-            if new_pos <= 0 or 100 <= new_pos:
+            if new_pos <= 0 or new_pos >= 100:
                 zero_passes += 1
             pos = new_pos % 100
             log.debug('Post: {"position": %d, "zero_passes": %d}', pos, zero_passes)
@@ -73,13 +73,13 @@ L82
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

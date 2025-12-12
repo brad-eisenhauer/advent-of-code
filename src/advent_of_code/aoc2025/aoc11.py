@@ -28,7 +28,7 @@ class AocSolution(Solution[int, int]):
     def solve_part_two(self, input_file: Optional[IO] = None) -> int:
         with input_file or self.open_input() as fp:
             network = Network.read(fp)
-        if (fft_to_dac := network.count_paths("fft", "dac")):
+        if fft_to_dac := network.count_paths("fft", "dac"):
             return (
                 network.count_paths("svr", "fft") * fft_to_dac * network.count_paths("dac", "out")
             )
@@ -98,13 +98,13 @@ hhh: out
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 

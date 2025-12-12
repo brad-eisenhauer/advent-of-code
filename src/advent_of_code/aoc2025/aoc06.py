@@ -83,13 +83,13 @@ SAMPLE_INPUTS = [
 ]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sample_input(request):
     with StringIO(SAMPLE_INPUTS[getattr(request, "param", 0)]) as f:
         yield f
 
 
-@pytest.fixture()
+@pytest.fixture
 def solution():
     return AocSolution()
 
@@ -105,7 +105,5 @@ def test_part_two(solution: AocSolution, sample_input: IO):
 def test_part_two_results(sample_input: IO) -> None:
     problems, operators = read_problems_2(sample_input)
     assert operators == ["*", "+", "*", "+"]
-    assert problems == [
-        [1, 24, 356], [369, 248, 8], [32, 581, 175], [623, 431, 4]
-    ]
+    assert problems == [[1, 24, 356], [369, 248, 8], [32, 581, 175], [623, 431, 4]]
     assert list(solve_problems(problems, operators)) == [8544, 625, 3253600, 1058]
