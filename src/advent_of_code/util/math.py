@@ -54,6 +54,34 @@ def sign(n: int) -> int:
     return n // abs(n)
 
 
+def div(numerator: int, denominator: int) -> tuple[int, int]:
+    """Calculate the quotient and remainder.
+
+    The result will have the following properties:
+
+    - abs(quotient * denominator) <= abs(numerator)
+    - sign(quotient * denominator) == sign(numerator)
+    - quotient * denominator + remainder == numerator
+
+    Parameters
+    ---------
+    numerator : int
+        Number to be divided.
+    denominator : int
+        Number to divide into numerator.
+
+    Returns
+    -------
+    int
+        Whole-number quotient.
+    int
+        Remainder
+    """
+    quotient = abs(numerator) // abs(denominator) * sign(numerator) * sign(denominator)
+    remainder = numerator - quotient * denominator
+    return quotient, remainder
+
+
 def product(xs: Iterable[T]) -> Union[T, int]:
     return reduce(operator.mul, xs, 1)
 
