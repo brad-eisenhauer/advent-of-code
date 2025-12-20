@@ -319,3 +319,6 @@ tags
 
 # Ignore input folder; downloadable from website
 input
+
+# Ignore all diffs. These are temporary files for feeding context to coding assistants.
+*.diff
